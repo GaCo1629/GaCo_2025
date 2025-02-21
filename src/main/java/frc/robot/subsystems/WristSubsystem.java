@@ -4,42 +4,45 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class WristSubsystem extends SubsystemBase {
-  private SparkFlex wristMotor;
-  private RelativeEncoder wristEncoder;
+	private SparkFlex wristMotor;
+	private RelativeEncoder wristEncoder;
 
-  /** Creates a new WristSubsystem. */
-  public WristSubsystem() {
-    wristMotor = new SparkFlex(Constants.WristConstants.kWristMotorId, SparkLowLevel.MotorType.kBrushless);
+	/** Creates a new WristSubsystem. */
+	public WristSubsystem() {
+		wristMotor = new SparkFlex(Constants.Wrist.kWristMotorId, SparkLowLevel.MotorType.kBrushless);
 
-    wristEncoder = wristMotor.getEncoder();
-  }
+		wristEncoder = wristMotor.getEncoder();
+	}
 
-  public void set(double speed) {
-    wristMotor.set(speed);
-  }
+	public void set(double speed) {
+		wristMotor.set(speed);
+	}
 
-  public double getPosition(){
-    return wristEncoder.getPosition();
-  }
+	public double getPosition() {
+		return wristEncoder.getPosition();
+	}
 
-  public double getVelocity(){
-    return wristEncoder.getVelocity();
-  }
+	public double getVelocity() {
+		return wristEncoder.getVelocity();
+	}
 
+	public void setIntakeSpeed(double speed){
+		//Run the intake motor at this speed
+	}
 
-  @Override
-  public void periodic() {
-    // This method will be called once per scheduler run
-    //SmartDashboard.putNumber("Wrist Position", wristEncoder.getPosition());
-    //SmartDashboard.putNumber("Wrist Velocity", wristEncoder.getVelocity());
-  }
+	@Override
+	public void periodic() {
+		// This method will be called once per scheduler run
+		// SmartDashboard.putNumber("Wrist Position", wristEncoder.getPosition());
+		// SmartDashboard.putNumber("Wrist Velocity", wristEncoder.getVelocity());
+	}
 }
