@@ -11,12 +11,18 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.path.PathConstraints;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.TriggerEventCmd;
 import frc.robot.commands.WaitForTowerStateCmd;
@@ -54,6 +60,9 @@ public class RobotContainer {
 
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
+
+    // 
+    Pose2d targetPose = new Pose2d();
 
     public RobotContainer() {
 
@@ -106,10 +115,21 @@ public class RobotContainer {
             )
         );
     }
+    Command branchG = AutoBuilder.pathfindToPose(
+        new Pose2d(5.795, 3.779, new Rotation2d(Math.PI)),
+        new PathConstraints(
+        1.0, 2.0,
+            Units.degreesToRadians(360), Units.degreesToRadians(720)),
+        0.0 // Goal end velocity in meters/sec
+    );
+
+
+
 
     private void configureBindings() {
 
-
+        // Path Generation
+        joystick.y().onTrue(branchG);
         // Tower State Machine Events
         joystick.start().onTrue(tower.runOnce(() -> tower.triggerEvent(TowerEvent.HOME_TOWER)));
         
