@@ -5,39 +5,40 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+
 import frc.robot.subsystems.ElevatorSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class DefaultElevatorCmd extends Command {
 
-  ElevatorSubsystem elevator;
+	ElevatorSubsystem elevator;
 
-  /** Creates a new DefaultWristCommand. */
-  public DefaultElevatorCmd(ElevatorSubsystem elevator) {
-    addRequirements(elevator);
-    this.elevator = elevator;
-  }
+	/** Creates a new DefaultWristCommand. */
+	public DefaultElevatorCmd(ElevatorSubsystem elevator) {
+		addRequirements(elevator);
+		this.elevator = elevator;
+	}
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    elevator.resetElevatorControl();
-  }
+	// Called when the command is initially scheduled.
+	@Override
+	public void initialize() {
+		elevator.resetElevatorControl();
+	}
 
-  @Override
-  public void execute() {
-    elevator.runClosedLoop();
-  }
+	@Override
+	public void execute() {
+		elevator.runClosedLoop();
+	}
 
-  // Called once the command ends or is interrupted.
-  @Override
-  public void end(boolean interrupted) {
-    elevator.resetElevatorControl();
-  }
+	// Called once the command ends or is interrupted.
+	@Override
+	public void end(boolean interrupted) {
+		elevator.resetElevatorControl();
+	}
 
-  // Returns true when the command should end.
-  @Override
-  public boolean isFinished() {
-    return false;
-  }
+	// Returns true when the command should end.
+	@Override
+	public boolean isFinished() {
+		return false;
+	}
 }

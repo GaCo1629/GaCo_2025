@@ -1,14 +1,14 @@
 package frc.robot.subsystems;
 
 public enum TowerState {
-	//Start
+	// Start
 	INIT,
 	MAKING_WRIST_SAFE,
 	HOMING_ELEVATOR,
 	HOMING_WRIST,
 	HOME,
 
-	//Scoring
+	// Scoring
 	INTAKING,
 	INTAKE_PAUSE,
 	GOING_TO_SAFE,
@@ -18,9 +18,8 @@ public enum TowerState {
 	RAISING_TO_L4,
 	TILTING_TO_SCORE_L4, // L4
 	SCORING_CORAL,
-	
 
-	//Algae
+	// Algae
 	GET_SAFE_FOR_L2_ALGAE,
 	GET_SAFE_FOR_L3_ALGAE,
 	GOING_TO_ALGAE_INTAKE,
@@ -31,7 +30,7 @@ public enum TowerState {
 	WINDING_UP,
 	RELEASING,
 
-	//Returning
+	// Returning
 	PAUSING_AFTER_SCORING_CORAL,
 	LOWERING,
 	GOING_TO_CORAL_INTAKE_ANGLE

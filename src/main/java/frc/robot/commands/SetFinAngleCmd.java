@@ -5,21 +5,22 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+
 import frc.robot.subsystems.WristSubsystem;
 
 public class SetFinAngleCmd extends InstantCommand {
 
-  WristSubsystem wrist;
-  double angle;
+	WristSubsystem wrist;
+	Angle angle;
 
-  public SetFinAngleCmd(WristSubsystem wrist, double angle) {
-    this.wrist = wrist;
-    this.angle = angle;
-  }
+	public SetFinAngleCmd(WristSubsystem wrist, Angle angle) {
+		this.wrist = wrist;
+		this.angle = angle;
+	}
 
-  // Called when the command is initially scheduled.
-  @Override
-  public void initialize() {
-    wrist.setGoalAngle(angle);
-  }
+	// Called when the command is initially scheduled.
+	@Override
+	public void initialize() {
+		wrist.setGoalAngle(angle);
+	}
 }
