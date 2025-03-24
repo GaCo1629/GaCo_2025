@@ -156,9 +156,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(MaxSpeed.in(MetersPerSecond) * -joystick.getLeftY() * Constants.DriverConstants.kMaxDriveSpeedPercentage.in(Percent) * tower.getTowerSpeedSafetyFactor().in(Percent)) // Drive forward with negative Y (forward)
-                    .withVelocityY(MaxSpeed.in(MetersPerSecond) * -joystick.getLeftX() * Constants.DriverConstants.kMaxDriveSpeedPercentage.in(Percent) * tower.getTowerSpeedSafetyFactor().in(Percent)) // Drive left with negative X (left)
-                    .withRotationalRate(MaxAngularRate.in(RadiansPerSecond) * -joystick.getRightX() * Constants.DriverConstants.kMaxTurnSpeedPercentage.in(Percent) * tower.getTowerSpeedSafetyFactor().in(Percent)) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(MaxSpeed.times(-joystick.getLeftY()).times(Constants.DriverConstants.kMaxDriveSpeedPercentage).times(tower.getTowerSpeedSafetyFactor())) // Drive forward with negative Y (forward)
+                    .withVelocityY(MaxSpeed.times(-joystick.getLeftX()).times(Constants.DriverConstants.kMaxDriveSpeedPercentage).times(tower.getTowerSpeedSafetyFactor())) // Drive left with negative X (left)
+                    .withRotationalRate(MaxAngularRate.times(-joystick.getRightX()).times(Constants.DriverConstants.kMaxTurnSpeedPercentage).times(tower.getTowerSpeedSafetyFactor())) // Drive counterclockwise with negative X (left)
             ));
 
         // avoid the PathPlanner startup delay....
