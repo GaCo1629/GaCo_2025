@@ -55,10 +55,10 @@ public class WristSubsystem extends SubsystemBase {
 	private TrapezoidProfile.State angleGoal = new TrapezoidProfile.State();
 	private TrapezoidProfile.State angleSetpoint;
 
-	private MutAngle wristAngle;
-	private MutAngularVelocity wristVelocity;
-	private MutLinearVelocity intakeVelocity;
-	private MutCurrent intakeCurrent;
+	private MutAngle wristAngle = Degrees.mutable(0.0);
+	private MutAngularVelocity wristVelocity = DegreesPerSecond.mutable(0.0);
+	private MutLinearVelocity intakeVelocity = MetersPerSecond.mutable(0.0);
+	private MutCurrent intakeCurrent = Amps.mutable(0.0);
 
 	TimeOfFlight enterTOF;
 	TimeOfFlight exitTOF;

@@ -8,17 +8,12 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.units.measure.Distance;
-import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import static edu.wpi.first.units.Units.Meters;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.GoalEndState;
@@ -34,9 +29,6 @@ import java.util.Optional;
 public class ApproachSubsystem extends SubsystemBase {
 
 	private CommandScheduler scheduler = CommandScheduler.getInstance();
-	//  public AprilTagFieldLayout tags =
-	// AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeAndyMark); //CHS uses andymark,
-	// worlds uses welded
 	public AprilTagFieldLayout tags =
 			AprilTagFieldLayout.loadField(AprilTagFields.k2025ReefscapeWelded); // CHS uses andymark, worlds uses welded
 	public Optional<Alliance> alliance = DriverStation.getAlliance();
@@ -63,26 +55,11 @@ public class ApproachSubsystem extends SubsystemBase {
 		}
 	}
 
-	static final Distance BUMPER_TO_CENTER = Meters.of(0.45);
-	static final Distance REEF_HALF_WIDTH = Meters.of(0.165); // Offset from the center to the pole
-	static final Distance NORMAL_APPROACH_DISTANCE = Meters.of(0.2); // Target Distance from reef when first approaching
-	static final Distance ALGAE_STANDOFF = Meters.of(0.80); // Extra distance for wrist fold down
-	static final Distance OVERHEAD_STANDOFF = Meters.of(0.0); // Negative is more under the barge
-
 	/* Create a Path Command to navigate to the specified position **/
 	public Command buildPathCmd(ApproachTarget targetPos) {
-		// Distance in meters
-		MutDistance centerStandoff = BUMPER_TO_CENTER.mutableCopy();
-		MutDistance reefBranchOffset = REEF_HALF_WIDTH.mutableCopy();
-
 		// Get tag coordinates and heading
 		int adjTagID = getTagId(targetPos.tagId);
 		Pose2d tag = tags.getTagPose(adjTagID).get().toPose2d();
-		// Distance tagX     = tags.getTagPose(adjTagID).get().getMeasureX();
-		// Distance tagY     = tags.getTagPose(adjTagID).get().getMeasureY();
-		// Rotation2d tagAngle = tags.getTagPose(adjTagID).get().toPose2d().getRotation();
-		// Distance offsetX  = Meters.of(0.0);
-		// Distance offsetY  = Meters.of(0.0);
 
 		SmartDashboard.putString(
 				"Tag Info",
@@ -90,80 +67,13 @@ public class ApproachSubsystem extends SubsystemBase {
 						"ID%d X:%.3f Y:%.3f T:%.1f",
 						adjTagID, tag.getX(), tag.getY(), tag.getRotation().getRadians()));
 
-		// adjust offset and standoff based on specific target location
-		if (targetPos.position == ApproachPosition.LEFT) {
-			reefBranchOffset.mut_times(-1.0);
-		} else if (targetPos.position == ApproachPosition.ALGAE) {
-			reefBranchOffset.mut_replace(0.0, Meters);
-			centerStandoff.mut_replace(ALGAE_STANDOFF); // Space out further for algae
-		} else if (targetPos.position == ApproachPosition.OVERHEAD) {
-			reefBranchOffset.mut_replace(0.4, Meters);
-			centerStandoff.mut_replace(OVERHEAD_STANDOFF); // Space out further for algae
-		}
-
-		// Calculate left/right offsets for branch coordinates
-		Translation2d offset = (reefBranchOffset.isEquivalent(OVERHEAD_STANDOFF))
-				? Translation2d.kZero
-				: new Translation2d(reefBranchOffset.in(Meters), tag.getRotation());
-		// if (reefBranchOffset.isEquivalent(OVERHEAD_STANDOFF)) {
-		// offset = new Translation2d(reefBranchOffset.in(Meters),
-		// tags.getTagPose(adjTagID).get().toPose2d().getRotation());
-		// offsetX  = reefBranchOffset.times(Math.cos(tagAngle.in(Radians) + Math.PI/2));
-		// offsetY  = reefBranchOffset.times(Math.sin(tagAngle.in(Radians) + Math.PI/2));
-		// }
-
-		// Rotation2d finalAngle =
-		// tags.getTagPose(adjTagID).get().toPose2d().getRotation().rotateBy(Rotation2d.k180deg);
-
-		// Determine intermediate and final approach points
-		// Translation2d pt0 = drivetrain.getState().Pose.getTranslation();
-		// Pose2d pt0 = drivetrain.getState().Pose;
-		// Translation2d pt1 = new Translation2d(tag.getX() + tagAngle.getCos() *
-		// centerStandoff.in(Meters) + NORMAL_APPROACH_DISTANCE.in(Meters) + offset.getX(),
-		// tag.getY() + tagAngle.getSin() * centerStandoff.in(Meters) +
-		// NORMAL_APPROACH_DISTANCE.in(Meters) + offset.getY());
-		// Pose2d pt1 = new Pose2d(tags.getTagPose(adjTagID).get().toPose2d().getX() +
-		// tags.getTagPose(adjTagID).get().toPose2d().getRotation().getCos() *
-		// centerStandoff.in(Meters) + NORMAL_APPROACH_DISTANCE.in(Meters) + offset.getX(),
-		// tags.getTagPose(adjTagID).get().toPose2d().getY() +
-		// tags.getTagPose(adjTagID).get().toPose2d().getRotation().getSin() *
-		// centerStandoff.in(Meters) + NORMAL_APPROACH_DISTANCE.in(Meters) + offset.getY(),
-		// tags.getTagPose(adjTagID).get().toPose2d().getRotation().rotateBy(Rotation2d.k180deg));
-		// Translation2d pt2 = new Translation2d(tag.getX() + tagAngle.getCos() *
-		// centerStandoff.in(Meters) + offset.getX(), tag.getY() + tagAngle.getSin() *
-		// centerStandoff.in(Meters) + offset.getY());
-		// Pose2d pt2 = new Pose2d(tags.getTagPose(adjTagID).get().toPose2d().getX() +
-		// tags.getTagPose(adjTagID).get().toPose2d().getRotation().getCos() *
-		// centerStandoff.in(Meters) + offset.getX(),
-		// tags.getTagPose(adjTagID).get().toPose2d().getY() +
-		// tags.getTagPose(adjTagID).get().toPose2d().getRotation().getSin() *
-		// centerStandoff.in(Meters) + offset.getY(),
-		// tags.getTagPose(adjTagID).get().toPose2d().getRotation().rotateBy(Rotation2d.k180deg));
-
-		// determine trajectory angles for starting and ending path.
-		// Rotation2d initialAngle  = Rotation2d.fromRadians(Math.atan2(pt1.getY() - pt0.getY(),
-		// pt1.getY() - pt0.getX()));
-		// Rotation2d overheadAngle = tag.getRotation();
-
 		// Create a list of three waypoints.
 		// The rotation component of the pose should be the direction of travel. Do not use
 		// holonomic rotation.
 		List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
 				drivetrain.getState().Pose,
-				new Pose2d(
-						tag.getX()
-								+ tag.getRotation().getCos() * centerStandoff.in(Meters)
-								+ NORMAL_APPROACH_DISTANCE.in(Meters)
-								+ offset.getX(),
-						tag.getY()
-								+ tag.getRotation().getSin() * centerStandoff.in(Meters)
-								+ NORMAL_APPROACH_DISTANCE.in(Meters)
-								+ offset.getY(),
-						tag.getRotation().rotateBy(Rotation2d.k180deg)),
-				new Pose2d(
-						tag.getX() + tag.getRotation().getCos() * centerStandoff.in(Meters) + offset.getX(),
-						tag.getY() + tag.getRotation().getSin() * centerStandoff.in(Meters) + offset.getY(),
-						tag.getRotation().rotateBy(Rotation2d.k180deg)));
+				tag.plus(targetPos.position.pt1Transform),
+				tag.plus(targetPos.position.pt2Transform));
 
 		// limit severity of motion.
 		PathConstraints constraints = new PathConstraints(

@@ -30,7 +30,7 @@ public enum ApproachTarget {
 	LEFT_SOURCE(13, ApproachPosition.ALGAE, true),
 	RIGHT_SOURCE(12, ApproachPosition.ALGAE, true);
 
-	public ApproachPosition position;
+	public final ApproachPosition position;
 	public final int tagId;
 	public final boolean enableHighCam;
 
