@@ -11,8 +11,10 @@ import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Constants.DriverConstants;
 
@@ -28,11 +30,13 @@ public class TowerSubsystem extends SubsystemBase {
 	private Dimensionless safetyFactor = Percent.of(100);
 	private int currentLevel = 0;
 	private boolean goDirectAlgae = false;
+	private CommandXboxController joystick;
 
 	/** Creates a new Tower. */
-	public TowerSubsystem(ElevatorSubsystem elevator, WristSubsystem wrist) {
+	public TowerSubsystem(ElevatorSubsystem elevator, WristSubsystem wrist, CommandXboxController joystick) {
 		this.elevator = elevator;
 		this.wrist = wrist;
+		this.joystick = joystick;
 		stateTimer.start();
 	}
 
@@ -61,6 +65,7 @@ public class TowerSubsystem extends SubsystemBase {
 
 	public void homeTower() {
 		wrist.setIntakeSpeed(0);
+		joystick.setRumble(RumbleType.kBothRumble,0);
 		elevator.resetElevatorControl();
 		wrist.resetWristControl();
 		pendingEvent = TowerEvent.NONE;
@@ -127,6 +132,7 @@ public class TowerSubsystem extends SubsystemBase {
 					setState(TowerState.PAUSING_AFTER_SCORING_CORAL);
 				} else {
 					currentLevel = 0;
+					joystick.setRumble(RumbleType.kBothRumble,0);
 				}
 				break;
 			}
@@ -136,9 +142,11 @@ public class TowerSubsystem extends SubsystemBase {
 			case INTAKING: {
 				if (wrist.gotExitCoral()) {   // this will be true if we are holding a coral
 					wrist.setIntakeSpeed(0);
+					joystick.setRumble(RumbleType.kBothRumble,1);
 					setState(TowerState.INTAKE_PAUSE);
 				} else if (wrist.gotEnterCoral()){
 					wrist.setIntakeSpeed(Constants.Wrist.kCoralSlowIntakePower);
+					joystick.setRumble(RumbleType.kBothRumble,1);
 					setState(TowerState.INTAKE_PAUSE);
 				}
 				break;
@@ -159,6 +167,8 @@ public class TowerSubsystem extends SubsystemBase {
 			case GOING_TO_SAFE: {
 				if (wrist.inPosition()){
 					wrist.setIntakeSpeed(0);
+					joystick.setRumble(RumbleType.kBothRumble,0);
+					
 					setState(TowerState.GOT_CORAL);
 				} else if (wrist.gotExitCoral()) {
 						wrist.setIntakeSpeed(0);

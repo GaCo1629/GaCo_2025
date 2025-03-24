@@ -58,7 +58,7 @@ public class Constants {
         public static final AngularVelocity kAngleMaxVelocity = DegreesPerSecond.of(400); // 
 		public static final AngularAcceleration kAngleMaxAcceleration = DegreesPerSecondPerSecond.of(1000); // 
 
-        public static final Angle kIntakeAngle             = Degrees.of(4);
+        public static final Angle kIntakeAngle             = Degrees.of(2);
         public static final Angle kSafeAngle               = Degrees.of(30);
         public static final Angle kL4Angle                 = Degrees.of(48);
         public static final Angle kHighAlgaeAngle          = Degrees.of(60);
@@ -109,13 +109,13 @@ public class Constants {
         public static final Distance kL1CoralHeight = Inches.of(21);
         public static final Distance kL2CoralHeight = Inches.of(31);
         public static final Distance kL3CoralHeight = Inches.of(46);
-        public static final Distance kL4CoralHeight = Inches.of(71);  // was 70
+        public static final Distance kL4CoralHeight = Inches.of(70);  // was 70
 
         public static final Distance kL1AlgaeHeight = Inches.of(24);
         public static final Distance kL2AlgaeHeight = Inches.of(39);
         public static final Distance kL3AlgaeHeight = Inches.of(54);  
 
-        public static final Distance kL4AlgaeWindupHeight = Inches.of(71);  
+        public static final Distance kL4AlgaeWindupHeight = Inches.of(70.5);  
 
         public static final Distance kSafeHomeHeight = Inches.of(19);
         

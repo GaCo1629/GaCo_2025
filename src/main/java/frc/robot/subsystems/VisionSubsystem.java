@@ -32,7 +32,6 @@ public class VisionSubsystem extends SubsystemBase{
     Pose3d robotPose;
     boolean safetyOverride = false;
     String cameraName;
-    boolean upperCam;
     Vector<N3> visionMeasurementStdDevs;
    
     /**
@@ -40,10 +39,9 @@ public class VisionSubsystem extends SubsystemBase{
      * less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and radians.
      */
     
-    public VisionSubsystem(CommandSwerveDrivetrain  drivetrain, String cameraName, Transform3d robotToCam, Vector<N3> stdDev, boolean upperCam){
+    public VisionSubsystem(CommandSwerveDrivetrain  drivetrain, String cameraName, Transform3d robotToCam, Vector<N3> stdDev){
         this.drivetrain = drivetrain;
         this.cameraName = cameraName;
-        this.upperCam   = upperCam;
         this.visionMeasurementStdDevs = stdDev;
 
         photonCamera = new PhotonCamera(cameraName);
@@ -59,7 +57,6 @@ public class VisionSubsystem extends SubsystemBase{
 
 
     public void periodic(){
-
         estimatedRobotPose = getEstimatedGlobalPose();
         if (estimatedRobotPose.isPresent()){
             EstimatedRobotPose estPose = estimatedRobotPose.get();   
@@ -72,22 +69,13 @@ public class VisionSubsystem extends SubsystemBase{
             Translation2d oldPosition = drivetrain.getState().Pose.getTranslation();
             double displacement = oldPosition.getDistance(newPosition);
 
-            // Make sure we're not the upper cam with a lockout
-            if (!upperCam || Globals.HIGH_CAM_ENABLED) {
-
-                // validate the position before usig it.
-                if ((displacement <= 1.0) || (DriverStation.isDisabled()) || safetyOverride) {
-                    drivetrain.addVisionMeasurement(robotPose, timestampSeconds, visionMeasurementStdDevs);
-                }
-
-                // dont display if locked out
-                SmartDashboard.putString(cameraName + " Pose 2d", robotPose.toString());
+            // validate the position before usig it.
+            if ((displacement <= 1.0) || (DriverStation.isDisabled()) || safetyOverride) {
+                drivetrain.addVisionMeasurement(robotPose, timestampSeconds, visionMeasurementStdDevs);
             }
 
-            if (upperCam) {
-                SmartDashboard.putBoolean("High Cam Enabled", Globals.HIGH_CAM_ENABLED);   
-            }
-          
+            // dont display if locked out
+            SmartDashboard.putString(cameraName + " Pose 2d", robotPose.toString());
         }
         
         SmartDashboard.putBoolean(cameraName + " Safety Override", safetyOverride);
