@@ -4,6 +4,8 @@
 
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.Amps;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.TowerSubsystem;
@@ -32,7 +34,7 @@ public class HomeElevatorCmd extends Command {
 
   @Override
   public void execute() {
-    if (elevator.getCurrent() > 50) {
+    if (elevator.getCurrent().in(Amps) > 50.0) {
       overcurrentCount++;
     } else {
       overcurrentCount = 0;

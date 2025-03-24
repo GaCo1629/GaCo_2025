@@ -23,6 +23,10 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.AngularVelocityUnit;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
+import edu.wpi.first.units.measure.MutAngle;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -53,19 +57,19 @@ import frc.robot.subsystems.TowerSubsystem;
 import frc.robot.Constants.DriverConstants;
 
 public class RobotContainer {
-    private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    private final LinearVelocity MaxSpeed = TunerConstants.kSpeedAt12Volts; // kSpeedAt12Volts desired top speed
+    private final AngularVelocity MaxAngularRate = RadiansPerSecond.of(Units.rotationsToRadians(0)); // 3/4 of a rotation per second max angular velocity in radians per second
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.08).withRotationalDeadband(MaxAngularRate * 0.08) // Add a 8% deadband
+            .withDeadband(MaxSpeed.times(DriverConstants.kDriveDeadband)).withRotationalDeadband(MaxAngularRate.times(DriverConstants.kRotationDeadband)) // Add a 8% deadband
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
 
     //private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+    private final Telemetry logger = new Telemetry(MaxSpeed.in(MetersPerSecond));
 
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandJoystick       copilot_1 = new CommandJoystick(1);
@@ -156,11 +160,10 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed * Constants.DriverConstants.kMaxDriveSpeed * tower.getTowerSpeedSafetyFactor()) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed * Constants.DriverConstants.kMaxDriveSpeed  * tower.getTowerSpeedSafetyFactor()) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate * Constants.DriverConstants.kMaxTurnSpeed * tower.getTowerSpeedSafetyFactor()) // Drive counterclockwise with negative X (left)
-            )
-        );
+                drive.withVelocityX(MaxSpeed.in(MetersPerSecond) * -joystick.getLeftY() * Constants.DriverConstants.kMaxDriveSpeedPercentage.in(Percent) * tower.getTowerSpeedSafetyFactor().in(Percent)) // Drive forward with negative Y (forward)
+                    .withVelocityY(MaxSpeed.in(MetersPerSecond) * -joystick.getLeftX() * Constants.DriverConstants.kMaxDriveSpeedPercentage.in(Percent) * tower.getTowerSpeedSafetyFactor().in(Percent)) // Drive left with negative X (left)
+                    .withRotationalRate(MaxAngularRate.in(RadiansPerSecond) * -joystick.getRightX() * Constants.DriverConstants.kMaxTurnSpeedPercentage.in(Percent) * tower.getTowerSpeedSafetyFactor().in(Percent)) // Drive counterclockwise with negative X (left)
+            ));
 
         // avoid the PathPlanner startup delay....
         FollowPathCommand.warmupCommand().schedule();
@@ -193,17 +196,20 @@ public class RobotContainer {
 
         // ==== NON Field Centric driving ================================
 
+        LinearVelocity xSpeed = MetersPerSecond.of(0.75);
+        LinearVelocity ySpeed = MetersPerSecond.of(0.25);
+
         joystick.pov(0).whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(0.75).withVelocityY(0))
+            forwardStraight.withVelocityX(xSpeed).withVelocityY(0))
         );
         joystick.pov(180).whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(-0.75).withVelocityY(0))
+            forwardStraight.withVelocityX(xSpeed.in(MetersPerSecond) * -1.0).withVelocityY(0))
         );
         joystick.pov(90).whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(0).withVelocityY(-0.25))
+            forwardStraight.withVelocityX(0).withVelocityY(ySpeed.in(MetersPerSecond) * -1.0))
         );
         joystick.pov(270).whileTrue(drivetrain.applyRequest(() ->
-            forwardStraight.withVelocityX(0).withVelocityY(0.25))
+            forwardStraight.withVelocityX(0).withVelocityY(ySpeed))
         );
             
         // ====  CoPilot 1 Buttons  ======================================
@@ -255,24 +261,34 @@ public class RobotContainer {
     // ==============================================================================================
     private Command approachCoralStationCommand;
     boolean isAtTarget = false;
-    double targetAngle = (approach.tags.getTagPose(12).get().getRotation().toRotation2d().getDegrees());
-    double headingError = 0;
+    MutAngle targetAngle = Degrees.mutable(0.0); // Initial target angle
+    MutAngle headingError = Degrees.mutable(0.0);
+    MutAngle robotRotation = Degrees.mutable(drivetrain.getState().Pose.getRotation().getDegrees());
 
     BooleanSupplier atTarget = (() -> {
+        robotRotation.mut_replace(drivetrain.getState().Pose.getRotation().getDegrees(), Degrees);
         
-        if(targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees()) > 180){
-            headingError = (targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees())) - 360;
-        } else if(targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees()) < -180){
-            headingError = (targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees())) + 360;
-        } else{
-            headingError = targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees());
+        // targetAngle - drivetrainRotation > 180
+        if(targetAngle.in(Degrees) - robotRotation.in(Degrees) > 180.0) {
+            // targetAnngle - drivetrainRotation - 360
+            headingError.mut_replace(targetAngle.in(Degrees) -  robotRotation.in(Degrees) - 360.0, Degrees);
+        } 
+        // targetAngle - drivetrainRotation < -180
+        else if(targetAngle.in(Degrees) - robotRotation.in(Degrees) > 180.0) {
+            // targetAnngle - drivetrainRotation + 360
+            headingError.mut_replace(targetAngle.in(Degrees) - robotRotation.in(Degrees) + 360.0, Degrees);
+        } 
+        // -180 < targetAngle - drivetrainRotation < 180
+        else{
+            // targetAnngle - drivetrainRotation
+            headingError.mut_replace(targetAngle.in(Degrees) - robotRotation.in(Degrees), Degrees);
         }
 
-        if(Math.abs(targetAngle - drivetrain.getState().Pose.getRotation().getDegrees()) < 1){
+        // |targetAngle - drivetrainRotation| < 1.0
+        if(Math.abs(targetAngle.in(Degrees) - robotRotation.in(Degrees)) < 1.0){
             return true;
         } else{
-            
-            SmartDashboard.putNumber("Degrees Left to Turn", headingError);
+            SmartDashboard.putNumber("Degrees Left to Turn", headingError.in(Degrees));
             return false;
         }
     });
@@ -292,17 +308,21 @@ public class RobotContainer {
                 tagId += 1;
             }
         }
-        targetAngle = (approach.tags.getTagPose(tagId).get().getRotation().toRotation2d().getDegrees());
+        targetAngle.mut_replace(approach.tags.getTagPose(tagId).get().getRotation().toRotation2d().getDegrees(),  Degrees);
 
-        if(targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees()) > 180){
-            headingError = (targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees())) + 360;
+        // targetAngle - drivetrainRotation > 180
+        if(targetAngle.in(Degrees) - robotRotation.in(Degrees) > 180.0){
+            // targetAngle - drivetrainRoation + 360
+            headingError.mut_replace(targetAngle.in(Degrees) - robotRotation.in(Degrees) + 360.0, Degrees);
         } else{
-            headingError = targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees());
+            // targetAngle - drivetrainRotation
+            headingError.mut_replace(targetAngle.in(Degrees) - robotRotation.in(Degrees), Degrees);
         }
             approachCoralStationCommand = drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed / 2) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed / 2) // Drive left with negative X (left)
-                    .withRotationalRate(clamp((headingError * MaxAngularRate / 80), -Math.PI, Math.PI, Math.PI/4)) // Auto rotate to position
+                drive.withVelocityX(MaxSpeed.in(MetersPerSecond) * -joystick.getLeftY() / 2.0) // Drive forward with negative Y (forward)
+                    .withVelocityY(MaxSpeed.in(MetersPerSecond) * -joystick.getLeftX() / 2.0) // Drive left with negative X (left)
+                    // MaxAngularrate * headingError / 80 = angularVelocity
+                    .withRotationalRate(clampAngularVelocity(MaxAngularRate.in(RadiansPerSecond) * headingError.in(Radians) / 80.0, -Math.PI, Math.PI, Math.PI / 4.0, RadiansPerSecond)) // Auto rotate to position
             ).until(atTarget); // Run until target angle is reached
       }
 
@@ -315,17 +335,16 @@ public class RobotContainer {
         tower.triggerEvent(TowerEvent.INTAKE_CORAL);
     }
 
-    private double clamp(double value, double min, double max, double innerBound){
+    private AngularVelocity clampAngularVelocity(double value, double min, double max, double innerBound, AngularVelocityUnit unit){
         if(value > max){
             value = max;
-        } else if(value > 0 && value < innerBound){
+        } else if(value > 0.0 && value < innerBound){
             value = innerBound;
         } else if(value < min){
             value = min;
-        } else if(value < 0 && value > -innerBound){
-            value = -innerBound;
+        } else if(value > 0.0 && value > (innerBound * -1.0)) {
+            value = innerBound * -1.0;
         }
-        return value;
+        return unit.of(value);
     }
-
 }

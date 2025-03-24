@@ -11,8 +11,11 @@ import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 
+import static edu.wpi.first.units.Units.Amps;
 import static edu.wpi.first.units.Units.Inches;
 import static edu.wpi.first.units.Units.Meters;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.ClosedLoopSlot;
@@ -23,7 +26,10 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.config.SparkFlexConfig;
 import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
+import edu.wpi.first.units.measure.Current;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.MutCurrent;
+import edu.wpi.first.units.measure.MutDistance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -47,8 +53,9 @@ public class ElevatorSubsystem extends SubsystemBase {
 	private TrapezoidProfile.State elevatorGoal = new TrapezoidProfile.State();
 	private TrapezoidProfile.State elevatorSetpoint;
 
-  private Distance relativeEncoderHeight =  Meters.of(0);
-  private Distance lastGoalPosition = Constants.Elevator.kElevatorMinHeight;
+  private final MutDistance relativeEncoderHeight =  Meters.mutable(0.0);
+  private final MutDistance lastGoalPosition = Constants.Elevator.kElevatorMinHeight.mutableCopy();
+  private final MutCurrent elevatorCurrent = Amps.mutable(0.0);
 
   /** Creates a new ElevatorSubsystem. */
   public ElevatorSubsystem() {
@@ -61,8 +68,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   
 	  elevatorFeedforward = new ElevatorFeedforward(Elevator.kS, Elevator.kG, Elevator.kV);
 
-	  elevatorTrapezoidProfile = new TrapezoidProfile(new Constraints(Elevator.kElevatorMaxVelocityRPS,
-				                                              Elevator.kElevatorMaxAccelerationRPSPS));
+	  elevatorTrapezoidProfile = new TrapezoidProfile(new Constraints(Elevator.kElevatorMaxVelocity.in(MetersPerSecond),
+				                                              Elevator.kElevatorMaxAcceleration.in(MetersPerSecondPerSecond)));
 
 	  elevatorSetpoint = new TrapezoidProfile.State(elevatorEncoder.getPosition(), elevatorEncoder.getVelocity());
 
@@ -80,18 +87,18 @@ public class ElevatorSubsystem extends SubsystemBase {
 
     centerElevatorMotorConfig
       .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(Elevator.kElevatorCurrentLimit);
+      .smartCurrentLimit((int) Elevator.kElevatorCurrentLimit.in(Amps));
 
     leftElevatorMotorConfig = new SparkFlexConfig();
     leftElevatorMotorConfig
       .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(Elevator.kElevatorCurrentLimit)
+      .smartCurrentLimit((int) Elevator.kElevatorCurrentLimit.in(Amps))
       .follow(centerElevatorMotor);
     
     rightElevatorMotorConfig = new SparkFlexConfig();
     rightElevatorMotorConfig
       .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(Elevator.kElevatorCurrentLimit)
+      .smartCurrentLimit((int) Elevator.kElevatorCurrentLimit.in(Amps))
       .follow(centerElevatorMotor);
 
     leftElevatorMotor.configure(leftElevatorMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -135,18 +142,19 @@ public class ElevatorSubsystem extends SubsystemBase {
 
 		// This method will be called once per scheduler run
     SmartDashboard.putNumber("Elev Rel Hgt", relativeEncoderHeight.in(Inches));
-		SmartDashboard.putNumber("ElevatorGoal", elevatorGoal.position * 39.333);
+		SmartDashboard.putNumber("Elevator Goal", elevatorGoal.position * 39.333);
     SmartDashboard.putNumber("Elevator Power", centerElevatorMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Elevator Current", elevatorCurrent.in(Amps));
     SmartDashboard.putBoolean("Elevator In Position", inPosition());
 	}
 
   public void readSensors() {
-    getCurrent();
-    relativeEncoderHeight = Meters.of(elevatorEncoder.getPosition()); 
+    elevatorCurrent.mut_replace(leftElevatorMotor.getOutputCurrent() +  centerElevatorMotor.getOutputCurrent() + rightElevatorMotor.getOutputCurrent(), Amps);
+    relativeEncoderHeight.mut_replace(elevatorEncoder.getPosition(), Meters); 
   }
   
-  public void bumpElevator(double changeMeters) {
-    setGoalPosition(Meters.of(lastGoalPosition.in(Meters) + changeMeters));
+  public void bumpElevator(Distance changeMeters) {
+    setGoalPosition(lastGoalPosition.mut_plus(changeMeters));
   }
 
   public void resetElevatorControl() {
@@ -160,7 +168,7 @@ public class ElevatorSubsystem extends SubsystemBase {
       goalPosition = Constants.Elevator.kElevatorMaxHeight;
     }
 
-    lastGoalPosition = goalPosition;
+    lastGoalPosition.mut_replace(goalPosition);
 	  elevatorGoal = new TrapezoidProfile.State(goalPosition.in(Meters), 0.0);
     elevatorSetpoint = new TrapezoidProfile.State(elevatorEncoder.getPosition(), 0.0);
 	}
@@ -188,10 +196,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     centerElevatorMotor.set(speed);
   }
 
-  public double getCurrent() {
-    double current = leftElevatorMotor.getOutputCurrent() +  centerElevatorMotor.getOutputCurrent() + rightElevatorMotor.getOutputCurrent();
-    SmartDashboard.putNumber("Elevator Current", current);
-    return current;
+  public Current getCurrent() {
+    return elevatorCurrent;
   }
 
   //----------//

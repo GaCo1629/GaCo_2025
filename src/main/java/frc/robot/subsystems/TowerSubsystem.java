@@ -4,8 +4,11 @@
 
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Percent;
 
+import edu.wpi.first.units.measure.Dimensionless;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -22,7 +25,7 @@ public class TowerSubsystem extends SubsystemBase {
 	private ElevatorSubsystem elevator;
 	private WristSubsystem wrist;
 	private TowerEvent pendingEvent = TowerEvent.NONE;   
-	private double safetyFactor = 1;
+	private Dimensionless safetyFactor = Percent.of(100);
 	private int currentLevel = 0;
 	private boolean goDirectAlgae = false;
 
@@ -349,7 +352,7 @@ public class TowerSubsystem extends SubsystemBase {
 					elevator.setGoalPosition(Constants.Elevator.kL4AlgaeWindupHeight);
 					wrist.setGoalAngle(Constants.Wrist.kAlgaeWindupAngle);
 					setState(TowerState.CHANGING_ALGAE_HEIGHT);
-				} else if(wrist.getIntakeCurrent() > 40){
+				} else if(wrist.getIntakeCurrent().in(Amps) > 40.0){
 					//wrist.setIntakeSpeed(Constants.WristConstants.kLowAlgaeIntakePower);  // hold lightly
 					Globals.GOT_ALGAE = true;
 				}
@@ -398,17 +401,17 @@ public class TowerSubsystem extends SubsystemBase {
 		}
 	}
 
-	public double getTowerSpeedSafetyFactor() {
+	public Dimensionless getTowerSpeedSafetyFactor() {
 		//  Determine what portion of full speed can be used based on the tower State
-		safetyFactor = 1;
+		safetyFactor = Percent.of(100);
 
 		if ((currentState == TowerState.SCORING_CORAL) || (currentState == TowerState.PAUSING_AFTER_SCORING_CORAL)) {
-			safetyFactor = 0.25;
+			safetyFactor = Percent.of(25);
 		} else if (elevator.getHeight().gt(Constants.Elevator.kElevatorSpeedSafeHeight)) {
-			double span    = Constants.Elevator.kElevatorMaxHeight.in(Inches) - Constants.Elevator.kElevatorSpeedSafeHeight.in(Inches); 
-			double overage = elevator.getHeight().in(Inches) - Constants.Elevator.kElevatorSpeedSafeHeight.in(Inches); 
-			double ratio   = overage / span;
-			safetyFactor   = 1.0 - (0.5 * ratio) ;
+			Distance span    = Constants.Elevator.kElevatorMaxHeight.minus(Constants.Elevator.kElevatorSpeedSafeHeight);
+			Distance overage = elevator.getHeight().minus(Constants.Elevator.kElevatorSpeedSafeHeight); 
+			Dimensionless ratio   = overage.div(span);
+			safetyFactor   = Percent.of(100).minus(ratio.times(Percent.of(50))); // Safety Factor equals 100% - ratio * 50%
 		}
 
 		return safetyFactor;
@@ -432,7 +435,7 @@ public class TowerSubsystem extends SubsystemBase {
 	
 	private void updateDashboard() {
 		SmartDashboard.putString("Tower State", currentState.toString() + " <- " + pendingEvent.toString());
-		SmartDashboard.putNumber("Safety Factor", safetyFactor * 100);
+		SmartDashboard.putNumber("Safety Factor", safetyFactor.in(Percent));
 		SmartDashboard.putBoolean("l3Algae", goDirectAlgae);
 	}
 	

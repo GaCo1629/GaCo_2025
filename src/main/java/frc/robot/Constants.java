@@ -4,9 +4,26 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.Amps;
+import static edu.wpi.first.units.Units.Degrees;
+import static edu.wpi.first.units.Units.DegreesPerSecond;
+import static edu.wpi.first.units.Units.DegreesPerSecondPerSecond;
 import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.MetersPerSecondPerSecond;
+import static edu.wpi.first.units.Units.Millimeters;
+import static edu.wpi.first.units.Units.Percent;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecondPerSecond;
 
+import edu.wpi.first.units.measure.Angle;
+import edu.wpi.first.units.measure.AngularAcceleration;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.Current;
+import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.LinearAcceleration;
+import edu.wpi.first.units.measure.LinearVelocity;
 
 /** Add your docs here. */
 public class Constants {
@@ -19,7 +36,7 @@ public class Constants {
         public static final int kExitTOFId = 63;
         public static final int kEnterTOFId = 64;
         
-        public static final double kAngleFactor = 360 * 24 / 40; // 216 degrees
+        public static final Angle kAngleFactor = Degrees.of(360 * 24 / 40); // 216 degrees
 
         public static final double kP = 0.04; // was 0.02
         public static final double kI = 0;
@@ -38,23 +55,23 @@ public class Constants {
 		public static final double kAlgaeIntakePower = 0.3;
         public static final double kLowAlgaeIntakePower = 0.2;
 
-        public static final double kAngleMaxVelocityDPS = 400; // 
-		public static final double kAngleMaxAccelerationDPSPS = 1000; // 
+        public static final AngularVelocity kAngleMaxVelocity = DegreesPerSecond.of(400); // 
+		public static final AngularAcceleration kAngleMaxAcceleration = DegreesPerSecondPerSecond.of(1000); // 
 
-        public static final double kIntakeAngle             = 4;
-        public static final double kSafeAngle               = 30;
-        public static final double kL4Angle                 = 48;
-        public static final double kHighAlgaeAngle          = 60;
+        public static final Angle kIntakeAngle             = Degrees.of(4);
+        public static final Angle kSafeAngle               = Degrees.of(30);
+        public static final Angle kL4Angle                 = Degrees.of(48);
+        public static final Angle kHighAlgaeAngle          = Degrees.of(60);
 
-        public static final double kAlgaeIntakeAngle        = 180; 
+        public static final Angle kAlgaeIntakeAngle        = Degrees.of(180); 
 
-        public static final double kAlgaeWindupAngle        = 150; 
-        public static final double kAlgaeReleaseAngle       = 60; 
+        public static final Angle kAlgaeWindupAngle        = Degrees.of(150); 
+        public static final Angle kAlgaeReleaseAngle       = Degrees.of(60); 
         
-        public static final double kMaxAngleWhenHome        = 182;
-        public static final double kMaxAngle                = 210;
+        public static final Angle kMaxAngleWhenHome        = Degrees.of(182);
+        public static final Angle kMaxAngle                = Degrees.of(210);
 
-        public static final double kMaxCoralDetectRangeMM   = 80;
+        public static final Distance kMaxCoralDetectRangeMM   = Millimeters.of(80);
     }
 
     public class Elevator {
@@ -77,7 +94,7 @@ public class Constants {
 
         public static final Distance kHeightTollerance = Inches.of(1.0);
 
-        public static final int kElevatorCurrentLimit = 60;
+        public static final Current kElevatorCurrentLimit = Amps.of(60);
 
         public static final int kElevatorMotorLeftId = 51;
         public static final int kElevatorMotorCenterId = 52;
@@ -102,18 +119,20 @@ public class Constants {
 
         public static final Distance kSafeHomeHeight = Inches.of(19);
         
-        public static final double kElevatorMaxVelocityRPS = 2.0;  // MPS
-		public static final double kElevatorMaxAccelerationRPSPS = 4.0; // MPSS  was 6
+        public static final LinearVelocity kElevatorMaxVelocity = MetersPerSecond.of(2.0);  // MPS
+		public static final LinearAcceleration kElevatorMaxAcceleration = MetersPerSecondPerSecond.of(4.0); // MPSS  was 6
 	
         public static final double kElevatorEncoderPositionConversionFactor = kRelativeEncoderScaleRevToMeters; 
         public static final double kElevatorEncoderVelocityConversionFactor = kRelativeEncoderScaleRevToMeters; 
     }
 
     public class DriverConstants{
-        
         // driver
-        public static final double kMaxDriveSpeed = 0.85;
-        public static final double kMaxTurnSpeed  = 0.9;
+        public static final Dimensionless kMaxDriveSpeedPercentage = Percent.of(85); // 85%
+        public static final Dimensionless kMaxTurnSpeedPercentage  = Percent.of(90); // 90%
+
+        public static final Dimensionless kDriveDeadband = Percent.of(8); // 0.08% deadband
+        public static final Dimensionless kRotationDeadband = Percent.of(8); // 0.08% deadband
 
         //Co-Pilot 1
         public static final int reset = 1;
@@ -145,6 +164,12 @@ public class Constants {
         public static final int pose_b = 10;
         public static final int pose_aba = 11;
         public static final int pose_a = 12;
+    }
 
+    public class ApproachConstants {
+        public static final LinearVelocity maxApproachLinearVelocity = MetersPerSecond.of(2.0);
+        public static final LinearAcceleration maxApproachLinearAcceleration = MetersPerSecondPerSecond.of(1.5);
+        public static final AngularVelocity maxApproachAngularVelocity = RadiansPerSecond.of(2 * Math.PI);
+        public static final AngularAcceleration maxApproachAngularAcceleration = RadiansPerSecondPerSecond.of(4 * Math.PI);
     }
 }
