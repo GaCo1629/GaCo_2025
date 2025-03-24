@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.units.measure.Dimensionless;
 import edu.wpi.first.units.measure.Distance;
+import edu.wpi.first.units.measure.MutDimensionless;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.Timer;
@@ -28,7 +29,7 @@ public class TowerSubsystem extends SubsystemBase {
 	private ElevatorSubsystem elevator;
 	private WristSubsystem wrist;
 	private TowerEvent pendingEvent = TowerEvent.NONE;
-	private Dimensionless safetyFactor = Percent.of(100);
+	private MutDimensionless safetyFactor = Percent.mutable(100);
 	private int currentLevel = 0;
 	private boolean goDirectAlgae = false;
 	private CommandXboxController joystick;
@@ -410,17 +411,17 @@ public class TowerSubsystem extends SubsystemBase {
 		}
 	}
 
-	public double getTowerSpeedSafetyFactor() {
+	public Dimensionless getTowerSpeedSafetyFactor() {
 		//  Determine what portion of full speed can be used based on the tower State
-		safetyFactor = 1;
+		safetyFactor.mut_replace(1.0, Percent);
 
 		if ((currentState == TowerState.SCORING_CORAL) || (currentState == TowerState.PAUSING_AFTER_SCORING_CORAL)) {
-			safetyFactor = 0.25;
+			safetyFactor.mut_replace(0.25, Percent);
 		} else if (elevator.getHeight().gt(Constants.Elevator.kElevatorSpeedSafeHeight)) {
 			Distance span = Constants.Elevator.kElevatorMaxHeight.minus(Constants.Elevator.kElevatorSpeedSafeHeight);
 			Distance overage = elevator.getHeight().minus(Constants.Elevator.kElevatorSpeedSafeHeight);
 			Dimensionless ratio = overage.div(span);
-			safetyFactor = Percent.of(100).minus(ratio.times(Percent.of(50))); // Safety Factor equals 100% - ratio *
+			safetyFactor.mut_replace(100 - ratio.in(Percent) * 50, Percent); // Safety Factor equals 100% - ratio *
 			// 50%
 		}
 
@@ -443,7 +444,7 @@ public class TowerSubsystem extends SubsystemBase {
 
 	private void updateDashboard() {
 		SmartDashboard.putString("Tower State", currentState.toString() + " <- " + pendingEvent.toString());
-		SmartDashboard.putNumber("Safety Factor", safetyFactor * 100);
+		SmartDashboard.putNumber("Safety Factor", safetyFactor.in(Percent));
 		SmartDashboard.putBoolean("l3Algae", goDirectAlgae);
 	}
 
