@@ -34,7 +34,7 @@ public class HomeElevatorCmd extends Command {
 
   @Override
   public void execute() {
-    if (elevator.getCurrent().in(Amps) > 50.0) {
+    if (elevator.getCurrent().gt(Amps.of(50.0))) {
       overcurrentCount++;
     } else {
       overcurrentCount = 0;
