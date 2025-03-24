@@ -75,14 +75,14 @@ public class ApproachSubsystem extends SubsystemBase {
 
     // Get tag coordinates and heading
     int adjTagID    = getTagId(targetPos.tagId);
-    //Pose2d tag = tags.getTagPose(adjTagID).get().toPose2d();
+    Pose2d tag = tags.getTagPose(adjTagID).get().toPose2d();
     //Distance tagX     = tags.getTagPose(adjTagID).get().getMeasureX();
     //Distance tagY     = tags.getTagPose(adjTagID).get().getMeasureY();
     //Rotation2d tagAngle = tags.getTagPose(adjTagID).get().toPose2d().getRotation();
     //Distance offsetX  = Meters.of(0.0);
     //Distance offsetY  = Meters.of(0.0);    
 
-    SmartDashboard.putString("Tag Info", String.format("ID%d X:%.3f Y:%.3f T:%.1f", adjTagID, tags.getTagPose(adjTagID).get().toPose2d().getX(), tags.getTagPose(adjTagID).get().toPose2d().getY(), tags.getTagPose(adjTagID).get().toPose2d().getRotation().getRadians()));
+    SmartDashboard.putString("Tag Info", String.format("ID%d X:%.3f Y:%.3f T:%.1f", adjTagID, tag.getX(), tag.getY(), tag.getRotation().getRadians()));
     
     // adjust offset and standoff based on specific target location
     if(targetPos.position == ApproachPosition.LEFT){
@@ -97,7 +97,7 @@ public class ApproachSubsystem extends SubsystemBase {
     Globals.HIGH_CAM_ENABLED = targetPos.enableHighCam;
 
     // Calculate left/right offsets for branch coordinates
-    Translation2d offset = (reefBranchOffset.isEquivalent(OVERHEAD_STANDOFF)) ? Translation2d.kZero : new Translation2d(reefBranchOffset.in(Meters), tags.getTagPose(adjTagID).get().toPose2d().getRotation());
+    Translation2d offset = (reefBranchOffset.isEquivalent(OVERHEAD_STANDOFF)) ? Translation2d.kZero : new Translation2d(reefBranchOffset.in(Meters), tag.getRotation());
     //if (reefBranchOffset.isEquivalent(OVERHEAD_STANDOFF)) {
       //offset = new Translation2d(reefBranchOffset.in(Meters), tags.getTagPose(adjTagID).get().toPose2d().getRotation());
       //offsetX  = reefBranchOffset.times(Math.cos(tagAngle.in(Radians) + Math.PI/2));
@@ -122,8 +122,8 @@ public class ApproachSubsystem extends SubsystemBase {
     // The rotation component of the pose should be the direction of travel. Do not use holonomic rotation.
     List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(
       drivetrain.getState().Pose,
-      new Pose2d(tags.getTagPose(adjTagID).get().toPose2d().getX() + tags.getTagPose(adjTagID).get().toPose2d().getRotation().getCos() * centerStandoff.in(Meters) + NORMAL_APPROACH_DISTANCE.in(Meters) + offset.getX(), tags.getTagPose(adjTagID).get().toPose2d().getY() + tags.getTagPose(adjTagID).get().toPose2d().getRotation().getSin() * centerStandoff.in(Meters) + NORMAL_APPROACH_DISTANCE.in(Meters) + offset.getY(), tags.getTagPose(adjTagID).get().toPose2d().getRotation().rotateBy(Rotation2d.k180deg)),
-      new Pose2d(tags.getTagPose(adjTagID).get().toPose2d().getX() + tags.getTagPose(adjTagID).get().toPose2d().getRotation().getCos() * centerStandoff.in(Meters) + offset.getX(), tags.getTagPose(adjTagID).get().toPose2d().getY() + tags.getTagPose(adjTagID).get().toPose2d().getRotation().getSin() * centerStandoff.in(Meters) + offset.getY(), tags.getTagPose(adjTagID).get().toPose2d().getRotation().rotateBy(Rotation2d.k180deg))
+      new Pose2d(tag.getX() + tag.getRotation().getCos() * centerStandoff.in(Meters) + NORMAL_APPROACH_DISTANCE.in(Meters) + offset.getX(), tag.getY() + tag.getRotation().getSin() * centerStandoff.in(Meters) + NORMAL_APPROACH_DISTANCE.in(Meters) + offset.getY(), tag.getRotation().rotateBy(Rotation2d.k180deg)),
+      new Pose2d(tag.getX() + tag.getRotation().getCos() * centerStandoff.in(Meters) + offset.getX(), tag.getY() + tag.getRotation().getSin() * centerStandoff.in(Meters) + offset.getY(), tag.getRotation().rotateBy(Rotation2d.k180deg))
     );
 
     // limit severity of motion.
@@ -134,7 +134,7 @@ public class ApproachSubsystem extends SubsystemBase {
         waypoints,
         constraints,
         null,
-        new GoalEndState(0.0, (targetPos.position == ApproachPosition.OVERHEAD) ? tags.getTagPose(adjTagID).get().toPose2d().getRotation() : tags.getTagPose(adjTagID).get().toPose2d().getRotation().rotateBy(Rotation2d.k180deg)) // Goal end state. 
+        new GoalEndState(0.0, (targetPos.position == ApproachPosition.OVERHEAD) ? tag.getRotation() : tag.getRotation().rotateBy(Rotation2d.k180deg)) // Goal end state. 
     );
 
     path.preventFlipping = true;
