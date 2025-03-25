@@ -35,10 +35,10 @@ public class TunerConstants {
 
     // The closed-loop output type to use for the steer motors;
     // This affects the PID/FF gains for the steer motors
-    private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.Voltage;
+    private static final ClosedLoopOutputType kSteerClosedLoopOutput = ClosedLoopOutputType.TorqueCurrentFOC;
     // The closed-loop output type to use for the drive motors;
     // This affects the PID/FF gains for the drive motors
-    private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.Voltage;
+    private static final ClosedLoopOutputType kDriveClosedLoopOutput = ClosedLoopOutputType.TorqueCurrentFOC;
 
     // The type of motor used for the drive motor
     private static final DriveMotorArrangement kDriveMotorType = DriveMotorArrangement.TalonFX_Integrated;
@@ -49,21 +49,44 @@ public class TunerConstants {
     // When not Pro-licensed, Fused*/Sync* automatically fall back to Remote*
     private static final SteerFeedbackType kSteerFeedbackType = SteerFeedbackType.FusedCANcoder;
 
+    private static final double kDrivePeakForwardTorqueCurrentLimitAmps = 80.0; // TalonFX Default is 800. Normal range is 60-80
+
     // The stator current at which the wheels start to slip;
     // This needs to be tuned to your individual robot
     private static final Current kSlipCurrent = Amps.of(120.0);
 
+    private static final double kSteerPeakForwardTorqueCurrentLimitAmps = 40.0; // TalonFX Default is 800. Normal range is 60-80
+    private static final double kSteerStatorCurrentLimitAmps = 40; // TalonFX Default is 120
+
     // Initial configs for the drive and steer motors and the azimuth encoder; these cannot be null.
     // Some configs will be overwritten; check the `with*InitialConfigs()` API documentation.
-    private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration();
-    private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
+    private static final TalonFXConfiguration driveInitialConfigs = new TalonFXConfiguration()
+        .withTorqueCurrent(
+            new TorqueCurrentConfigs()
+            .withPeakForwardTorqueCurrent(kDrivePeakForwardTorqueCurrentLimitAmps) // For drivetrain, forward and reverse current limit should be equal magnitude
+            .withPeakReverseTorqueCurrent(-kDrivePeakForwardTorqueCurrentLimitAmps)
+        )
         .withCurrentLimits(
             new CurrentLimitsConfigs()
-                // Swerve azimuth does not require much torque output, so we can set a relatively low
-                // stator current limit to help avoid brownouts without impacting performance.
-                .withStatorCurrentLimit(Amps.of(60))
-                .withStatorCurrentLimitEnable(true)
+            .withStatorCurrentLimit(kSlipCurrent) // Stator current is equal to slip current
+            .withSupplyCurrentLimit(kDrivePeakForwardTorqueCurrentLimitAmps) // Supply current limt should be equal to peakForwardCurrent Limit magnitude
+            .withStatorCurrentLimitEnable(true)
+            .withSupplyCurrentLimitEnable(true)
         );
+    private static final TalonFXConfiguration steerInitialConfigs = new TalonFXConfiguration()
+        .withTorqueCurrent(
+            new TorqueCurrentConfigs()
+            .withPeakForwardTorqueCurrent(kSteerPeakForwardTorqueCurrentLimitAmps) // For drivetrain, forward and reverse current limit should be equal magnitude
+            .withPeakReverseTorqueCurrent(-kSteerPeakForwardTorqueCurrentLimitAmps)
+        )
+        .withCurrentLimits(
+            new CurrentLimitsConfigs()
+            .withStatorCurrentLimit(kSteerStatorCurrentLimitAmps)
+            .withSupplyCurrentLimit(kSteerPeakForwardTorqueCurrentLimitAmps) // Supply current limt should be equal to peakForwardCurrent Limit magnitude
+            .withStatorCurrentLimitEnable(true)
+            .withSupplyCurrentLimitEnable(true)
+        );
+
     private static final CANcoderConfiguration encoderInitialConfigs = new CANcoderConfiguration();
     // Configs for the Pigeon 2; leave this null to skip applying Pigeon 2 configs
     private static final Pigeon2Configuration pigeonConfigs = null;
