@@ -18,6 +18,7 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.events.EventTrigger;
 
+import edu.wpi.first.hal.SimDevice.Direction;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Rotation3d;
@@ -244,6 +245,12 @@ public class RobotContainer {
 
         joystick.leftBumper().onTrue(collectCoralLeftInstant);  // collect coral left side
         joystick.rightBumper().onTrue(collectCoralRightInstant);// collect coral right side
+
+        // Run SysID if the leftStick is held down
+        joystick.leftStick().and(joystick.a()).whileTrue(drivetrain.sysIdDynamic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
+        joystick.leftStick().and(joystick.b()).whileTrue(drivetrain.sysIdDynamic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse));
+        joystick.leftStick().and(joystick.x()).whileTrue(drivetrain.sysIdQuasistatic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kForward));
+        joystick.leftStick().and(joystick.y()).whileTrue(drivetrain.sysIdQuasistatic(edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction.kReverse));
 
         joystick.y().onTrue(intakeHighAlgaeInstant);
         joystick.a().onTrue(intakeLowAlgaeInstant);
