@@ -60,7 +60,11 @@ public class RobotContainer {
 
     //private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
+<<<<<<< HEAD
             .withDriveRequestType(DriveRequestType.Velocity); // Use closed-loop control for drive motors
+=======
+            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); 
+>>>>>>> Drivetrain-SysID
 
     private final SwerveRequest.FieldCentricFacingAngle rotateTo = new SwerveRequest.FieldCentricFacingAngle()
             .withDeadband(Constants.DrivetrainConstants.kMaxVelocityMPS * 0.08)
