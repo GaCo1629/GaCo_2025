@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.HomeElevatorCmd;
 import frc.robot.commands.JustIntakeCmd;
 import frc.robot.commands.TriggerEventCmd;
@@ -254,6 +255,12 @@ public class RobotContainer {
 
         joystick.x().onTrue(approachBargeInstant);
         joystick.b().onTrue(approachProcessorInstant);
+
+        // joystick.y().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+        // joystick.a().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
+        // joystick.x().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
+        // joystick.b().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
+        
 
         // ==== Approach Buttons ================================
 
