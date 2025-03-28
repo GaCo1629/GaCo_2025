@@ -30,7 +30,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.commands.HomeElevatorCmd;
 import frc.robot.commands.JustIntakeCmd;
 import frc.robot.commands.TriggerEventCmd;
@@ -255,13 +254,7 @@ public class RobotContainer {
 
         joystick.x().onTrue(approachBargeInstant);
         joystick.b().onTrue(approachProcessorInstant);
-
-        // joystick.y().whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
-        // joystick.a().whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
-        // joystick.x().whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
-        // joystick.b().whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
         
-
         // ==== Approach Buttons ================================
 
         joystick.leftTrigger(0.5).onTrue(startApproachInstant)
@@ -320,61 +313,22 @@ public class RobotContainer {
     // Approach Command code
     // ==============================================================================================
     private Rotation2d targetAngle;
-    private double headingError;
 
     BooleanSupplier atTarget = (() -> {
-        
-        //if(targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees()) > 180){
-        //    headingError = (targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees())) - 360;
-        //} else if(targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees()) < -180){
-        //    headingError = (targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees())) + 360;
-        //} else{
-        //    headingError = targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees());
-        //}
-
-        // headingError = Math.abs(targetAngle.getDegrees() - drivetrain.getState().Pose.getRotation().getDegrees());
-
         SmartDashboard.putNumber("Degrees Left to Turn", Units.radiansToDegrees(rotateTo.HeadingController.getPositionError()));
-        return rotateTo.HeadingController.atSetpoint();
-
-        // if(headingError < 1) {
-        //     return true;
-        // } else{
-        //     SmartDashboard.putNumber("Degrees Left to Turn", headingError);
-        //     return false;
-        // }
+        return Math.abs(targetAngle.getDegrees() - drivetrain.getState().Pose.getRotation().getDegrees()) < 1.0;
     });
 
     public Command faceCoralStation(boolean isLeft){
         // Left coral station is tag 13, right is 12. Uses getTagId to convert Blue april tag IDs to Red
         targetAngle = Constants.kFieldLayout.getTagPose(ApproachTarget.getTagId((isLeft) ? 13 : 12)).get().getRotation().toRotation2d();
 
-        // if(targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees()) > 180){
-        //     headingError = (targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees())) + 360;
-        // } else{
-        //     headingError = targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees());
-        // }
+        SmartDashboard.putNumber("Target Degrees", targetAngle.getDegrees());
         return drivetrain.applyRequest(() ->
-                // drive.withVelocityX(-joystick.getLeftY() * Constants.DrivetrainConstants.kMaxVelocityMPS * Constants.ApproachConstants.maxApproachLinearVelocityPercent) // Drive forward with negative Y (forward)
-                //     .withVelocityY(-joystick.getLeftX() * Constants.DrivetrainConstants.kMaxVelocityMPS * Constants.ApproachConstants.maxApproachLinearVelocityPercent) // Drive left with negative X (left)
-                //     .withRotationalRate(clamp((headingError * Constants.DrivetrainConstants.kMaxAngularVelocityRPS * Constants.ApproachConstants.maxApproachAngularVelocityPercent), -Math.PI, Math.PI, Math.PI/4)) // Auto rotate to position
                 rotateTo.withTargetDirection(targetAngle)
                     .withVelocityX(-joystick.getLeftY() * Constants.DrivetrainConstants.kMaxVelocityMPS * Constants.ApproachConstants.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                     .withVelocityY(-joystick.getLeftX() * Constants.DrivetrainConstants.kMaxVelocityMPS * Constants.ApproachConstants.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
-                    .withMaxAbsRotationalRate(Constants.DrivetrainConstants.kMaxAngularVelocityRPS / 2.0 * Constants.ApproachConstants.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
+                    .withMaxAbsRotationalRate(Constants.DrivetrainConstants.kMaxAngularVelocityRPS * Constants.ApproachConstants.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
             ).until(atTarget).andThen(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)); // Run until target angle is reached
       }
-
-    // private double clamp(double value, double min, double max, double innerBound){
-    //     if(value > max){
-    //         value = max;
-    //     } else if(value > 0 && value < innerBound){
-    //         value = innerBound;
-    //     } else if(value < min){
-    //         value = min;
-    //     } else if(value < 0 && value > -innerBound){
-    //         value = -innerBound;
-    //     }
-    //     return value;
-    // }
 }
