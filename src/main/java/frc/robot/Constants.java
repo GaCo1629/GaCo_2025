@@ -33,26 +33,24 @@ public class Constants {
 		
         public static final double kAnglePower = 0.5; // was 1.0
 		
-		public static final double kCoralIntakePower = -0.3;
-        public static final double kCoralSlowIntakePower = -0.1;
-        public static final double kCoralRetractPower = 0.02;
-		public static final double kCoralOutputPower =  0.5;
-		public static final double kCoralL234ScoringPower = -1.0;
-        public static final double kCoralL1ScoringPower = -0.2;
+        public static final double kCoralSlowIntakePower    = -0.1;
+		public static final double kCoralL1ScoringPower     = -0.2;
+        public static final double kCoralIntakePower        = -0.3;
+		public static final double kCoralL234ScoringPower   = -1.0;
+        public static final double kCoralHoldPower          =  0.02;
+        
+  		public static final double kAlgaeIntakePower        =  0.3;
 
-		public static final double kAlgaeIntakePower = 0.3;
-        public static final double kLowAlgaeIntakePower = 0.2;
-
-        public static final double kAngleMaxVelocityDPS = 400; // 
-		public static final double kAngleMaxAccelerationDPSPS = 1000; // 
+        public static final double kAngleMaxVelocityDPS       = 400;  
+		public static final double kAngleMaxAccelerationDPSPS = 1000; 
 
         public static final double kIntakeAngleDegrees             = 2;
         public static final double kSafeAngleDegrees               = 30;
         public static final double kL4AngleDegrees                 = 48;
+
         public static final double kHighAlgaeAngleDegrees          = 60;
 
         public static final double kAlgaeIntakeAngleDegrees        = 180; 
-
         public static final double kAlgaeWindupAngleDegrees        = 150; 
         public static final double kAlgaeReleaseAngleDegrees       = 60; 
         
@@ -60,8 +58,7 @@ public class Constants {
         public static final double kMaxAngleDegrees                = 210;
 
         public static final double kMaxCoralDetectRangeMM   = 80;
-
-        public static final double kTOFSampleTime = 24;
+        public static final double kTOFSampleTime           = 24;
     }
 
     public class Elevator {
