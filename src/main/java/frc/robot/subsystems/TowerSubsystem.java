@@ -346,7 +346,7 @@ public class TowerSubsystem extends SubsystemBase {
 						setState(TowerState.PAUSING_AFTER_SCORING_ALGAE);
 					} else {
 						// Lobbing into Barge
-						wrist.setGoalAngle(Constants.Wrist.kAlgaeReleaseAngleDegrees);
+						wrist.setGoalAngle(Constants.Wrist.kAlgaeReleaseGoalAngleDegrees);
 						setState(TowerState.WINDING_UP);
 					}
 				} else if (isTriggered(TowerEvent.GOTO_L1)) {
@@ -384,15 +384,20 @@ public class TowerSubsystem extends SubsystemBase {
 			}
 
 			case WINDING_UP: {
-				if (wrist.inPosition()) {
+				if (wrist.getWristAngle() < Constants.Wrist.kAlgaeReleaseAngleDegrees){
 					wrist.setIntakeSpeed(Constants.Wrist.kCoralL234ScoringPower);
-					setState(TowerState.RELEASING)	;
+					setState(TowerState.RELEASING);
 				}
+
+				/*if (wrist.inPosition()) {
+					wrist.setIntakeSpeed(Constants.Wrist.kCoralL234ScoringPower);
+					setState(TowerState.RELEASING);
+				}*/
 				break;
 			}
 
 			case RELEASING: {
-				if (stateTimer.hasElapsed(2)){
+				if (stateTimer.hasElapsed(.2)){
 					setState(TowerState.PAUSING_AFTER_SCORING_ALGAE);
 				}
 				break;

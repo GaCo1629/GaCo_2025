@@ -42,6 +42,7 @@ public class Constants {
         public static final double kCoralHoldPower          =  0.04;
         
   		public static final double kAlgaeIntakePower        =  0.3;
+        public static final double kAlgaeScoringPower       = -1.0;
 
         public static final double kAngleMaxVelocityDPS       = 400;  
 		public static final double kAngleMaxAccelerationDPSPS = 1000; 
@@ -54,7 +55,8 @@ public class Constants {
 
         public static final double kAlgaeIntakeAngleDegrees        = 180; 
         public static final double kAlgaeWindupAngleDegrees        = 150; 
-        public static final double kAlgaeReleaseAngleDegrees       = 60; 
+        public static final double kAlgaeReleaseAngleDegrees       = 125;
+        public static final double kAlgaeReleaseGoalAngleDegrees   = 20;
         
         public static final double kMaxAngleWhenHomeDegrees        = 182;
         public static final double kMaxAngleDegrees                = 210;
