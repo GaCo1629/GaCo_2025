@@ -261,6 +261,12 @@ public class TowerSubsystem extends SubsystemBase {
 					wrist.setGoalAngle(Constants.Wrist.kSafeAngleDegrees);
 					currentLevel = 1;
 					setState(TowerState.RAISING_TO_L123);
+				} else {
+					if (wrist.gotExitCoral()) {
+						wrist.setIntakeSpeed(Constants.Wrist.kCoralHoldPower);
+					} else {
+						wrist.setIntakeSpeed(0);
+					}
 				}
 				break;
 			}
