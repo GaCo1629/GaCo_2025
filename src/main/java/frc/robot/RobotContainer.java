@@ -106,6 +106,7 @@ public class RobotContainer {
     private final TriggerEventCmd intakeHighAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_HIGH_ALGAE);
     private final TriggerEventCmd gotoL1 = new TriggerEventCmd(tower, TowerEvent.GOTO_L1);
     private final TriggerEventCmd gotoL3 = new TriggerEventCmd(tower, TowerEvent.GOTO_L3);
+    private final TriggerEventCmd gotoL4 = new TriggerEventCmd(tower, TowerEvent.GOTO_L4);
 
     /* Waiting Commands */
     private final WaitForTowerStateCmd waitForAlgae = new WaitForTowerStateCmd(tower, TowerState.WAITING_FOR_ALGAE);
@@ -192,6 +193,7 @@ public class RobotContainer {
         new EventTrigger("INTAKE_AND_GOTO_L4").onTrue(intakeAndGotoL4);
         new EventTrigger("GOTO_L1_ALGAE").onTrue(gotoL1);
         new EventTrigger("GOTO_L3_ALGAE").onTrue(gotoL3);
+        new EventTrigger("GOTO_L4_ALGAE").onTrue(gotoL4);
         new EventTrigger("INTAKE_LOW_ALGAE").onTrue(intakeLowAlgae);
         new EventTrigger("INTAKE_HIGH_ALGAE").onTrue(intakeHighAlgae);
  
