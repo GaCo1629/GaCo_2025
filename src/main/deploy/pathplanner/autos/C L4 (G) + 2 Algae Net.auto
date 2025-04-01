@@ -106,6 +106,12 @@
           "data": {
             "name": "SCORE_ALGAE"
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
         }
       ]
     }
