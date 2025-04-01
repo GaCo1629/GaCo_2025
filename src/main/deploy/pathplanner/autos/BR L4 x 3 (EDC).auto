@@ -42,6 +42,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "WAIT_TO_SEE_CORAL"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "CRtoD"
@@ -63,6 +69,12 @@
           "type": "path",
           "data": {
             "pathName": "DtoCR"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WAIT_TO_SEE_CORAL"
           }
         },
         {

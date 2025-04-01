@@ -37,6 +37,7 @@ import frc.robot.commands.HomeElevatorCmd;
 import frc.robot.commands.JustIntakeCmd;
 import frc.robot.commands.TriggerEventCmd;
 import frc.robot.commands.WaitForTowerStateCmd;
+import frc.robot.commands.WaitToSeeCoralCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ApproachSubsystem;
 import frc.robot.subsystems.ApproachTarget;
@@ -97,7 +98,8 @@ public class RobotContainer {
     private final JustIntakeCmd intakeAndGotoL1 = new JustIntakeCmd(tower, TowerEvent.GOTO_L1);
     private final JustIntakeCmd intakeAndGotoL2 = new JustIntakeCmd(tower, TowerEvent.GOTO_L2);
     private final JustIntakeCmd intakeAndGotoL3 = new JustIntakeCmd(tower, TowerEvent.GOTO_L3);
-    private final JustIntakeCmd intakeAndGotoL4 = new JustIntakeCmd(tower, TowerEvent.GOTO_L4);
+    private final JustIntakeCmd intakeAndGotoL4 = new JustIntakeCmd(tower, TowerEvent.GOTO_L4);    
+    private final WaitToSeeCoralCmd waitToSeeCoral  = new WaitToSeeCoralCmd(tower);
 
     /* Event Trigger Commands */
     private final TriggerEventCmd intakeCoral = new TriggerEventCmd(tower, TowerEvent.INTAKE_CORAL);
@@ -177,6 +179,8 @@ public class RobotContainer {
         NamedCommands.registerCommand("INTAKE_AND_GOTO_L2",        intakeAndGotoL2);
         NamedCommands.registerCommand("INTAKE_AND_GOTO_L3",        intakeAndGotoL3);
         NamedCommands.registerCommand("INTAKE_AND_GOTO_L4",        intakeAndGotoL4);
+        NamedCommands.registerCommand("WAIT_TO_SEE_CORAL",         waitToSeeCoral);  //Does not set height
+        
         NamedCommands.registerCommand("SCORE_CORAL",               score);
         NamedCommands.registerCommand("SCORE_ALGAE",               score); // same as coral
         NamedCommands.registerCommand("GET_ALGAE",                 intakeHighAlgae);
