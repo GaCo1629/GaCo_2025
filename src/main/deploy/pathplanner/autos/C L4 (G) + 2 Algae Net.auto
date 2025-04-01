@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "BRtoE"
+                  "pathName": "CtoG"
                 }
               },
               {
@@ -21,54 +21,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SCORE_CORAL"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WAIT_FOR_LOWERING"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "EtoCR Fast"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CRtoD Fast"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SCORE_CORAL"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WAIT_FOR_LOWERING"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "DtoCR Fast"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CRtoC Fast"
           }
         },
         {
@@ -84,15 +36,75 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "CtoCD"
+            "name": "WAIT_FOR_LOWERING"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CDtoProcessor"
+            "pathName": "Gto0.5C"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WAIT_FOR_ALGAE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "0.5CtoGH"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GHtoNet"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SCORE_ALGAE"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "GO_DIRECTLY_TO_ALGAE"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NtoIJ"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "IJtoNM"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SCORE_ALGAE"
           }
         }
       ]

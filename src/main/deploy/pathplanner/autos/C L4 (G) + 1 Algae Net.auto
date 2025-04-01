@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "BRtoE"
+                  "pathName": "CtoG"
                 }
               },
               {
@@ -26,25 +26,7 @@
         {
           "type": "named",
           "data": {
-            "name": "SCORE_CORAL"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WAIT_FOR_LOWERING"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "EtoCR Fast"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CRtoD"
+            "name": "GO_DIRECTLY_TO_ALGAE"
           }
         },
         {
@@ -62,43 +44,31 @@
         {
           "type": "path",
           "data": {
-            "pathName": "DtoCR Fast"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "CRtoC"
+            "pathName": "Gto0.5C"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "SCORE_CORAL"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WAIT_FOR_LOWERING"
+            "name": "WAIT_FOR_ALGAE"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CtoCR Fast"
+            "pathName": "0.5CtoGH"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CRtoC Fast"
+            "pathName": "GHtoNet"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "SCORE_CORAL"
+            "name": "SCORE_ALGAE"
           }
         }
       ]
