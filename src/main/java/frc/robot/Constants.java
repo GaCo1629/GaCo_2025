@@ -33,35 +33,36 @@ public class Constants {
 		
         public static final double kAnglePower = 0.5; // was 1.0
 		
-		public static final double kCoralIntakePower = -0.3;
-        public static final double kCoralSlowIntakePower = -0.1;
-        public static final double kCoralRetractPower = 0.02;
-		public static final double kCoralOutputPower =  0.5;
-		public static final double kCoralL234ScoringPower = -1.0;
-        public static final double kCoralL1ScoringPower = -0.2;
+        public static final double kCoralSlowIntakePower    = -0.1;
+		public static final double kCoralL1ScoringPower     = -0.2;
+        public static final double kCoralIntakePower        = -0.3;
+		public static final double kCoralL234ScoringPower   = -1.0;
 
-		public static final double kAlgaeIntakePower = 0.3;
-        public static final double kLowAlgaeIntakePower = 0.2;
+        public static final double kCoralFeedPower          = -0.04;
+        public static final double kCoralHoldPower          =  0.04;
+        
+  		public static final double kAlgaeIntakePower        =  0.3;
+        public static final double kAlgaeScoringPower       = -1.0;
 
-        public static final double kAngleMaxVelocityDPS = 400; // 
-		public static final double kAngleMaxAccelerationDPSPS = 1000; // 
+        public static final double kAngleMaxVelocityDPS       = 400;  
+		public static final double kAngleMaxAccelerationDPSPS = 1000; 
 
         public static final double kIntakeAngleDegrees             = 2;
         public static final double kSafeAngleDegrees               = 30;
         public static final double kL4AngleDegrees                 = 48;
+
         public static final double kHighAlgaeAngleDegrees          = 60;
 
         public static final double kAlgaeIntakeAngleDegrees        = 180; 
-
         public static final double kAlgaeWindupAngleDegrees        = 150; 
-        public static final double kAlgaeReleaseAngleDegrees       = 60; 
+        public static final double kAlgaeReleaseAngleDegrees       = 125;
+        public static final double kAlgaeReleaseGoalAngleDegrees   = 20;
         
         public static final double kMaxAngleWhenHomeDegrees        = 182;
         public static final double kMaxAngleDegrees                = 210;
 
         public static final double kMaxCoralDetectRangeMM   = 80;
-
-        public static final double kTOFSampleTime = 24;
+        public static final double kTOFSampleTime           = 24;
     }
 
     public class Elevator {
@@ -98,19 +99,17 @@ public class Constants {
 
         public static final double kL1CoralHeightMeters = Units.inchesToMeters(21);
         public static final double kL2CoralHeightMeters = Units.inchesToMeters(31);
-        public static final double kL3CoralHeightMeters = Units.inchesToMeters(46);
-        public static final double kL4CoralHeightMeters = Units.inchesToMeters(70);  // was 70
-
-        public static final double kL1AlgaeHeightMeters = Units.inchesToMeters(24);
+        public static final double kL3CoralHeightMeters = Units.inchesToMeters(45);  // was 46
+        public static final double kL4CoralHeightMeters = Units.inchesToMeters(70);  
+        public static final double kL1AlgaeHeightMeters = Units.inchesToMeters(22);  // was 24
         public static final double kL2AlgaeHeightMeters = Units.inchesToMeters(39);
         public static final double kL3AlgaeHeightMeters = Units.inchesToMeters(54);  
 
-        public static final double kL4AlgaeWindupHeightMeters = Units.inchesToMeters(70.5);  
-
+        public static final double kL4AlgaeWindupHeightMeters = Units.inchesToMeters(72);  
         public static final double kSafeHomeHeightMeters = Units.inchesToMeters(19);
         
-        public static final double kElevatorMaxVelocityMPS = 2.0;  // MPS
-		public static final double kElevatorMaxAccelerationMPSPS = 4.0; // MPSS  was 6
+        public static final double kElevatorMaxVelocityMPS       = 2.0;  // MPS
+		public static final double kElevatorMaxAccelerationMPSPS = 4.0;  // MPSS  was 6
 	
         public static final double kElevatorEncoderPositionConversionFactor = kRelativeEncoderScaleRevToMeters; 
         public static final double kElevatorEncoderVelocityConversionFactor = kRelativeEncoderScaleRevToMeters; 

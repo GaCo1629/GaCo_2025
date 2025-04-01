@@ -3,49 +3,40 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.045640677973637,
-        "y": 0.761459862345223
+        "x": 8.14125,
+        "y": 5.34125
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.964743500097779,
-        "y": 1.3671914914449645
+        "x": 7.010250000000001,
+        "y": 5.9165
       },
       "isLocked": false,
-      "linkedName": "Processor"
+      "linkedName": "Net"
     },
     {
       "anchor": {
-        "x": 5.136768226965968,
-        "y": 2.944799946940335
+        "x": 5.0992500000000005,
+        "y": 5.1267499999999995
       },
       "prevControl": {
-        "x": 5.499000000001813,
-        "y": 2.3674999999973183
+        "x": 5.986500000000001,
+        "y": 6.35525
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "EF"
+      "linkedName": "IJ"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.17192982456140535,
-      "rotationDegrees": -89.16503815517356
-    },
-    {
-      "waypointRelativePos": 0.5326315789473675,
-      "rotationDegrees": 112.2296130905596
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.7519348268839108,
+      "minWaypointRelativePos": 0.7600814663951121,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 1.0,
-        "maxAcceleration": 2.0,
+        "maxVelocity": 2.5,
+        "maxAcceleration": 1.5,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
         "nominalVoltage": 12.0,
@@ -57,7 +48,7 @@
   "eventMarkers": [
     {
       "name": "GOTO_L3_ALGAE",
-      "waypointRelativePos": 0.09042769857433855,
+      "waypointRelativePos": 0.12627291242362668,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -72,13 +63,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 119.16761337957777
+    "rotation": -121.13897243697885
   },
   "reversed": false,
-  "folder": "Processor",
+  "folder": "Net",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.96286362563627
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
