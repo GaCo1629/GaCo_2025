@@ -253,7 +253,7 @@ public class RobotContainer {
         // Change to .toggleOnTrue to make it toggle on/off when the button is pressed
         joystick.leftBumper().onTrue(intakeCoralInstant)
             .whileTrue(drivetrain.applyRequest(() -> 
-                    rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(ApproachTarget.getTagId(13)).get().getRotation().toRotation2d())
+                    rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(13).get().getRotation().toRotation2d())
                         .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                         .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                         .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
@@ -261,7 +261,7 @@ public class RobotContainer {
 
         joystick.rightBumper().onTrue(intakeCoralInstant)
             .whileTrue(drivetrain.applyRequest(() -> 
-                    rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(ApproachTarget.getTagId(12)).get().getRotation().toRotation2d())
+                    rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(12).get().getRotation().toRotation2d())
                         .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                         .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                         .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
