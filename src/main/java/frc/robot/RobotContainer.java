@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.util.function.BooleanSupplier;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -16,7 +14,6 @@ import com.pathplanner.lib.events.EventTrigger;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
@@ -27,7 +24,6 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.HomeElevatorCmd;
@@ -122,9 +118,7 @@ public class RobotContainer {
 
     /* Instant Commands */
     private final Command scoreInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.SCORE));
-
-    private final Command collectCoralLeftInstant = faceCoralStation(true).alongWith(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)));
-    private final Command collectCoralRightInstant = faceCoralStation(false).alongWith(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)));
+    private final Command intakeCoralInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL));
 
     private final Command intakeLowAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE));
     private final Command intakeHighAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE));
@@ -256,10 +250,24 @@ public class RobotContainer {
         joystick.start().onTrue(homeElevator);  //home the elevator
         joystick.rightStick().onTrue(tiltTowerInstant); // Tilt the elevator
 
-        // Change to .whileTrue to make it cancel if button is released
         // Change to .toggleOnTrue to make it toggle on/off when the button is pressed
-        joystick.leftBumper().whileTrue(collectCoralLeftInstant);  // collect coral left side
-        joystick.rightBumper().whileFalse(collectCoralRightInstant);// collect coral right side
+        joystick.leftBumper()
+            .whileTrue(intakeCoralInstant
+                .alongWith(drivetrain.applyRequest(() -> 
+                    rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(ApproachTarget.getTagId(13)).get().getRotation().toRotation2d())
+                        .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
+                    )));  // collect coral left side
+
+        joystick.rightBumper()
+            .whileTrue(intakeCoralInstant
+                .alongWith(drivetrain.applyRequest(() -> 
+                    rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(ApproachTarget.getTagId(13)).get().getRotation().toRotation2d())
+                        .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
+                    )));// collect coral right side
 
         joystick.y().onTrue(intakeHighAlgaeInstant);
         joystick.a().onTrue(intakeLowAlgaeInstant);
@@ -320,26 +328,4 @@ public class RobotContainer {
         /* Run the path selected from the auto chooser */
         return autoChooser.getSelected();
     }
-
-    // ==============================================================================================
-    // Approach Command code
-    // ==============================================================================================
-
-    /* Coral Station Approach */
-    private Rotation2d targetAngle = new Rotation2d();
-
-    BooleanSupplier atTarget = (() -> {
-        SmartDashboard.putNumber("Degrees Left to Turn", Units.radiansToDegrees(rotateTo.HeadingController.getPositionError()));
-        return Math.abs(targetAngle.getDegrees() - drivetrain.getState().Pose.getRotation().getDegrees()) < 1.0;
-    });
-
-    public Command faceCoralStation(boolean isLeft){
-        // Left coral station is tag 13, right is 12. Uses getTagId to convert Blue april tag IDs to Red
-        return drivetrain.applyRequest(() -> 
-                rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(ApproachTarget.getTagId((isLeft) ? 13 : 12)).get().getRotation().toRotation2d())
-                    .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
-                    .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
-                    .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
-            );
-      }
 }
