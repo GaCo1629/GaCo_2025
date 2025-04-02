@@ -173,7 +173,7 @@ public class Constants {
 
     public class Approach {
 		public static final double maxApproachLinearVelocityPercent = 0.8; // Was 2.0m/s, now percent of kMaxVelocityMPS
-		public static final double maxApproachLinearAccelerationPercent = 1.2; // Was 1.5m/s, now percent of kMaxAccelerationMPSPS
+		public static final double maxApproachLinearAccelerationPercent = 0.3; // Was 1.5m/s, now percent of kMaxAccelerationMPSPS
 		public static final double maxApproachAngularVelocityPercent = 1.0; // Was 2PI, now percent of kMaxAngularVelocityRPS
 		public static final double maxApproachAngularAccelerationPercent = 1.0; // Was 4PI, now percent of kMaxAngularAccelerationRPSPS
 	}
