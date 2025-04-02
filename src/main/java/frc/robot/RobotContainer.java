@@ -96,14 +96,6 @@ public class RobotContainer {
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
 
-    /* Coral Station Approach */
-    private Rotation2d targetAngle = new Rotation2d();
-
-    BooleanSupplier atTarget = (() -> {
-        SmartDashboard.putNumber("Degrees Left to Turn", Units.radiansToDegrees(rotateTo.HeadingController.getPositionError()));
-        return Math.abs(targetAngle.getDegrees() - drivetrain.getState().Pose.getRotation().getDegrees()) < 1.0;
-    });
-
     /* Intake and Goto Commands */
     private final JustIntakeCmd intakeAndGotoL1 = new JustIntakeCmd(tower, TowerEvent.GOTO_L1);
     private final JustIntakeCmd intakeAndGotoL2 = new JustIntakeCmd(tower, TowerEvent.GOTO_L2);
@@ -131,8 +123,8 @@ public class RobotContainer {
     /* Instant Commands */
     private final Command scoreInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.SCORE));
 
-    private final Command collectCoralLeftInstant = faceCoralStation(true).alongWith(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)));
-    private final Command collectCoralRightInstant = faceCoralStation(false).alongWith(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)));;
+    private final Command collectCoralLeftInstant = Commands.runOnce(() -> faceCoralStation(true).schedule()).andThen(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)));
+    private final Command collectCoralRightInstant = Commands.runOnce(() -> faceCoralStation(false).schedule()).andThen(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)));
 
     private final Command intakeLowAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE));
     private final Command intakeHighAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE));
@@ -332,6 +324,14 @@ public class RobotContainer {
     // ==============================================================================================
     // Approach Command code
     // ==============================================================================================
+
+    /* Coral Station Approach */
+    private Rotation2d targetAngle = new Rotation2d();
+
+    BooleanSupplier atTarget = (() -> {
+        SmartDashboard.putNumber("Degrees Left to Turn", Units.radiansToDegrees(rotateTo.HeadingController.getPositionError()));
+        return Math.abs(targetAngle.getDegrees() - drivetrain.getState().Pose.getRotation().getDegrees()) < 1.0;
+    });
 
     public Command faceCoralStation(boolean isLeft){
         // Left coral station is tag 13, right is 12. Uses getTagId to convert Blue april tag IDs to Red
