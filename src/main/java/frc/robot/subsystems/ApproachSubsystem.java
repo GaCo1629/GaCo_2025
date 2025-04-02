@@ -13,6 +13,8 @@ import com.pathplanner.lib.path.Waypoint;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -48,12 +50,12 @@ public class ApproachSubsystem extends SubsystemBase {
   public void startApproach() {
     Globals.setLEDMode(LEDmode.APPROACH);
     if (Globals.IDENTIFIED_TARGET != ApproachTarget.UNKNOWN) {
-      scheduler.schedule(buildPathCmd(Globals.IDENTIFIED_TARGET));
+      scheduler.schedule(buildPathCmd(Globals.IDENTIFIED_TARGET, DriverStation.getAlliance().get()));
     }
   }
   
   /* Create a Path Command to navigate to the specified position **/
-  public Command buildPathCmd(ApproachTarget targetPos){
+  public Command buildPathCmd(ApproachTarget targetPos, Alliance alliance){
     
     // Create a list of three waypoints.
     // The rotation component of the pose is the direction of travel. 
@@ -61,15 +63,15 @@ public class ApproachSubsystem extends SubsystemBase {
     // End moving normal to tag surface
     pt0X = drivetrain.getState().Pose.getX();
     pt0Y = drivetrain.getState().Pose.getY();
-    pt0 = new Pose2d(pt0X, pt0Y, new Rotation2d(targetPos.pt1.getX()-pt0X, targetPos.pt1.getY()-pt0Y) );
-    List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(pt0, targetPos.pt1, targetPos.pt2);
+    pt0 = new Pose2d(pt0X, pt0Y, new Rotation2d((alliance == Alliance.Blue ? targetPos.bluePt1.getX() : targetPos.redPt1.getX()) - pt0X, (alliance == Alliance.Blue ? targetPos.bluePt1.getY() : targetPos.redPt1.getY()) - pt0Y) );
+    List<Waypoint> waypoints = PathPlannerPath.waypointsFromPoses(pt0, (alliance == Alliance.Blue ? targetPos.bluePt1 : targetPos.redPt1), (alliance == Alliance.Blue ? targetPos.bluePt2 : targetPos.redPt2));
     
     // Create and return the path using the waypoints created above
     path = new PathPlannerPath(
         waypoints,
         pathConstraints,
         null,
-        targetPos.goalEndState); // Goal end state.
+        (alliance == Alliance.Blue ? targetPos.blueGoalEndState : targetPos.redGoalEndState)); // Goal end state.
     path.preventFlipping = true;
     return AutoBuilder.followPath(path);
   }
