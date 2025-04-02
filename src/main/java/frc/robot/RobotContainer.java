@@ -123,8 +123,8 @@ public class RobotContainer {
     /* Instant Commands */
     private final Command scoreInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.SCORE));
 
-    private final Command collectCoralLeftInstant = Commands.runOnce(() -> faceCoralStation(true).schedule()).andThen(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)));
-    private final Command collectCoralRightInstant = Commands.runOnce(() -> faceCoralStation(false).schedule()).andThen(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)));
+    private final Command collectCoralLeftInstant = faceCoralStation(true).alongWith(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)));
+    private final Command collectCoralRightInstant = faceCoralStation(false).alongWith(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)));
 
     private final Command intakeLowAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE));
     private final Command intakeHighAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE));
@@ -258,8 +258,8 @@ public class RobotContainer {
 
         // Change to .whileTrue to make it cancel if button is released
         // Change to .toggleOnTrue to make it toggle on/off when the button is pressed
-        joystick.leftBumper().onTrue(collectCoralLeftInstant);  // collect coral left side
-        joystick.rightBumper().onTrue(collectCoralRightInstant);// collect coral right side
+        joystick.leftBumper().whileTrue(collectCoralLeftInstant);  // collect coral left side
+        joystick.rightBumper().whileFalse(collectCoralRightInstant);// collect coral right side
 
         joystick.y().onTrue(intakeHighAlgaeInstant);
         joystick.a().onTrue(intakeLowAlgaeInstant);
@@ -335,14 +335,11 @@ public class RobotContainer {
 
     public Command faceCoralStation(boolean isLeft){
         // Left coral station is tag 13, right is 12. Uses getTagId to convert Blue april tag IDs to Red
-        targetAngle = Constants.kFieldLayout.getTagPose(ApproachTarget.getTagId((isLeft) ? 13 : 12)).get().getRotation().toRotation2d();
-
-        SmartDashboard.putNumber("Target Degrees", targetAngle.getDegrees());
-        return drivetrain.applyRequest(() ->
-                rotateTo.withTargetDirection(targetAngle)
+        return drivetrain.applyRequest(() -> 
+                rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(ApproachTarget.getTagId((isLeft) ? 13 : 12)).get().getRotation().toRotation2d())
                     .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                     .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                     .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
-            ).until(atTarget); // Run until target angle is reached
+            );
       }
 }
