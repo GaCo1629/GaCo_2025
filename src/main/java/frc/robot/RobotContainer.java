@@ -126,7 +126,8 @@ public class RobotContainer {
     private final Command seedFieldCentricInstant = drivetrain.runOnce(() -> drivetrain.seedFieldCentric());
     private final Command stopDrivetrainInstant = drivetrain.runOnce(() -> drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.0).withVelocityY(0.0)));
     
-    private final Command enableSafetyOverrideInstant = leftVision.runOnce(() -> leftVision.setSafetyOverride(true));
+    private final Command enableSafetyOverrideInstant = leftVision.runOnce(() -> leftVision.setSafetyOverride(true))
+                                                        .andThen(rightVision.runOnce(() -> rightVision.setSafetyOverride(true)));
     private final Command enableDirectToAlgaeInstant = tower.runOnce(() -> tower.enableGoToDirectAlgae());
 
     private final Command homeTowerInstant = tower.runOnce(() -> tower.homeTower());
@@ -287,9 +288,7 @@ public class RobotContainer {
             
         // ====  CoPilot 1 Buttons  ======================================
 
-        copilot_1.button(Driver.reset).onTrue(enableSafetyOverrideInstant
-//                                             .andThen(upperVision.runOnce(() -> upperVision.setSafetyOverride(true)))  //   only override low cam safety to reposition
-                                               );
+        copilot_1.button(Driver.reset).onTrue(enableSafetyOverrideInstant );
 
         copilot_1.button(Driver.home).onTrue(homeTowerInstant);
 
