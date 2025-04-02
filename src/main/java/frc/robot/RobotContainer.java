@@ -4,12 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.MetersPerSecond;
-import static edu.wpi.first.units.Units.RadiansPerSecond;
-import static edu.wpi.first.units.Units.RotationsPerSecond;
-
-import java.util.function.BooleanSupplier;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
@@ -30,7 +24,6 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.HomeElevatorCmd;
@@ -53,19 +46,25 @@ import frc.robot.subsystems.TowerSubsystem;
 import frc.robot.Constants.Driver;
 
 public class RobotContainer {
-    private final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    private final double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    //public static final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
+    //public static final double MaxAngularRate = RotationsPerSecond.of(1.5).in(RadiansPerSecond); // was 0.75
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 8% deadband
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
+            .withDeadband(Constants.Drivetrain.kMaxVelocityMPS * 0.08).withRotationalDeadband(Constants.Drivetrain.kMaxAngularVelocityRPS * 0.08) // Add a 8% deadband
+            .withDriveRequestType(DriveRequestType.Velocity); // Use closed-loop control for drive motors
 
     //private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
     private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
-            .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
+            .withDriveRequestType(DriveRequestType.Velocity); // Use closed-loop control for drive motors
 
-    private final Telemetry logger = new Telemetry(MaxSpeed);
+    private final SwerveRequest.FieldCentricFacingAngle rotateTo = new SwerveRequest.FieldCentricFacingAngle()
+            .withDeadband(Constants.Drivetrain.kMaxVelocityMPS * 0.08)
+            .withRotationalDeadband(Constants.Drivetrain.kMaxAngularVelocityRPS * 0.08)
+            .withDriveRequestType(DriveRequestType.Velocity) // Use closed-loop control for drive motors
+            .withHeadingPID(Constants.Drivetrain.kPHeading, Constants.Drivetrain.kIHeading, Constants.Drivetrain.kDHeading);
+
+    private final Telemetry logger = new Telemetry(Constants.Drivetrain.kMaxVelocityMPS);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandJoystick       copilot_1 = new CommandJoystick(1);
@@ -74,8 +73,7 @@ public class RobotContainer {
     static final Transform3d robotToLeftCam = new Transform3d(new Translation3d(0.24, 0.27, 0.21), 
                                                             new Rotation3d(0, Math.toRadians(-5), Math.toRadians(-45)));
     static final Vector<N3> leftCamStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(5));
-
-
+  
     static final Transform3d robotToRightCam = new Transform3d(new Translation3d(0.24, -0.27, 0.217), 
                                                           new Rotation3d(0, Math.toRadians(-5), Math.toRadians(45)));
     static final Vector<N3> rightCamStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(5));
@@ -120,18 +118,16 @@ public class RobotContainer {
 
     /* Instant Commands */
     private final Command scoreInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.SCORE));
+    private final Command intakeCoralInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL));
 
-    private final Command collectCoralLeftInstant = drivetrain.runOnce(() -> faceCoralStation(true).schedule());
-    private final Command collectCoralRightInstant = drivetrain.runOnce(() -> faceCoralStation(false).schedule());
-
-    private final Command intakeLowAlgaeInstant = drivetrain.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE));
-    private final Command intakeHighAlgaeInstant = drivetrain.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE));
+    private final Command intakeLowAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE));
+    private final Command intakeHighAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE));
 
     private final Command seedFieldCentricInstant = drivetrain.runOnce(() -> drivetrain.seedFieldCentric());
     private final Command stopDrivetrainInstant = drivetrain.runOnce(() -> drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.0).withVelocityY(0.0)));
     
     private final Command enableSafetyOverrideInstant = leftVision.runOnce(() -> leftVision.setSafetyOverride(true));
-    private final Command enableDirectToAlgaeInstant = Commands.runOnce(() -> tower.enableGoToDirectAlgae());
+    private final Command enableDirectToAlgaeInstant = tower.runOnce(() -> tower.enableGoToDirectAlgae());
 
     private final Command homeTowerInstant = tower.runOnce(() -> tower.homeTower());
     private final Command tiltTowerInstant = tower.runOnce(() -> tower.tiltForward());
@@ -234,9 +230,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed * Constants.Driver.kMaxDriveSpeed * tower.getTowerSpeedSafetyFactor()) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed * Constants.Driver.kMaxDriveSpeed  * tower.getTowerSpeedSafetyFactor()) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * MaxAngularRate * Constants.Driver.kMaxTurnSpeed * tower.getTowerSpeedSafetyFactor()) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed * tower.getTowerSpeedSafetyFactor()) // Drive forward with negative Y (forward)
+                    .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed  * tower.getTowerSpeedSafetyFactor()) // Drive left with negative X (left)
+                    .withRotationalRate(-joystick.getRightX() * Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Driver.kMaxTurnSpeed * tower.getTowerSpeedSafetyFactor()) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -254,15 +250,29 @@ public class RobotContainer {
         joystick.start().onTrue(homeElevator);  //home the elevator
         joystick.rightStick().onTrue(tiltTowerInstant); // Tilt the elevator
 
-        joystick.leftBumper().onTrue(collectCoralLeftInstant);  // collect coral left side
-        joystick.rightBumper().onTrue(collectCoralRightInstant);// collect coral right side
+        // Change to .toggleOnTrue to make it toggle on/off when the button is pressed
+        joystick.leftBumper().onTrue(intakeCoralInstant)
+            .whileTrue(drivetrain.applyRequest(() -> 
+                    rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(13).get().getRotation().toRotation2d())
+                        .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
+                    ));  // collect coral left side
+
+        joystick.rightBumper().onTrue(intakeCoralInstant)
+            .whileTrue(drivetrain.applyRequest(() -> 
+                    rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(12).get().getRotation().toRotation2d())
+                        .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
+                    )); // collect coral right side
 
         joystick.y().onTrue(intakeHighAlgaeInstant);
         joystick.a().onTrue(intakeLowAlgaeInstant);
 
         joystick.x().onTrue(approachBargeInstant);
         joystick.b().onTrue(approachProcessorInstant);
-
+        
         // ==== Approach Buttons ================================
 
         joystick.leftTrigger(0.5).onTrue(startApproachInstant)
@@ -316,59 +326,4 @@ public class RobotContainer {
         /* Run the path selected from the auto chooser */
         return autoChooser.getSelected();
     }
-
-    // ==============================================================================================
-    // Approach Command code
-    // ==============================================================================================
-    private double targetAngle = 0.0;
-    private double headingError = 0.0;
-
-    BooleanSupplier atTarget = (() -> {
-        
-        if(targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees()) > 180){
-            headingError = (targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees())) - 360;
-        } else if(targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees()) < -180){
-            headingError = (targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees())) + 360;
-        } else{
-            headingError = targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees());
-        }
-
-        if(Math.abs(targetAngle - drivetrain.getState().Pose.getRotation().getDegrees()) < 1){
-            return true;
-        } else{
-            
-            SmartDashboard.putNumber("Degrees Left to Turn", headingError);
-            return false;
-        }
-    });
-
-    public Command faceCoralStation(boolean isLeft){
-        // Left coral station is tag 13, right is 12. Uses getTagId to convert Blue april tag IDs to Red
-        targetAngle = Constants.kFieldLayout.getTagPose(ApproachTarget.getTagId((isLeft) ? 13 : 12)).get().getRotation().toRotation2d().getDegrees();
-
-        if(targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees()) > 180){
-            headingError = (targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees())) + 360;
-        } else{
-            headingError = targetAngle - (drivetrain.getState().Pose.getRotation().getDegrees());
-        }
-        return drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * MaxSpeed / 2) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * MaxSpeed / 2) // Drive left with negative X (left)
-                    .withRotationalRate(clamp((headingError * MaxAngularRate / 80), -Math.PI, Math.PI, Math.PI/4)) // Auto rotate to position
-            ).until(atTarget).andThen(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)); // Run until target angle is reached
-      }
-
-    private double clamp(double value, double min, double max, double innerBound){
-        if(value > max){
-            value = max;
-        } else if(value > 0 && value < innerBound){
-            value = innerBound;
-        } else if(value < min){
-            value = min;
-        } else if(value < 0 && value > -innerBound){
-            value = -innerBound;
-        }
-        return value;
-    }
-
 }

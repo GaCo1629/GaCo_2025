@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import static edu.wpi.first.units.Units.MetersPerSecond;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.util.Units;
+import frc.robot.generated.TunerConstants;
 
 /** Add your docs here. */
 public class Constants {
@@ -21,6 +24,9 @@ public class Constants {
         public static final int kIntakeMotorId = 62;
         public static final int kExitTOFId = 63;
         public static final int kEnterTOFId = 64;
+
+        public static final int kAngleCurrentLimit = 50;
+        public static final int kIntakeCurrentLimit = 50;
 
 		public static final int kAlgaeGrabbedCurrent = 40;
         
@@ -47,7 +53,7 @@ public class Constants {
         public static final double kAngleMaxVelocityDPS       = 400;  
 		public static final double kAngleMaxAccelerationDPSPS = 1000; 
 
-        public static final double kIntakeAngleDegrees             = 2;
+        public static final double kIntakeAngleDegrees             = 3;
         public static final double kSafeAngleDegrees               = 30;
         public static final double kL4AngleDegrees                 = 48;
 
@@ -108,8 +114,8 @@ public class Constants {
         public static final double kL4AlgaeWindupHeightMeters = Units.inchesToMeters(72);  
         public static final double kSafeHomeHeightMeters = Units.inchesToMeters(19);
         
-        public static final double kElevatorMaxVelocityMPS       = 2.0;  // MPS
-		public static final double kElevatorMaxAccelerationMPSPS = 4.0;  // MPSS  was 6
+        //public static final double kElevatorMaxVelocityMPS = 2.0;  // MPS
+		public static final double kElevatorMaxAccelerationMPSPS = 4.0; // MPSS  was 6
 	
         public static final double kElevatorEncoderPositionConversionFactor = kRelativeEncoderScaleRevToMeters; 
         public static final double kElevatorEncoderVelocityConversionFactor = kRelativeEncoderScaleRevToMeters; 
@@ -117,9 +123,9 @@ public class Constants {
 
     public class Driver{
         
-        // driver
-        public static final double kMaxDriveSpeed = 0.9;
-        public static final double kMaxTurnSpeed  = 2;
+        // driver 
+        public static final double kMaxDriveSpeed = 0.9; // Percent of kMaxVelocityMPS
+        public static final double kMaxTurnSpeed  = 0.75; // Percent of kMaxAngularVelocityRPS
 
         //Co-Pilot 1
         public static final int reset = 1;
@@ -154,10 +160,21 @@ public class Constants {
 
     }
 
-    public class ApproachConstants {
-		public static final double maxApproachLinearVelocityMPS = 4.0;
-		public static final double maxApproachLinearAccelerationMPSPS = 3.0;
-		public static final double maxApproachAngularVelocityRPS = 2 * Math.PI;
-		public static final double maxApproachAngularAccelerationRPSPS = 4 * Math.PI;
+    public class Drivetrain {
+        public static final double kMaxVelocityMPS = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+        public static final double kMaxAccelerationMPSPS = 2 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
+        public static final double kMaxAngularVelocityRPS = 2 * Math.PI;
+        public static final double kMaxAngularAccelerationRPSPS = 4 * Math.PI;
+
+        public static final double kPHeading = 10.0;
+        public static final double kIHeading = 0.0;
+        public static final double kDHeading = 0.0;
+    }
+
+    public class Approach {
+		public static final double maxApproachLinearVelocityPercent = 0.8; // Was 2.0m/s, now percent of kMaxVelocityMPS
+		public static final double maxApproachLinearAccelerationPercent = 0.3; // Was 1.5m/s, now percent of kMaxAccelerationMPSPS
+		public static final double maxApproachAngularVelocityPercent = 1.0; // Was 2PI, now percent of kMaxAngularVelocityRPS
+		public static final double maxApproachAngularAccelerationPercent = 1.0; // Was 4PI, now percent of kMaxAngularAccelerationRPSPS
 	}
 }

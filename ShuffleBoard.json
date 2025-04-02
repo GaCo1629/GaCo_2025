@@ -288,6 +288,32 @@
               "_glyph": 148,
               "_showGlyph": false
             }
+          },
+          "17,8": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Target Degrees",
+              "_title": "/SmartDashboard/Target Degrees",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
+          },
+          "20,8": {
+            "size": [
+              3,
+              2
+            ],
+            "content": {
+              "_type": "Text View",
+              "_source0": "network_table:///SmartDashboard/Degrees Left to Turn",
+              "_title": "/SmartDashboard/Degrees Left to Turn",
+              "_glyph": 148,
+              "_showGlyph": false
+            }
           }
         }
       }

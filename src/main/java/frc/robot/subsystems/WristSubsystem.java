@@ -30,7 +30,7 @@ import com.playingwithfusion.TimeOfFlight.RangingMode;
 public class WristSubsystem extends SubsystemBase {
 
   private final SparkFlex intakeSpark;
-  private final SparkFlex angleSpark;
+  private SparkFlex angleSpark; // cannot be final due to SysID
   private final SparkFlexConfig intakeConfig = new SparkFlexConfig();
   private final SparkFlexConfig angleConfig = new SparkFlexConfig();
   private final SparkFlexConfig resetFrameRateConfig = new SparkFlexConfig();
@@ -59,10 +59,6 @@ public class WristSubsystem extends SubsystemBase {
     intakeEncoder = intakeSpark.getEncoder();
     angleEncoder = angleSpark.getAbsoluteEncoder();
 
-    angleTrapezoidProfile = new TrapezoidProfile(new Constraints(Constants.Wrist.kAngleMaxVelocityDPS,
-				                                              Constants.Wrist.kAngleMaxAccelerationDPSPS));
-
-	  angleSetpoint = new TrapezoidProfile.State(angleEncoder.getPosition(), angleEncoder.getVelocity());
     angleController = angleSpark.getClosedLoopController();
 
     // Use module constants to calculate conversion factors and feed forward gain.
@@ -75,7 +71,7 @@ public class WristSubsystem extends SubsystemBase {
 
     intakeConfig
       .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(50);
+      .smartCurrentLimit(Constants.Wrist.kIntakeCurrentLimit);
     intakeConfig.encoder
       .positionConversionFactor(intakeFactor) // meters
       .velocityConversionFactor(intakeFactor / 60.0); // meters per second
@@ -83,7 +79,7 @@ public class WristSubsystem extends SubsystemBase {
     angleConfig
       .idleMode(IdleMode.kBrake)
       //.inverted(true)
-      .smartCurrentLimit(50);
+      .smartCurrentLimit(Constants.Wrist.kAngleCurrentLimit);
     angleConfig.absoluteEncoder
       //.inverted(true)
       .positionConversionFactor(Constants.Wrist.kAngleFactor) // degrees
@@ -109,6 +105,12 @@ public class WristSubsystem extends SubsystemBase {
     resetFrameRateConfig.signals.appliedOutputPeriodMs(10);
 
     setDefaultCommand(new DefaultWristCmd(this));
+
+    angleTrapezoidProfile = new TrapezoidProfile(new Constraints(
+                                                      Constants.Wrist.kAngleMaxVelocityDPS,
+				                                              Constants.Wrist.kAngleMaxAccelerationDPSPS));
+
+	  angleSetpoint = new TrapezoidProfile.State(angleEncoder.getPosition(), angleEncoder.getVelocity());
   }
 
   public void initialize() {
@@ -233,7 +235,7 @@ public class WristSubsystem extends SubsystemBase {
   
   public void runWristClosedLoop() {
       angleSetpoint = angleTrapezoidProfile.calculate(Constants.kDt, angleSetpoint, angleGoal);
+
 		  angleController.setReference(angleSetpoint.position, ControlType.kPosition);
   }
-
 }
