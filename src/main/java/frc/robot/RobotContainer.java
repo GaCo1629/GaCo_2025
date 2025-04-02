@@ -132,7 +132,7 @@ public class RobotContainer {
     private final Command scoreInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.SCORE));
 
     private final Command collectCoralLeftInstant = faceCoralStation(true).alongWith(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)));
-    private final Command collectCoralRightInstant = faceCoralStation(false);
+    private final Command collectCoralRightInstant = faceCoralStation(false).alongWith(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)));;
 
     private final Command intakeLowAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE));
     private final Command intakeHighAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE));
