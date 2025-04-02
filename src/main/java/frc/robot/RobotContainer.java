@@ -96,6 +96,14 @@ public class RobotContainer {
     /* Path follower */
     private final SendableChooser<Command> autoChooser;
 
+    /* Coral Station Approach */
+    private Rotation2d targetAngle = new Rotation2d();
+
+    BooleanSupplier atTarget = (() -> {
+        SmartDashboard.putNumber("Degrees Left to Turn", Units.radiansToDegrees(rotateTo.HeadingController.getPositionError()));
+        return Math.abs(targetAngle.getDegrees() - drivetrain.getState().Pose.getRotation().getDegrees()) < 1.0;
+    });
+
     /* Intake and Goto Commands */
     private final JustIntakeCmd intakeAndGotoL1 = new JustIntakeCmd(tower, TowerEvent.GOTO_L1);
     private final JustIntakeCmd intakeAndGotoL2 = new JustIntakeCmd(tower, TowerEvent.GOTO_L2);
@@ -324,12 +332,6 @@ public class RobotContainer {
     // ==============================================================================================
     // Approach Command code
     // ==============================================================================================
-    private Rotation2d targetAngle = new Rotation2d();
-
-    BooleanSupplier atTarget = (() -> {
-        SmartDashboard.putNumber("Degrees Left to Turn", Units.radiansToDegrees(rotateTo.HeadingController.getPositionError()));
-        return Math.abs(targetAngle.getDegrees() - drivetrain.getState().Pose.getRotation().getDegrees()) < 1.0;
-    });
 
     public Command faceCoralStation(boolean isLeft){
         // Left coral station is tag 13, right is 12. Uses getTagId to convert Blue april tag IDs to Red
