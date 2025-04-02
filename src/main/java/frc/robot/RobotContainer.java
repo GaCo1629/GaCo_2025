@@ -251,23 +251,21 @@ public class RobotContainer {
         joystick.rightStick().onTrue(tiltTowerInstant); // Tilt the elevator
 
         // Change to .toggleOnTrue to make it toggle on/off when the button is pressed
-        joystick.leftBumper()
-            .whileTrue(intakeCoralInstant
-                .alongWith(drivetrain.applyRequest(() -> 
+        joystick.leftBumper().onTrue(intakeCoralInstant)
+            .whileTrue(drivetrain.applyRequest(() -> 
                     rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(ApproachTarget.getTagId(13)).get().getRotation().toRotation2d())
                         .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                         .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                         .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
-                    )));  // collect coral left side
+                    ));  // collect coral left side
 
-        joystick.rightBumper()
-            .whileTrue(intakeCoralInstant
-                .alongWith(drivetrain.applyRequest(() -> 
+        joystick.rightBumper().onTrue(intakeCoralInstant)
+            .whileTrue(drivetrain.applyRequest(() -> 
                     rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(ApproachTarget.getTagId(13)).get().getRotation().toRotation2d())
                         .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                         .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                         .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
-                    )));// collect coral right side
+                    ));// collect coral right side
 
         joystick.y().onTrue(intakeHighAlgaeInstant);
         joystick.a().onTrue(intakeLowAlgaeInstant);
