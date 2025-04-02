@@ -126,7 +126,6 @@ public class WristSubsystem extends SubsystemBase {
   //  browser followed by :5812.
   @Override
   public void simulationPeriodic() {
-      // TODO Auto-generated method stub
       SmartDashboard.putNumber("Wrist Goal", angleGoal.position);    
       SmartDashboard.putNumber("Wrist Angle", angleGoal.position);
 
@@ -224,7 +223,6 @@ public class WristSubsystem extends SubsystemBase {
     return angleEncoder.getVelocity();
   }
 
-
   public boolean inPosition(){
     if (Utils.isSimulation()){
       Globals.WRIST_IN_POSITION = true;
@@ -234,16 +232,10 @@ public class WristSubsystem extends SubsystemBase {
       return Globals.WRIST_IN_POSITION;
     }
   }
-
   
   public void runWristClosedLoop() {
       angleSetpoint = angleTrapezoidProfile.calculate(Constants.kDt, angleSetpoint, angleGoal);
 
 		  angleController.setReference(angleSetpoint.position, ControlType.kPosition);
   }
-
-  //----------//
-  // Commands //
-  //----------//
-
 }

@@ -3,48 +3,39 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.045640677973637,
-        "y": 0.761459862345223
+        "x": 5.0992500000000005,
+        "y": 5.1267499999999995
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.964743500097779,
-        "y": 1.3671914914449645
+        "x": 5.890068493150685,
+        "y": 6.076005993150685
       },
       "isLocked": false,
-      "linkedName": "Processor"
+      "linkedName": "IJ"
     },
     {
       "anchor": {
-        "x": 5.136768226965968,
-        "y": 2.944799946940335
+        "x": 8.098844178082192,
+        "y": 5.850620719178083
       },
       "prevControl": {
-        "x": 5.499000000001813,
-        "y": 2.3674999999973183
+        "x": 7.032020547945206,
+        "y": 5.820569349315068
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": "EF"
+      "linkedName": "Net Middle"
     }
   ],
-  "rotationTargets": [
-    {
-      "waypointRelativePos": 0.17192982456140535,
-      "rotationDegrees": -89.16503815517356
-    },
-    {
-      "waypointRelativePos": 0.5326315789473675,
-      "rotationDegrees": 112.2296130905596
-    }
-  ],
+  "rotationTargets": [],
   "constraintZones": [
     {
       "name": "Constraints Zone",
-      "minWaypointRelativePos": 0.7519348268839108,
+      "minWaypointRelativePos": 0.27593699076588873,
       "maxWaypointRelativePos": 1.0,
       "constraints": {
-        "maxVelocity": 1.0,
+        "maxVelocity": 2.0,
         "maxAcceleration": 2.0,
         "maxAngularVelocity": 540.0,
         "maxAngularAcceleration": 720.0,
@@ -56,8 +47,8 @@
   "pointTowardsZones": [],
   "eventMarkers": [
     {
-      "name": "GOTO_L3_ALGAE",
-      "waypointRelativePos": 0.09042769857433855,
+      "name": "GOTO_L4_ALGAE",
+      "waypointRelativePos": 0.5032258064516129,
       "endWaypointRelativePos": null,
       "command": null
     }
@@ -72,13 +63,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 119.16761337957777
+    "rotation": 180.0
   },
   "reversed": false,
-  "folder": "Processor",
+  "folder": "IJ",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -90.96286362563627
+    "rotation": -121.13897243697885
   },
   "useDefaultConstraints": true
 }
