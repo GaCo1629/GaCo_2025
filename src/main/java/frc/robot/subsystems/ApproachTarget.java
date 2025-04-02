@@ -7,8 +7,6 @@ package frc.robot.subsystems;
 import com.pathplanner.lib.path.GoalEndState;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.robot.Constants;
 
 /** Reef target positions using blue side AprilTag IDs */
@@ -69,34 +67,5 @@ public enum ApproachTarget {
         this.redPt1 = redTagPose.plus(position.pt1Transform);
         this.redPt2 = redTagPose.plus(position.pt2Transform);
         this.redGoalEndState = new GoalEndState(0.0, (position == ApproachPosition.OVERHEAD) ? redTagPose.getRotation() : redTagPose.getRotation().rotateBy(Rotation2d.k180deg));
-    }
-
-    // Modify tag ID is running on Red Alliance.
-    public static int getTagId(int id){
-        if(DriverStation.getAlliance() != null && DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get().equals(Alliance.Red)){
-            switch(id){
-                case 12:
-                    return 2;
-                case 13:
-                    return 1;
-                case 14:
-                    return 5;
-                case 16:
-                    return 3;
-                case 17:
-                    return 8;
-                case 18:
-                    return 7;
-                case 19:
-                    return 6;
-                case 20:
-                    return 11;
-                case 21:
-                    return 10;
-                case 22:
-                    return 9;
-            }
-        }
-        return id;
     }
 }
