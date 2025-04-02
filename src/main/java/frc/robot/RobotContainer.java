@@ -324,7 +324,7 @@ public class RobotContainer {
     // ==============================================================================================
     // Approach Command code
     // ==============================================================================================
-    private Rotation2d targetAngle;
+    private Rotation2d targetAngle = new Rotation2d();
 
     BooleanSupplier atTarget = (() -> {
         SmartDashboard.putNumber("Degrees Left to Turn", Units.radiansToDegrees(rotateTo.HeadingController.getPositionError()));
