@@ -160,7 +160,7 @@ public class Constants {
 
     }
 
-    public class DrivetrainConstants {
+    public class Drivetrain {
         public static final double kMaxVelocityMPS = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
         public static final double kMaxAccelerationMPSPS = 2 * TunerConstants.kSpeedAt12Volts.in(MetersPerSecond);
         public static final double kMaxAngularVelocityRPS = 2 * Math.PI;
@@ -171,9 +171,9 @@ public class Constants {
         public static final double kDHeading = 0.0;
     }
 
-    public class ApproachConstants {
-		public static final double maxApproachLinearVelocityPercent = 0.4; // Was 2.0m/s, now percent of kMaxVelocityMPS
-		public static final double maxApproachLinearAccelerationPercent = 0.6; // Was 1.5m/s, now percent of kMaxAccelerationMPSPS
+    public class Approach {
+		public static final double maxApproachLinearVelocityPercent = 0.8; // Was 2.0m/s, now percent of kMaxVelocityMPS
+		public static final double maxApproachLinearAccelerationPercent = 1.2; // Was 1.5m/s, now percent of kMaxAccelerationMPSPS
 		public static final double maxApproachAngularVelocityPercent = 1.0; // Was 2PI, now percent of kMaxAngularVelocityRPS
 		public static final double maxApproachAngularAccelerationPercent = 1.0; // Was 4PI, now percent of kMaxAngularAccelerationRPSPS
 	}

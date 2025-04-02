@@ -23,10 +23,10 @@ public class ApproachSubsystem extends SubsystemBase {
   private final CommandScheduler scheduler = CommandScheduler.getInstance();
   private final CommandSwerveDrivetrain drivetrain;
   private final PathConstraints pathConstraints = new PathConstraints(
-                              Constants.DrivetrainConstants.kMaxVelocityMPS * Constants.ApproachConstants.maxApproachLinearVelocityPercent, 
-                              Constants.DrivetrainConstants.kMaxAccelerationMPSPS * Constants.ApproachConstants.maxApproachLinearAccelerationPercent, 
-                              Constants.DrivetrainConstants.kMaxAngularVelocityRPS * Constants.ApproachConstants.maxApproachAngularVelocityPercent, 
-                              Constants.DrivetrainConstants.kMaxAngularAccelerationRPSPS * Constants.ApproachConstants.maxApproachAngularAccelerationPercent);
+                              Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent, 
+                              Constants.Drivetrain.kMaxAccelerationMPSPS * Constants.Approach.maxApproachLinearAccelerationPercent, 
+                              Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent, 
+                              Constants.Drivetrain.kMaxAngularAccelerationRPSPS * Constants.Approach.maxApproachAngularAccelerationPercent);
   private PathPlannerPath path;
   private Pose2d pt0;
   private double pt0X;

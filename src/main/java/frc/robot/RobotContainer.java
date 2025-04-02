@@ -55,7 +55,7 @@ public class RobotContainer {
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(Constants.DrivetrainConstants.kMaxVelocityMPS * 0.08).withRotationalDeadband(Constants.DrivetrainConstants.kMaxAngularVelocityRPS * 0.08) // Add a 8% deadband
+            .withDeadband(Constants.Drivetrain.kMaxVelocityMPS * 0.08).withRotationalDeadband(Constants.Drivetrain.kMaxAngularVelocityRPS * 0.08) // Add a 8% deadband
             .withDriveRequestType(DriveRequestType.Velocity); // Use closed-loop control for drive motors
 
     //private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
@@ -63,12 +63,12 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.Velocity); // Use closed-loop control for drive motors
 
     private final SwerveRequest.FieldCentricFacingAngle rotateTo = new SwerveRequest.FieldCentricFacingAngle()
-            .withDeadband(Constants.DrivetrainConstants.kMaxVelocityMPS * 0.08)
-            .withRotationalDeadband(Constants.DrivetrainConstants.kMaxAngularVelocityRPS * 0.08)
+            .withDeadband(Constants.Drivetrain.kMaxVelocityMPS * 0.08)
+            .withRotationalDeadband(Constants.Drivetrain.kMaxAngularVelocityRPS * 0.08)
             .withDriveRequestType(DriveRequestType.Velocity) // Use closed-loop control for drive motors
-            .withHeadingPID(Constants.DrivetrainConstants.kPHeading, Constants.DrivetrainConstants.kIHeading, Constants.DrivetrainConstants.kDHeading);
+            .withHeadingPID(Constants.Drivetrain.kPHeading, Constants.Drivetrain.kIHeading, Constants.Drivetrain.kDHeading);
 
-    private final Telemetry logger = new Telemetry(Constants.DrivetrainConstants.kMaxVelocityMPS);
+    private final Telemetry logger = new Telemetry(Constants.Drivetrain.kMaxVelocityMPS);
 
     private final CommandXboxController joystick = new CommandXboxController(0);
     private final CommandJoystick       copilot_1 = new CommandJoystick(1);
@@ -123,17 +123,17 @@ public class RobotContainer {
     /* Instant Commands */
     private final Command scoreInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.SCORE));
 
-    private final Command collectCoralLeftInstant = drivetrain.runOnce(() -> faceCoralStation(true).schedule());
-    private final Command collectCoralRightInstant = drivetrain.runOnce(() -> faceCoralStation(false).schedule());
+    private final Command collectCoralLeftInstant = faceCoralStation(true).alongWith(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)));
+    private final Command collectCoralRightInstant = faceCoralStation(false);
 
-    private final Command intakeLowAlgaeInstant = drivetrain.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE));
-    private final Command intakeHighAlgaeInstant = drivetrain.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE));
+    private final Command intakeLowAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE));
+    private final Command intakeHighAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE));
 
     private final Command seedFieldCentricInstant = drivetrain.runOnce(() -> drivetrain.seedFieldCentric());
     private final Command stopDrivetrainInstant = drivetrain.runOnce(() -> drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.0).withVelocityY(0.0)));
     
     private final Command enableSafetyOverrideInstant = leftVision.runOnce(() -> leftVision.setSafetyOverride(true));
-    private final Command enableDirectToAlgaeInstant = Commands.runOnce(() -> tower.enableGoToDirectAlgae());
+    private final Command enableDirectToAlgaeInstant = tower.runOnce(() -> tower.enableGoToDirectAlgae());
 
     private final Command homeTowerInstant = tower.runOnce(() -> tower.homeTower());
     private final Command tiltTowerInstant = tower.runOnce(() -> tower.tiltForward());
@@ -236,9 +236,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * Constants.DrivetrainConstants.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed * tower.getTowerSpeedSafetyFactor()) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * Constants.DrivetrainConstants.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed  * tower.getTowerSpeedSafetyFactor()) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * Constants.DrivetrainConstants.kMaxAngularVelocityRPS * Constants.Driver.kMaxTurnSpeed * tower.getTowerSpeedSafetyFactor()) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed * tower.getTowerSpeedSafetyFactor()) // Drive forward with negative Y (forward)
+                    .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed  * tower.getTowerSpeedSafetyFactor()) // Drive left with negative X (left)
+                    .withRotationalRate(-joystick.getRightX() * Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Driver.kMaxTurnSpeed * tower.getTowerSpeedSafetyFactor()) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -256,6 +256,8 @@ public class RobotContainer {
         joystick.start().onTrue(homeElevator);  //home the elevator
         joystick.rightStick().onTrue(tiltTowerInstant); // Tilt the elevator
 
+        // Change to .whileTrue to make it cancel if button is released
+        // Change to .toggleOnTrue to make it toggle on/off when the button is pressed
         joystick.leftBumper().onTrue(collectCoralLeftInstant);  // collect coral left side
         joystick.rightBumper().onTrue(collectCoralRightInstant);// collect coral right side
 
@@ -336,9 +338,9 @@ public class RobotContainer {
         SmartDashboard.putNumber("Target Degrees", targetAngle.getDegrees());
         return drivetrain.applyRequest(() ->
                 rotateTo.withTargetDirection(targetAngle)
-                    .withVelocityX(-joystick.getLeftY() * Constants.DrivetrainConstants.kMaxVelocityMPS * Constants.ApproachConstants.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
-                    .withVelocityY(-joystick.getLeftX() * Constants.DrivetrainConstants.kMaxVelocityMPS * Constants.ApproachConstants.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
-                    .withMaxAbsRotationalRate(Constants.DrivetrainConstants.kMaxAngularVelocityRPS * Constants.ApproachConstants.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
-            ).until(atTarget).andThen(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL)); // Run until target angle is reached
+                    .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                    .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                    .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
+            ).until(atTarget); // Run until target angle is reached
       }
 }
