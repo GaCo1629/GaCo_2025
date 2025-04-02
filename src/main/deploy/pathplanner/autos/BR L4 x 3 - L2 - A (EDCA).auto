@@ -38,13 +38,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "EtoCR"
+            "pathName": "EtoCR Fast"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "CRtoD"
+            "pathName": "CRtoD Fast"
           }
         },
         {
@@ -68,7 +68,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "CRtoC"
+            "pathName": "CRtoC Fast"
           }
         },
         {

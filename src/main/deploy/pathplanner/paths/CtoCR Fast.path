@@ -34,7 +34,7 @@
   "eventMarkers": [
     {
       "name": "INTAKE_AND_GOTO_L2",
-      "waypointRelativePos": 0.5016949152542373,
+      "waypointRelativePos": 0.404887983706722,
       "endWaypointRelativePos": null,
       "command": null
     }

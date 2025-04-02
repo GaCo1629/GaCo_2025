@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 1.8672991071428569,
-        "y": 1.3872767857142856
+        "x": 1.6867500000000002,
+        "y": 1.5582499999999992
       },
       "isLocked": false,
       "linkedName": "Collect Right"
@@ -20,8 +20,8 @@
         "y": 3.859
       },
       "prevControl": {
-        "x": 2.1785,
-        "y": 3.859
+        "x": 2.19375,
+        "y": 3.478999999999999
       },
       "nextControl": null,
       "isLocked": false,
@@ -31,7 +31,14 @@
   "rotationTargets": [],
   "constraintZones": [],
   "pointTowardsZones": [],
-  "eventMarkers": [],
+  "eventMarkers": [
+    {
+      "name": "INTAKE_AND_GOTO_L2",
+      "waypointRelativePos": 0,
+      "endWaypointRelativePos": null,
+      "command": null
+    }
+  ],
   "globalConstraints": {
     "maxVelocity": 3.5,
     "maxAcceleration": 3.5,
