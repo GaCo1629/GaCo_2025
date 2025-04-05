@@ -106,6 +106,18 @@
           "data": {
             "name": "SCORE_ALGAE"
           }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.75
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NMtoOut"
+          }
         }
       ]
     }
