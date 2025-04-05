@@ -273,11 +273,20 @@ public class TowerSubsystem extends SubsystemBase {
 			}
 
 			case SCORING_CORAL: {
-				if (!wrist.gotExitCoral() || stateTimer.hasElapsed(0.3)) {
+				if (!wrist.gotExitCoral()) {
+					setState(TowerState.DELAY_AFTER_SCORING_CORAL);
+				} else if(stateTimer.hasElapsed(0.5)){
 					wrist.setGoalAngle(Constants.Wrist.kSafeAngleDegrees);
 					setState(TowerState.PAUSING_AFTER_SCORING_CORAL);
 				}
 				break;
+			}
+
+			case DELAY_AFTER_SCORING_CORAL: {
+				if (stateTimer.hasElapsed(0.2)){
+					wrist.setGoalAngle(Constants.Wrist.kSafeAngleDegrees);
+					setState(TowerState.PAUSING_AFTER_SCORING_CORAL);
+				}
 			}
 
 			case PAUSING_AFTER_SCORING_CORAL: {
