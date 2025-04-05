@@ -42,7 +42,8 @@ public class Constants {
         public static final double kCoralSlowIntakePower    = -0.1;
 		public static final double kCoralL1ScoringPower     = -0.2;
         public static final double kCoralIntakePower        = -0.3;
-		public static final double kCoralL234ScoringPower   = -0.80;  // was -1.0
+		public static final double kCoralL23ScoringPower    = -0.30;  // was -1.0
+        public static final double kCoralL4ScoringPower     = -0.80;  // was -1.0
 
         public static final double kCoralFeedPower          = -0.04;
         public static final double kCoralHoldPower          =  0.04;
@@ -55,7 +56,7 @@ public class Constants {
 
         public static final double kIntakeAngleDegrees             = 3;
         public static final double kSafeAngleDegrees               = 30;
-        public static final double kL4AngleDegrees                 = 50; // was 48
+        public static final double kL4AngleDegrees                 = 52; // was 48
 
         public static final double kHighAlgaeAngleDegrees          = 60;
 

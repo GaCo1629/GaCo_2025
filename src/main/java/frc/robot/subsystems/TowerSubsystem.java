@@ -236,8 +236,10 @@ public class TowerSubsystem extends SubsystemBase {
 
 			case READY_TO_SCORE_CORAL: {
 				if (isTriggered(TowerEvent.SCORE)) {
-					if (currentLevel >  1) {
-						wrist.setIntakeSpeed(Constants.Wrist.kCoralL234ScoringPower);
+					if (currentLevel == 4) {
+						wrist.setIntakeSpeed(Constants.Wrist.kCoralL4ScoringPower);
+					} else if (currentLevel > 1){
+						wrist.setIntakeSpeed(Constants.Wrist.kCoralL23ScoringPower);
 					} else {
 						wrist.setIntakeSpeed(Constants.Wrist.kCoralL1ScoringPower);
 					}
