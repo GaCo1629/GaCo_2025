@@ -5,13 +5,19 @@
     "data": {
       "commands": [
         {
+          "type": "path",
+          "data": {
+            "pathName": "BRtoBump"
+          }
+        },
+        {
           "type": "parallel",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "CtoG"
+                  "pathName": "BumpBRtoE"
                 }
               },
               {
@@ -21,12 +27,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "GO_DIRECTLY_TO_ALGAE"
           }
         },
         {
@@ -44,67 +44,67 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Gto0.5C"
+            "pathName": "EtoCR"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "WAIT_FOR_ALGAE"
+            "name": "WAIT_TO_SEE_CORAL"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "0.5CtoGH"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "GHtoNet"
+            "pathName": "CRtoD"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "SCORE_ALGAE"
+            "name": "SCORE_CORAL"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "GO_DIRECTLY_TO_ALGAE"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.75
+            "name": "WAIT_FOR_LOWERING"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "NtoIJ"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "IJtoNM"
+            "pathName": "DtoCR"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "SCORE_ALGAE"
+            "name": "WAIT_TO_SEE_CORAL"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CRtoC"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SCORE_CORAL"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WAIT_FOR_LOWERING"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "CtoCR"
           }
         }
       ]

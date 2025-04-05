@@ -40,6 +40,7 @@ public class TowerSubsystem extends SubsystemBase {
 	public void initialize() {
 		setState(TowerState.INIT);
 		pendingEvent = TowerEvent.NONE;
+		Globals.GOT_ALGAE = false;
 		wrist.initialize();
 		elevator.initialize();
 	}
@@ -386,34 +387,23 @@ public class TowerSubsystem extends SubsystemBase {
 			case WINDING_UP: {
 				if (wrist.getWristAngle() < Constants.Wrist.kAlgaeReleaseAngleDegrees){
 					wrist.setIntakeSpeed(Constants.Wrist.kCoralL234ScoringPower);
-					setState(TowerState.RELEASING);
-				}
-
-				/*if (wrist.inPosition()) {
-					wrist.setIntakeSpeed(Constants.Wrist.kCoralL234ScoringPower);
-					setState(TowerState.RELEASING);
-				}*/
-				break;
-			}
-
-			case RELEASING: {
-				if (stateTimer.hasElapsed(.2)){
+					Globals.GOT_ALGAE = false;
 					setState(TowerState.PAUSING_AFTER_SCORING_ALGAE);
 				}
 				break;
 			}
 
-			case PAUSING_AFTER_SCORING_ALGAE: {  // this state trigers Path Planner to move after scoring
-				if (stateTimer.hasElapsed(0.3)){
+			case PAUSING_AFTER_SCORING_ALGAE: {  
+				if (stateTimer.hasElapsed(0.5)){
 					if(goDirectAlgae){  // special bypass to go to pickup Algae in Auto
 						goDirectAlgae = false; //resets the flag
 						wrist.setGoalAngle(Constants.Wrist.kAlgaeIntakeAngleDegrees);
-						currentLevel = 1;
 						wrist.setIntakeSpeed(Constants.Wrist.kAlgaeIntakePower);
 						setState(TowerState.WAITING_FOR_ALGAE);
 					} else {
 						wrist.setGoalAngle(Constants.Wrist.kSafeAngleDegrees);
 						elevator.setGoalPositionMeters(Constants.Elevator.kIntakeHeightMeters);
+						currentLevel = 1;
 						setState(TowerState.LOWERING);
 					}
 				}
@@ -459,6 +449,7 @@ public class TowerSubsystem extends SubsystemBase {
 		SmartDashboard.putString("Tower State", currentState.toString() + " <- " + pendingEvent.toString());
 		SmartDashboard.putNumber("Safety Factor", safetyFactor * 100);
 		SmartDashboard.putBoolean("l3Algae", goDirectAlgae);
+		SmartDashboard.putNumber("Elevator Level", currentLevel);
 	}
 	
 	private Boolean isTriggered(TowerEvent event){

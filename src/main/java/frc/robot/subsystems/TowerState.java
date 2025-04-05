@@ -29,7 +29,6 @@ public enum TowerState {
 	PAUSING_AFTER_SCORING_ALGAE,
 
 	WINDING_UP,
-	RELEASING,
 
 	//Returning
 	PAUSING_AFTER_SCORING_CORAL,
