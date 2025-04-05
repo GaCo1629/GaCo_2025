@@ -55,14 +55,14 @@ public class Constants {
 
         public static final double kIntakeAngleDegrees             = 3;
         public static final double kSafeAngleDegrees               = 30;
-        public static final double kL4AngleDegrees                 = 48;
+        public static final double kL4AngleDegrees                 = 50; // was 48
 
         public static final double kHighAlgaeAngleDegrees          = 60;
 
         public static final double kAlgaeIntakeAngleDegrees        = 180; 
         public static final double kAlgaeWindupAngleDegrees        = 150; 
         public static final double kAlgaeReleaseAngleDegrees       = 125;
-        public static final double kAlgaeReleaseGoalAngleDegrees   = 20;
+        public static final double kAlgaeReleaseGoalAngleDegrees   = 22; // was 20
         
         public static final double kMaxAngleWhenHomeDegrees        = 182;
         public static final double kMaxAngleDegrees                = 210;
@@ -172,8 +172,8 @@ public class Constants {
     }
 
     public class Approach {
-		public static final double maxApproachLinearVelocityPercent = 0.8; // Was 2.0m/s, now percent of kMaxVelocityMPS
-		public static final double maxApproachLinearAccelerationPercent = 0.3; // Was 1.5m/s, now percent of kMaxAccelerationMPSPS
+		public static final double maxApproachLinearVelocityPercent = 0.6; // Was 2.0m/s, now percent of kMaxVelocityMPS
+		public static final double maxApproachLinearAccelerationPercent = 0.2; // Was 1.5m/s, now percent of kMaxAccelerationMPSPS
 		public static final double maxApproachAngularVelocityPercent = 1.0; // Was 2PI, now percent of kMaxAngularVelocityRPS
 		public static final double maxApproachAngularAccelerationPercent = 1.0; // Was 4PI, now percent of kMaxAngularAccelerationRPSPS
 	}

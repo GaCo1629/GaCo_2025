@@ -351,7 +351,7 @@ public class TowerSubsystem extends SubsystemBase {
 			case WAITING_FOR_ALGAE: {
 				if(isTriggered(TowerEvent.SCORE)){
 					if (currentLevel < 4) {
-						wrist.setIntakeSpeed(Constants.Wrist.kCoralIntakePower);  // Score Algae
+						wrist.setIntakeSpeed(Constants.Wrist.kAlgaeScoringPower);  // Score Algae
 						Globals.GOT_ALGAE = false;
 						setState(TowerState.PAUSING_AFTER_SCORING_ALGAE);
 					} else {
@@ -395,7 +395,7 @@ public class TowerSubsystem extends SubsystemBase {
 
 			case WINDING_UP: {
 				if (wrist.getWristAngle() < Constants.Wrist.kAlgaeReleaseAngleDegrees){
-					wrist.setIntakeSpeed(Constants.Wrist.kCoralL234ScoringPower);
+					wrist.setIntakeSpeed(Constants.Wrist.kAlgaeScoringPower);
 					Globals.GOT_ALGAE = false;
 					setState(TowerState.PAUSING_AFTER_SCORING_ALGAE);
 				}
