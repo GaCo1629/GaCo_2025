@@ -127,7 +127,6 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   @Override
   public void simulationPeriodic() {
-      // TODO Auto-generated method stub
       SmartDashboard.putNumber("Elev Rel Hgt", Units.metersToInches(elevatorGoal.position));
       SmartDashboard.putNumber("ElevatorGoal", Units.metersToInches(elevatorGoal.position));
       SmartDashboard.putString("Elevator Power", "SIMULATION");
@@ -141,8 +140,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Elev Rel Hgt", Units.metersToInches(relativeEncoderHeightMeters));
 		SmartDashboard.putNumber("Elevator Goal", Units.metersToInches(elevatorGoal.position));
     SmartDashboard.putNumber("Elevator Power", centerElevatorMotor.getAppliedOutput());
-    SmartDashboard.putNumber("Elevator Current", getCurrent());
-	}
+    SmartDashboard.putNumber("Elevator Current", getCurrent());    
+    SmartDashboard.putNumber("Elevator Velocity", elevatorEncoder.getVelocity());	}
 
   public void readSensors() {
     getCurrent();
