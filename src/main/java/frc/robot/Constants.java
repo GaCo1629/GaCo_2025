@@ -107,7 +107,9 @@ public class Constants {
         public static final double kL1CoralHeightMeters = Units.inchesToMeters(21);
         public static final double kL2CoralHeightMeters = Units.inchesToMeters(31);
         public static final double kL3CoralHeightMeters = Units.inchesToMeters(45);  // was 46
+
         public static final double kL4CoralHeightMeters = Units.inchesToMeters(70);  
+        
         public static final double kL1AlgaeHeightMeters = Units.inchesToMeters(22);  // was 24
         public static final double kL2AlgaeHeightMeters = Units.inchesToMeters(39);
         public static final double kL3AlgaeHeightMeters = Units.inchesToMeters(54);  
