@@ -1,0 +1,146 @@
+{
+  "version": "2025.0",
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "CtoG"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "INTAKE_AND_GOTO_L4"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "GO_DIRECTLY_TO_ALGAE"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SCORE_CORAL"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WAIT_FOR_LOWERING"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Gto0.5C"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WAIT_FOR_ALGAE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "0.5CtoGH"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GHtoNet"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SCORE_ALGAE"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "GO_DIRECTLY_TO_ALGAE"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.75
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NtoIJ"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.25
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "IJtoNM"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SCORE_ALGAE"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.5
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NMtoEF"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WAIT_FOR_ALGAE"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "EFtoProcessor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SCORE_ALGAE"
+          }
+        }
+      ]
+    }
+  },
+  "resetOdom": true,
+  "folder": null,
+  "choreoAuto": false
+}
