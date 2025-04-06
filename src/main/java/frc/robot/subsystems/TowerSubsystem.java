@@ -236,8 +236,10 @@ public class TowerSubsystem extends SubsystemBase {
 
 			case READY_TO_SCORE_CORAL: {
 				if (isTriggered(TowerEvent.SCORE)) {
-					if (currentLevel >  1) {
-						wrist.setIntakeSpeed(Constants.Wrist.kCoralL234ScoringPower);
+					if (currentLevel == 4) {
+						wrist.setIntakeSpeed(Constants.Wrist.kCoralL4ScoringPower);
+					} else if (currentLevel > 1){
+						wrist.setIntakeSpeed(Constants.Wrist.kCoralL23ScoringPower);
 					} else {
 						wrist.setIntakeSpeed(Constants.Wrist.kCoralL1ScoringPower);
 					}
@@ -273,11 +275,20 @@ public class TowerSubsystem extends SubsystemBase {
 			}
 
 			case SCORING_CORAL: {
-				if (!wrist.gotExitCoral() || stateTimer.hasElapsed(0.3)) {
+				if (!wrist.gotExitCoral()) {
+					setState(TowerState.DELAY_AFTER_SCORING_CORAL);
+				} else if(stateTimer.hasElapsed(0.5)){
 					wrist.setGoalAngle(Constants.Wrist.kSafeAngleDegrees);
 					setState(TowerState.PAUSING_AFTER_SCORING_CORAL);
 				}
 				break;
+			}
+
+			case DELAY_AFTER_SCORING_CORAL: {
+				if (stateTimer.hasElapsed(0.2)){
+					wrist.setGoalAngle(Constants.Wrist.kSafeAngleDegrees);
+					setState(TowerState.PAUSING_AFTER_SCORING_CORAL);
+				}
 			}
 
 			case PAUSING_AFTER_SCORING_CORAL: {
@@ -342,7 +353,7 @@ public class TowerSubsystem extends SubsystemBase {
 			case WAITING_FOR_ALGAE: {
 				if(isTriggered(TowerEvent.SCORE)){
 					if (currentLevel < 4) {
-						wrist.setIntakeSpeed(Constants.Wrist.kCoralIntakePower);  // Score Algae
+						wrist.setIntakeSpeed(Constants.Wrist.kAlgaeScoringPower);  // Score Algae
 						Globals.GOT_ALGAE = false;
 						setState(TowerState.PAUSING_AFTER_SCORING_ALGAE);
 					} else {
@@ -386,7 +397,7 @@ public class TowerSubsystem extends SubsystemBase {
 
 			case WINDING_UP: {
 				if (wrist.getWristAngle() < Constants.Wrist.kAlgaeReleaseAngleDegrees){
-					wrist.setIntakeSpeed(Constants.Wrist.kCoralL234ScoringPower);
+					wrist.setIntakeSpeed(Constants.Wrist.kAlgaeScoringPower);
 					Globals.GOT_ALGAE = false;
 					setState(TowerState.PAUSING_AFTER_SCORING_ALGAE);
 				}
