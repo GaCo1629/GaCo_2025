@@ -89,7 +89,8 @@ public class WristSubsystem extends SubsystemBase {
       // These are example gains you may need to them for your own robot!
       .pid(Constants.Wrist.kP, Constants.Wrist.kI, Constants.Wrist.kD)
       .outputRange(-Constants.Wrist.kAnglePower, Constants.Wrist.kAnglePower)
-      .positionWrappingInputRange(0, Constants.Wrist.kAngleFactor);
+      .positionWrappingInputRange(0, Constants.Wrist.kAngleFactor)
+      .positionWrappingEnabled(true);
 
     intakeSpark.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     angleSpark.configure(angleConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
