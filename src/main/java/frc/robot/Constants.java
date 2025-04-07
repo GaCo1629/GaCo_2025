@@ -35,7 +35,7 @@ public class Constants {
         public static final double kP = 0.04; // was 0.02
         public static final double kI = 0;
         public static final double kD = 0.0;
-        public static final double kAngleTollerance = 1;
+        public static final double kAngleTollerance = 2;
 		
         public static final double kAnglePower = 0.5; // was 1.0
 		
@@ -56,7 +56,7 @@ public class Constants {
 
         public static final double kIntakeAngleDegrees             = 3;
         public static final double kSafeAngleDegrees               = 30;
-        public static final double kL4AngleDegrees                 = 52; // was 48
+        public static final double kL4AngleDegrees                 = 50; // was 48
 
         public static final double kHighAlgaeAngleDegrees          = 60;
 
@@ -107,7 +107,9 @@ public class Constants {
         public static final double kL1CoralHeightMeters = Units.inchesToMeters(21);
         public static final double kL2CoralHeightMeters = Units.inchesToMeters(31);
         public static final double kL3CoralHeightMeters = Units.inchesToMeters(45);  // was 46
+
         public static final double kL4CoralHeightMeters = Units.inchesToMeters(70);  
+        
         public static final double kL1AlgaeHeightMeters = Units.inchesToMeters(22);  // was 24
         public static final double kL2AlgaeHeightMeters = Units.inchesToMeters(39);
         public static final double kL3AlgaeHeightMeters = Units.inchesToMeters(54);  
@@ -125,8 +127,8 @@ public class Constants {
     public class Driver{
         
         // driver 
-        public static final double kMaxDriveSpeed = 0.9; // Percent of kMaxVelocityMPS
-        public static final double kMaxTurnSpeed  = 0.75; // Percent of kMaxAngularVelocityRPS
+        public static final double kMaxDriveSpeed = 1.0; // Percent of kMaxVelocityMPS
+        public static final double kMaxTurnSpeed  = 0.85; // Percent of kMaxAngularVelocityRPS
 
         //Co-Pilot 1
         public static final int reset = 1;
