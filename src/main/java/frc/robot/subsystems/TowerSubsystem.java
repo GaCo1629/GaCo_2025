@@ -399,6 +399,15 @@ public class TowerSubsystem extends SubsystemBase {
 				if (wrist.getWristAngle() < Constants.Wrist.kAlgaeReleaseAngleDegrees){
 					wrist.setIntakeSpeed(Constants.Wrist.kAlgaeScoringPower);
 					Globals.GOT_ALGAE = false;
+					setState(TowerState.ALGAE_BACKSPIN);
+				}
+				break;
+			}
+
+			case ALGAE_BACKSPIN: {
+				if (wrist.getWristAngle() <= Constants.Wrist.kAlgaeBackspinDegrees){
+					wrist.setIntakeSpeed(-Constants.Wrist.kAlgaeScoringPower);
+
 					setState(TowerState.PAUSING_AFTER_SCORING_ALGAE);
 				}
 				break;
