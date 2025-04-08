@@ -63,6 +63,7 @@ public class Constants {
         public static final double kAlgaeIntakeAngleDegrees        = 180; 
         public static final double kAlgaeWindupAngleDegrees        = 150; 
         public static final double kAlgaeReleaseAngleDegrees       = 125;
+        public static final double kAlgaeBackspinDegrees           = 95;
         public static final double kAlgaeReleaseGoalAngleDegrees   = 22; // was 20
         
         public static final double kMaxAngleWhenHomeDegrees        = 182;
