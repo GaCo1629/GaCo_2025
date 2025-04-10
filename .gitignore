@@ -164,3 +164,6 @@ bin/
 *simgui*
 *hoot
 *networktables.json
+
+# AdvantageKit
+src/main/java/frc/robot/BuildConstants.java
