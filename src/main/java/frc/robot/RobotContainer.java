@@ -54,6 +54,9 @@ import frc.robot.subsystems.tower.TowerEvent;
 import frc.robot.subsystems.tower.TowerState;
 import frc.robot.subsystems.tower.TowerSubsystem;
 import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.subsystems.wrist.AngleIOSparkFlex;
+import frc.robot.subsystems.wrist.IntakeIOSparkFlex;
+import frc.robot.subsystems.wrist.SensorIOPWF;
 import frc.robot.subsystems.wrist.WristSubsystem;
 
 public class RobotContainer {
@@ -73,7 +76,7 @@ public class RobotContainer {
     public Drive drive;
     public final Globals globals = new Globals();
     public ElevatorSubsystem elevator;
-    public WristSubsystem wrist = new WristSubsystem();
+    public WristSubsystem wrist;
     public TowerSubsystem tower = new TowerSubsystem(elevator, wrist, joystick);
     public VisionSubsystem leftVision = new VisionSubsystem(drive, "LEFT_CAM", robotToLeftCam, leftCamStdDevs);
     public VisionSubsystem rightVision = new VisionSubsystem(drive, "RIGHT_CAM", robotToRightCam, rightCamStdDevs);
@@ -176,6 +179,11 @@ public class RobotContainer {
                 led = 
                     new LEDSubsystem(
                         new LEDIOReal(0, 25));
+                wrist = 
+                    new WristSubsystem(
+                        new AngleIOSparkFlex(),
+                        new IntakeIOSparkFlex(),
+                        new SensorIOPWF());
                 break;
             case SIM:
                 // Sim robot, instantiate physics sim IO implementations

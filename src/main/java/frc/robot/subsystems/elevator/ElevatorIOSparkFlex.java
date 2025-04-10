@@ -22,7 +22,6 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import frc.robot.Constants;
 import frc.robot.Constants.Elevator;
 
-/** Add your docs here. */
 public class ElevatorIOSparkFlex implements ElevatorIO {
     private final SparkFlex leftElevatorMotor;
     private final SparkFlex centerElevatorMotor; // Cannot be final due to sysID Routine method
@@ -99,20 +98,23 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
         inputs.encoderPositionMeters = elevatorEncoder.getPosition();
         inputs.encoderVelocityMetersPerSec = elevatorEncoder.getVelocity();
         
-        inputs.motor1AppliedVolts = leftElevatorMotor.getAppliedOutput();
+        inputs.motor1AppliedVolts = leftElevatorMotor.getAppliedOutput() * leftElevatorMotor.getBusVoltage();
         inputs.motor1CurrentAmps = leftElevatorMotor.getOutputCurrent();
         inputs.motor1PositionMeters = leftElevatorMotor.getEncoder().getPosition();
         inputs.motor1VelocityMetersPerSec = leftElevatorMotor.getEncoder().getVelocity();
 
-        inputs.motor2AppliedVolts = centerElevatorMotor.getAppliedOutput();
+        inputs.motor2AppliedVolts = centerElevatorMotor.getAppliedOutput() * centerElevatorMotor.getBusVoltage();
         inputs.motor2CurrentAmps = centerElevatorMotor.getOutputCurrent();
         inputs.motor2PositionMeters = centerElevatorMotor.getEncoder().getPosition();
         inputs.motor2VelocityMetersPerSec = centerElevatorMotor.getEncoder().getVelocity();
 
-        inputs.motor3AppliedVolts = rightElevatorMotor.getAppliedOutput();
+        inputs.motor3AppliedVolts = rightElevatorMotor.getAppliedOutput() * rightElevatorMotor.getBusVoltage();
         inputs.motor3CurrentAmps = rightElevatorMotor.getOutputCurrent();
         inputs.motor3PositionMeters = rightElevatorMotor.getEncoder().getPosition();
         inputs.motor3VelocityMetersPerSec = rightElevatorMotor.getEncoder().getVelocity();
+
+        
+        inputs.goalPositionMeters = elevatorGoal.position;
     }
 
     @Override
@@ -128,14 +130,12 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     }
 
     @Override
-    public void setGoalPositionMeters(ElevatorIOInputs inputs, double goalPositionMeters) {
+    public void setGoalPositionMeters(double goalPositionMeters) {
         if (goalPositionMeters < Constants.Elevator.kElevatorMinHeightMeters) {
             goalPositionMeters = Constants.Elevator.kElevatorMinHeightMeters;
         } else if (goalPositionMeters > Constants.Elevator.kElevatorMaxHeightMeters) {
             goalPositionMeters = Constants.Elevator.kElevatorMaxHeightMeters;
         }
-
-        inputs.goalPositionMeters = goalPositionMeters;
           
         elevatorGoal.position = goalPositionMeters;
         elevatorGoal.velocity = 0.0;

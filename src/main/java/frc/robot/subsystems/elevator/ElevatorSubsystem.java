@@ -57,7 +57,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void setGoalPositionMeters(double meters) {
-    io.setGoalPositionMeters(inputs, meters);
+    io.setGoalPositionMeters(meters);
   }
 
   public void runClosedLoop() {
@@ -69,11 +69,11 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
   
   public void bumpElevatorMeters(double changeMeters) {
-    io.setGoalPositionMeters(inputs, lastGoalPositionMeters + changeMeters);
+    io.setGoalPositionMeters(lastGoalPositionMeters + changeMeters);
   }
 
   public void resetElevatorControl() {
-    io.setGoalPositionMeters(inputs, inputs.encoderPositionMeters);
+    io.setGoalPositionMeters(inputs.encoderPositionMeters);
   }
 
   public void resetEncoder() {
