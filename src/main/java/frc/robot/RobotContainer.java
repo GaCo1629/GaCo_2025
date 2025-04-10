@@ -42,6 +42,9 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOSparkFlex;
+import frc.robot.subsystems.elevator.ElevatorIOSparkSim;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.tower.TowerEvent;
@@ -66,13 +69,13 @@ public class RobotContainer {
     // Instanciate subsystems
     public Drive drive;
     public final Globals globals = new Globals();
-    public final ElevatorSubsystem elevator = new ElevatorSubsystem();
-    public final WristSubsystem wrist = new WristSubsystem();
-    public final TowerSubsystem tower = new TowerSubsystem(elevator, wrist, joystick);
-    public final VisionSubsystem leftVision = new VisionSubsystem(drive, "LEFT_CAM", robotToLeftCam, leftCamStdDevs);
-    public final VisionSubsystem rightVision = new VisionSubsystem(drive, "RIGHT_CAM", robotToRightCam, rightCamStdDevs);
-    public final ApproachSubsystem approach = new ApproachSubsystem(drive);
-    public final LEDSubsystem led = new LEDSubsystem(0);
+    public ElevatorSubsystem elevator;
+    public WristSubsystem wrist = new WristSubsystem();
+    public TowerSubsystem tower = new TowerSubsystem(elevator, wrist, joystick);
+    public VisionSubsystem leftVision = new VisionSubsystem(drive, "LEFT_CAM", robotToLeftCam, leftCamStdDevs);
+    public VisionSubsystem rightVision = new VisionSubsystem(drive, "RIGHT_CAM", robotToRightCam, rightCamStdDevs);
+    public ApproachSubsystem approach;
+    public LEDSubsystem led = new LEDSubsystem(0);
 
     /* Path follower */
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -162,6 +165,11 @@ public class RobotContainer {
                         new ModuleIOTalonFX(TunerConstants.FrontRight),
                         new ModuleIOTalonFX(TunerConstants.BackLeft),
                         new ModuleIOTalonFX(TunerConstants.BackRight));
+                approach = 
+                    new ApproachSubsystem(drive);
+                elevator = 
+                    new ElevatorSubsystem(
+                        new ElevatorIOSparkFlex());
                 break;
             case SIM:
                 // Sim robot, instantiate physics sim IO implementations
@@ -172,6 +180,11 @@ public class RobotContainer {
                         new ModuleIOSim(TunerConstants.FrontRight),
                         new ModuleIOSim(TunerConstants.BackLeft),
                         new ModuleIOSim(TunerConstants.BackRight));
+                approach = 
+                    new ApproachSubsystem(drive);
+                elevator = 
+                    new ElevatorSubsystem(
+                        new ElevatorIOSparkSim());
                 break;
             default:
                 // Replayed robot, disable IO implementations
@@ -182,6 +195,11 @@ public class RobotContainer {
                         new ModuleIO() {},
                         new ModuleIO() {},
                         new ModuleIO() {});
+                approach = 
+                    new ApproachSubsystem(drive);
+                elevator = 
+                    new ElevatorSubsystem(
+                        new ElevatorIO() {});
                 break;
         }
         

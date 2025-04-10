@@ -4,177 +4,76 @@
 
 package frc.robot.subsystems.elevator;
 
-import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.util.Units;
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.Utils;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkFlex;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkFlexConfig;
-import com.revrobotics.spark.config.ClosedLoopConfig.FeedbackSensor;
 
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.Constants.Elevator;
 import frc.robot.commands.DefaultElevatorCmd;
 import frc.robot.subsystems.Globals;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  private final SparkFlex leftElevatorMotor;
-  private final SparkFlex centerElevatorMotor; // Cannot be final due to sysID Routine method
-  private final SparkFlex rightElevatorMotor;
-  
-  private final SparkFlexConfig leftElevatorMotorConfig;
-  private final SparkFlexConfig centerElevatorMotorConfig;
-  private final SparkFlexConfig rightElevatorMotorConfig;
-  private final SparkFlexConfig resetFrameRateConfig;
-  private final SparkClosedLoopController elevatorController;
-  private final RelativeEncoder elevatorEncoder;
+  private final ElevatorIO io;
+  private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
-  private final ElevatorFeedforward elevatorFeedforward;
-
-	private final TrapezoidProfile elevatorTrapezoidProfile;
-	private TrapezoidProfile.State elevatorGoal = new TrapezoidProfile.State();
-	private TrapezoidProfile.State elevatorSetpoint;
-
-  private double relativeEncoderHeightMeters =  0;
   private double lastGoalPositionMeters = Constants.Elevator.kElevatorMinHeightMeters;
 
   /** Creates a new ElevatorSubsystem. */
-  public ElevatorSubsystem() {
-    leftElevatorMotor = new SparkFlex(Elevator.kElevatorMotorLeftId, MotorType.kBrushless);
-    centerElevatorMotor = new SparkFlex(Elevator.kElevatorMotorCenterId, MotorType.kBrushless);
-    rightElevatorMotor = new SparkFlex(Elevator.kElevatorMotorRightId, MotorType.kBrushless);
-
-    elevatorController = centerElevatorMotor.getClosedLoopController();
-    elevatorEncoder = centerElevatorMotor.getEncoder();
-  
-	  elevatorFeedforward = new ElevatorFeedforward(Elevator.kS, Elevator.kG, Elevator.kV);
-
-	  elevatorTrapezoidProfile = new TrapezoidProfile(new Constraints(elevatorFeedforward.maxAchievableVelocity(12.0, Elevator.kElevatorMaxAccelerationMPSPS),
-				                                              Elevator.kElevatorMaxAccelerationMPSPS));
-
-    centerElevatorMotorConfig = new SparkFlexConfig();
-
-    centerElevatorMotorConfig.closedLoop
-      .p(Elevator.kP)
-      .i(Elevator.kI)
-      .d(Elevator.kD)
-      .feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-
-    centerElevatorMotorConfig.encoder
-      .positionConversionFactor(Elevator.kElevatorEncoderPositionConversionFactor)
-      .velocityConversionFactor(Elevator.kElevatorEncoderVelocityConversionFactor);
-
-    centerElevatorMotorConfig
-      .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(Elevator.kElevatorCurrentLimit);
-
-    leftElevatorMotorConfig = new SparkFlexConfig();
-    leftElevatorMotorConfig
-      .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(Elevator.kElevatorCurrentLimit)
-      .follow(centerElevatorMotor);
-    
-    rightElevatorMotorConfig = new SparkFlexConfig();
-    rightElevatorMotorConfig
-      .idleMode(IdleMode.kBrake)
-      .smartCurrentLimit(Elevator.kElevatorCurrentLimit)
-      .follow(centerElevatorMotor);
-
-    leftElevatorMotor.configure(leftElevatorMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    centerElevatorMotor.configure(centerElevatorMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
-    rightElevatorMotor.configure(rightElevatorMotorConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+  public ElevatorSubsystem(ElevatorIO io) {
+    this.io = io;
 
     setDefaultCommand(new DefaultElevatorCmd(this));
-
-    elevatorEncoder.setPosition(Constants.Elevator.elevatorHomeHeightMeters); 
-
-    elevatorSetpoint = new TrapezoidProfile.State(elevatorEncoder.getPosition(), elevatorEncoder.getVelocity());
-
-    resetFrameRateConfig = new SparkFlexConfig();
-    resetFrameRateConfig.signals.appliedOutputPeriodMs(10);
-  }
-
-    /**
-   * WARNING: This will rebase the elevator at the current position.
-   */
-  public void resetEncoder(){
-    elevatorEncoder.setPosition(Constants.Elevator.elevatorHomeHeightMeters); 
-    initialize();
-  }
-
-  public void initialize(){
-    readSensors();
-    resetElevatorControl();
-  }
-
-  public void resetFrameRate() {
-    leftElevatorMotor.configure(resetFrameRateConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    centerElevatorMotor.configure(resetFrameRateConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    rightElevatorMotor.configure(resetFrameRateConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
-    System.out.println("RESET FRAME RATE");
   }
 
   @Override
   public void simulationPeriodic() {
-      SmartDashboard.putNumber("Elev Rel Hgt", Units.metersToInches(elevatorGoal.position));
-      SmartDashboard.putNumber("ElevatorGoal", Units.metersToInches(elevatorGoal.position));
-      SmartDashboard.putString("Elevator Power", "SIMULATION");
+    SmartDashboard.putNumber("Elev Rel Hgt", Units.metersToInches(inputs.encoderPositionMeters));
+    SmartDashboard.putNumber("ElevatorGoal", Units.metersToInches(inputs.goalPositionMeters));
+    SmartDashboard.putString("Elevator Power", "SIMULATION");
   }
 
   @Override
 	public void periodic() {
-    readSensors();
+    io.updateInputs(inputs);
+    Logger.processInputs("Elevator", inputs);
 
 		// This method will be called once per scheduler run
-    SmartDashboard.putNumber("Elev Rel Hgt", Units.metersToInches(relativeEncoderHeightMeters));
-		SmartDashboard.putNumber("Elevator Goal", Units.metersToInches(elevatorGoal.position));
-    SmartDashboard.putNumber("Elevator Power", centerElevatorMotor.getAppliedOutput());
+    SmartDashboard.putNumber("Elev Rel Hgt", Units.metersToInches(inputs.encoderPositionMeters));
+		SmartDashboard.putNumber("Elevator Goal", Units.metersToInches(inputs.goalPositionMeters));
+    SmartDashboard.putNumber("Elevator Power", inputs.motor2AppliedVolts);
     SmartDashboard.putNumber("Elevator Current", getCurrent());    
-    SmartDashboard.putNumber("Elevator Velocity", elevatorEncoder.getVelocity());	}
+    SmartDashboard.putNumber("Elevator Velocity", inputs.encoderVelocityMetersPerSec);	
+  }
 
-  public void readSensors() {
-    getCurrent();
-    relativeEncoderHeightMeters = elevatorEncoder.getPosition(); 
+  public void setGoalPositionMeters(double meters) {
+    io.setGoalPositionMeters(inputs, meters);
+  }
+
+  public void runClosedLoop() {
+    io.runClosedLoop();
+  }
+
+  public void setSpeed(double speed) {
+    io.setSpeed(speed);
   }
   
   public void bumpElevatorMeters(double changeMeters) {
-    setGoalPositionMeters(lastGoalPositionMeters + changeMeters);
+    io.setGoalPositionMeters(inputs, lastGoalPositionMeters + changeMeters);
   }
 
   public void resetElevatorControl() {
-    setGoalPositionMeters(relativeEncoderHeightMeters);
+    io.setGoalPositionMeters(inputs, inputs.encoderPositionMeters);
   }
 
-  public void setGoalPositionMeters(double goalPositionMeters) {
-    if (goalPositionMeters < Constants.Elevator.kElevatorMinHeightMeters) {
-      goalPositionMeters = Constants.Elevator.kElevatorMinHeightMeters;
-    } else if (goalPositionMeters > Constants.Elevator.kElevatorMaxHeightMeters) {
-      goalPositionMeters = Constants.Elevator.kElevatorMaxHeightMeters;
-    }
-
-    lastGoalPositionMeters = goalPositionMeters;
-    
-	  elevatorGoal.position = goalPositionMeters;
-    elevatorGoal.velocity = 0.0;
-
-    elevatorSetpoint.position = elevatorEncoder.getPosition();
-    elevatorSetpoint.velocity = 0.0;
-	}
+  public void resetEncoder() {
+    resetEncoder();
+  }
 
   public double getHeightMeters(){
-    return relativeEncoderHeightMeters;
+    return inputs.encoderPositionMeters;
   }
 
   public boolean inPosition(){
@@ -182,31 +81,12 @@ public class ElevatorSubsystem extends SubsystemBase {
       Globals.ELEVATOR_IN_POSITION = true;
       return Globals.ELEVATOR_IN_POSITION;
     } else {
-      Globals.ELEVATOR_IN_POSITION = (Math.abs(elevatorGoal.position - elevatorEncoder.getPosition()) < Constants.Elevator.kHeightTolleranceMeters);
+      Globals.ELEVATOR_IN_POSITION = (Math.abs(inputs.goalPositionMeters - inputs.encoderPositionMeters) < Constants.Elevator.kHeightTolleranceMeters);
       return Globals.ELEVATOR_IN_POSITION;
     }
   }
-	
-  public void runClosedLoop() {
-    elevatorSetpoint = elevatorTrapezoidProfile.calculate(Constants.kDt, elevatorSetpoint, elevatorGoal);
-  
-    double arbFF = elevatorFeedforward.calculate(elevatorSetpoint.velocity);
-      
-    elevatorController.setReference(elevatorSetpoint.position, ControlType.kPosition, ClosedLoopSlot.kSlot0, arbFF);
-  
-    SmartDashboard.putNumber("Elevator FeedForward", arbFF);
-  }
-
-  public void setSpeed(double speed) {
-    centerElevatorMotor.set(speed);
-  }
 
   public double getCurrent() {
-    return leftElevatorMotor.getOutputCurrent() +  centerElevatorMotor.getOutputCurrent() + rightElevatorMotor.getOutputCurrent();
+    return inputs.motor1CurrentAmps + inputs.motor2CurrentAmps + inputs.motor3CurrentAmps;
   }
-
-  //----------//
-  // Commands //
-  //----------//
-  
 }
