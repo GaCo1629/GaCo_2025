@@ -20,7 +20,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.BuildConstants;
 import frc.robot.subsystems.Globals;
-import frc.robot.subsystems.LEDmode;
+import frc.robot.subsystems.led.LEDmode;
 
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;

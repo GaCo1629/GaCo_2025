@@ -5,7 +5,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.WristSubsystem;
+import frc.robot.subsystems.wrist.WristSubsystem;
 
 public class DefaultWristCmd extends Command {
 
