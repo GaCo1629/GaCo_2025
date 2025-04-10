@@ -16,11 +16,12 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.subsystems.drive.Drive;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class VisionSubsystem extends SubsystemBase{
 
-    private final CommandSwerveDrivetrain drivetrain;
+    private final Drive drive;
     private final PhotonCamera photonCamera;
     private final PhotonPoseEstimator poseEstimator;
     private Optional<EstimatedRobotPose>  estimatedRobotPose;
@@ -33,8 +34,8 @@ public class VisionSubsystem extends SubsystemBase{
      * less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and radians.
      */
     
-    public VisionSubsystem(CommandSwerveDrivetrain  drivetrain, String cameraName, Transform3d robotToCam, Vector<N3> stdDev){
-        this.drivetrain = drivetrain;
+    public VisionSubsystem(Drive drive, String cameraName, Transform3d robotToCam, Vector<N3> stdDev){
+        this.drive = drive;
         this.cameraName = cameraName;
         this.visionMeasurementStdDevs = stdDev;
 
@@ -54,8 +55,8 @@ public class VisionSubsystem extends SubsystemBase{
         if (estimatedRobotPose.isPresent()){
             // send this new vision position to drivetrain to adjust odometry if we are within 1 M of out last position
             // validate the position before using it.
-            if ((drivetrain.getState().Pose.getTranslation().getDistance(estimatedRobotPose.get().estimatedPose.toPose2d().getTranslation()) <= 0.5) || (DriverStation.isDisabled()) || safetyOverride) {
-                drivetrain.addVisionMeasurement(estimatedRobotPose.get().estimatedPose.toPose2d(), estimatedRobotPose.get().timestampSeconds, visionMeasurementStdDevs);
+            if ((drive.getPose().getTranslation().getDistance(estimatedRobotPose.get().estimatedPose.toPose2d().getTranslation()) <= 0.5) || (DriverStation.isDisabled()) || safetyOverride) {
+                drive.addVisionMeasurement(estimatedRobotPose.get().estimatedPose.toPose2d(), estimatedRobotPose.get().timestampSeconds, visionMeasurementStdDevs);
             }
             // dont display if locked out
             SmartDashboard.putString(cameraName + " Pose 2d", estimatedRobotPose.get().estimatedPose.toPose2d().toString());

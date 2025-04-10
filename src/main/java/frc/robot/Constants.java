@@ -9,10 +9,13 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
 
 /** Add your docs here. */
 public class Constants {
+    public static final Mode simMode = Mode.SIM;
+    public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
     public static final double kDt = 0.02;
 
@@ -74,7 +77,6 @@ public class Constants {
     }
 
     public class Elevator {
-
         public static final double elevatorHomeHeightMeters = Units.inchesToMeters(17.5);  // only valid when elevator is homed;
 
         // scale factors
@@ -126,7 +128,6 @@ public class Constants {
     }
 
     public class Driver{
-        
         // driver 
         public static final double kMaxDriveSpeed = 1.0; // Percent of kMaxVelocityMPS
         public static final double kMaxTurnSpeed  = 0.85; // Percent of kMaxAngularVelocityRPS
@@ -161,7 +162,6 @@ public class Constants {
         public static final int pose_b = 10;
         public static final int pose_aba = 11;
         public static final int pose_a = 12;
-
     }
 
     public class Drivetrain {
@@ -181,4 +181,15 @@ public class Constants {
 		public static final double maxApproachAngularVelocityPercent = 1.0; // Was 2PI, now percent of kMaxAngularVelocityRPS
 		public static final double maxApproachAngularAccelerationPercent = 1.0; // Was 4PI, now percent of kMaxAngularAccelerationRPSPS
 	}
+
+    public static enum Mode {
+        /** Running on a real robot. */
+        REAL,
+
+        /** Running a physics simulator. */
+        SIM,
+
+        /** Replaying from a log file. */
+        REPLAY
+    }
 }

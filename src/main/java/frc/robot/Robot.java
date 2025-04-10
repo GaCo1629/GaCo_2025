@@ -18,19 +18,44 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.generated.BuildConstants;
-import frc.robot.subsystems.ApproachTarget;
 import frc.robot.subsystems.Globals;
 import frc.robot.subsystems.LEDmode;
 
 public class Robot extends LoggedRobot {
-  private Command m_autonomousCommand;
+  private Command autonomousCommand;
 
   public static final Field2d m_field = new Field2d(); // Tele-Op field
 
-  private final RobotContainer m_robotContainer;
+  private final RobotContainer robotContainer;
 
   public Robot() {
     Logger.recordMetadata("ProjectName", "GaCo 2025"); // Set a metadata value
+    Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
+    Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
+    Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
+    Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
+
+    switch (BuildConstants.DIRTY) {
+      case 0:
+        Logger.recordMetadata("GitDirty", "All changes committed");
+        break;
+      case 1:
+        Logger.recordMetadata("GitDirty", "Uncomitted changes");
+        break;
+      default:
+        Logger.recordMetadata("GitDirty", "Unknown");
+        break;
+    }
+
+    // Set up data receivers & replay source
+    switch (Constants.currentMode) {
+      case REAL:
+        break;
+      case SIM:
+        break;
+      case REPLAY:
+        break;
+    }
 
     if (isReal()) {
         Logger.addDataReceiver(new WPILOGWriter()); // Log to a USB stick ("/U/logs")
@@ -41,15 +66,9 @@ public class Robot extends LoggedRobot {
         Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
     }
-
-    Logger.recordMetadata("GitSHA", BuildConstants.GIT_SHA);
-    Logger.recordMetadata("GitBranch", BuildConstants.GIT_BRANCH);
-    Logger.recordMetadata("GitDate", BuildConstants.GIT_DATE);
-    Logger.recordMetadata("BuildDate", BuildConstants.BUILD_DATE);
-
     Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
 
-    m_robotContainer = new RobotContainer();
+    robotContainer = new RobotContainer();
   }
 
   @Override
@@ -63,7 +82,7 @@ public class Robot extends LoggedRobot {
     SignalLogger.enableAutoLogging(false);
     SmartDashboard.putData("Field", m_field);
     SmartDashboard.putData("AutoField", Telemetry.m_field2);
-    m_robotContainer.tower.initialize();
+    robotContainer.tower.initialize();
   }
 
   @Override
@@ -73,20 +92,20 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void disabledExit() {
-    m_robotContainer.tower.initialize();
-    m_robotContainer.leftVision.setSafetyOverride(false);
+    robotContainer.tower.initialize();
+    robotContainer.leftVision.setSafetyOverride(false);
   }
 
   @Override
   public void autonomousInit() {
 
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    autonomousCommand = robotContainer.getAutonomousCommand();
 
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+    if (autonomousCommand != null) {
+      autonomousCommand.schedule();
     }
 
-    m_robotContainer.tower.homeTower();
+    robotContainer.tower.homeTower();
   }
 
   @Override
@@ -97,10 +116,10 @@ public class Robot extends LoggedRobot {
 
   @Override
   public void teleopInit() {
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
+    if (autonomousCommand != null) {
+      autonomousCommand.cancel();
     }
-    m_robotContainer.tower.initialize();
+    robotContainer.tower.initialize();
     Globals.setLEDMode(LEDmode.MANUAL );
   }
 
@@ -111,11 +130,7 @@ public class Robot extends LoggedRobot {
   public void teleopExit() {}
 
   @Override
-  public void testInit() {
-    CommandScheduler.getInstance().cancelAll();
-    m_robotContainer.approach.identifyTarget(ApproachTarget.REEF_A);
-    m_robotContainer.approach.startApproach();
-  }
+  public void testInit() {}
 
   @Override
   public void testPeriodic() {}
