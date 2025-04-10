@@ -14,7 +14,7 @@ import frc.robot.generated.TunerConstants;
 
 /** Add your docs here. */
 public class Constants {
-    public static final Mode simMode = Mode.SIM;
+    public static final Mode simMode = Mode.REPLAY;
     public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
     public static final double kDt = 0.02;
