@@ -67,7 +67,7 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(Constants.Drivetrain.kMaxVelocityMPS);
 
-    private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController pilot = new CommandXboxController(0);
     private final CommandJoystick       copilot_1 = new CommandJoystick(1);
     private final CommandJoystick       copilot_2 = new CommandJoystick(2);
 
@@ -84,7 +84,7 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final ElevatorSubsystem elevator = new ElevatorSubsystem();
     public final WristSubsystem wrist = new WristSubsystem();
-    public final TowerSubsystem tower = new TowerSubsystem(elevator, wrist, joystick);
+    public final TowerSubsystem tower = new TowerSubsystem(elevator, wrist, pilot);
     public final VisionSubsystem leftVision = new VisionSubsystem(drivetrain, "LEFT_CAM", robotToLeftCam, leftCamStdDevs);
     public final VisionSubsystem rightVision = new VisionSubsystem(drivetrain, "RIGHT_CAM", robotToRightCam, rightCamStdDevs);
     public final ApproachSubsystem approach = new ApproachSubsystem(drivetrain);
@@ -133,7 +133,8 @@ public class RobotContainer {
                                                         .andThen(rightVision.runOnce(() -> rightVision.setSafetyOverride(true)));
 
     private final Command homeTowerInstant = tower.runOnce(() -> tower.homeTower());
-    private final Command tiltTowerInstant = tower.runOnce(() -> tower.tiltForward());
+    private final Command tiltWristNearInstant = tower.runOnce(() -> tower.forceWristTilt(Constants.Wrist.kSafeAngleDegrees));
+    private final Command tiltWristFarInstant = tower.runOnce(() -> tower.forceWristTilt(Constants.Wrist.kAlgaeReleaseAngleDegrees));
 
     private final Command gotoL1Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L1));
     private final Command gotoL2Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L2));
@@ -234,9 +235,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed * tower.getTowerSpeedSafetyFactor()) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed  * tower.getTowerSpeedSafetyFactor()) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Driver.kMaxTurnSpeed * tower.getTowerSpeedSafetyFactor()) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-pilot.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed * tower.getTowerSpeedSafetyFactor()) // Drive forward with negative Y (forward)
+                    .withVelocityY(-pilot.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed  * tower.getTowerSpeedSafetyFactor()) // Drive left with negative X (left)
+                    .withRotationalRate(-pilot.getRightX() * Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Driver.kMaxTurnSpeed * tower.getTowerSpeedSafetyFactor()) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -247,47 +248,48 @@ public class RobotContainer {
     private void configureBindings() {
 
         // Driver Buttons
-        joystick.rightTrigger(0.5).onTrue(scoreInstant);  // score coral or algae
+        pilot.rightTrigger(0.5).onTrue(scoreInstant);  // score coral or algae
 
-        joystick.back().onTrue(seedFieldCentricInstant);  // reset field centric home
+        pilot.back().onTrue(seedFieldCentricInstant);  // reset field centric home
 
-        joystick.start().onTrue(homeElevator);  //home the elevator
-        joystick.rightStick().onTrue(tiltTowerInstant); // Tilt the elevator
+        pilot.start().onTrue(homeElevator);  //home the elevator
+        pilot.rightStick().onTrue(tiltWristNearInstant); // Tilt the wrist to free coral
+        pilot.leftStick().onTrue(tiltWristFarInstant); // Tilt the wrist to free algae
 
         // Change to .toggleOnTrue to make it toggle on/off when the button is pressed
-        joystick.leftBumper().onTrue(intakeCoralInstant)
+        pilot.leftBumper().onTrue(intakeCoralInstant)
             .whileTrue(drivetrain.applyRequest(() -> 
                     rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(13).get().getRotation().toRotation2d())
-                        .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
-                        .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withVelocityX(-pilot.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withVelocityY(-pilot.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                         .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
                     ));  // collect coral left side
 
-        joystick.rightBumper().onTrue(intakeCoralInstant)
+        pilot.rightBumper().onTrue(intakeCoralInstant)
             .whileTrue(drivetrain.applyRequest(() -> 
                     rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(12).get().getRotation().toRotation2d())
-                        .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
-                        .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withVelocityX(-pilot.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withVelocityY(-pilot.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                         .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
                     )); // collect coral right side
 
-        joystick.y().onTrue(intakeHighAlgaeInstant);
-        joystick.a().onTrue(intakeLowAlgaeInstant);
+        pilot.y().onTrue(intakeHighAlgaeInstant);
+        pilot.a().onTrue(intakeLowAlgaeInstant);
 
-        joystick.x().onTrue(approachBargeInstant);
-        joystick.b().onTrue(approachProcessorInstant);
+        pilot.x().onTrue(approachBargeInstant);
+        pilot.b().onTrue(approachProcessorInstant);
         
         // ==== Approach Buttons ================================
 
-        joystick.leftTrigger(0.5).onTrue(startApproachInstant)
+        pilot.leftTrigger(0.5).onTrue(startApproachInstant)
         .onFalse(stopDrivetrainInstant);
 
         // ==== NON Field Centric driving ================================
 
-        joystick.pov(0).whileTrue(robotCentricForward);
-        joystick.pov(180).whileTrue(robotCentricBackward);
-        joystick.pov(90).whileTrue(robotCentricRight);
-        joystick.pov(270).whileTrue(robotCentricLeft);
+        pilot.pov(0).whileTrue(robotCentricForward);
+        pilot.pov(180).whileTrue(robotCentricBackward);
+        pilot.pov(90).whileTrue(robotCentricRight);
+        pilot.pov(270).whileTrue(robotCentricLeft);
             
         // ====  CoPilot 1 Buttons  ======================================
 

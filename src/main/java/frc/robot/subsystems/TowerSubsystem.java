@@ -70,8 +70,9 @@ public class TowerSubsystem extends SubsystemBase {
 		setState(TowerState.INIT);
 	}
 	
-	public void tiltForward(){
-		wrist.setGoalAngle(Constants.Wrist.kSafeAngleDegrees);
+	public void forceWristTilt(double angleDeg){
+		wrist.setGoalAngle(angleDeg);
+		wrist.setIntakeSpeed(0);
 		setState(TowerState.GOING_TO_SAFE);
 	}
 
@@ -439,9 +440,9 @@ public class TowerSubsystem extends SubsystemBase {
 					setState(TowerState.CHANGING_ALGAE_HEIGHT);
 				} else {
 					wrist.setGoalAngle(Constants.Wrist.kSafeAngleDegrees);
-					elevator.setGoalPositionMeters(Constants.Elevator.kIntakeHeightMeters);
+					//elevator.setGoalPositionMeters(Constants.Elevator.kIntakeHeightMeters);
 					currentLevel = 0;
-					setState(TowerState.LOWERING);
+					setState(TowerState.FINISHING_SCORING_CORAL);  // make sure the wrist is back before lowring
 				}
 				break;
 			}
