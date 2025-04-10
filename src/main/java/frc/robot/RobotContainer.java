@@ -46,6 +46,9 @@ import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSparkFlex;
 import frc.robot.subsystems.elevator.ElevatorIOSparkSim;
 import frc.robot.subsystems.elevator.ElevatorSubsystem;
+import frc.robot.subsystems.led.LEDIO;
+import frc.robot.subsystems.led.LEDIOReal;
+import frc.robot.subsystems.led.LEDIOSim;
 import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.tower.TowerEvent;
 import frc.robot.subsystems.tower.TowerState;
@@ -75,7 +78,7 @@ public class RobotContainer {
     public VisionSubsystem leftVision = new VisionSubsystem(drive, "LEFT_CAM", robotToLeftCam, leftCamStdDevs);
     public VisionSubsystem rightVision = new VisionSubsystem(drive, "RIGHT_CAM", robotToRightCam, rightCamStdDevs);
     public ApproachSubsystem approach;
-    public LEDSubsystem led = new LEDSubsystem(0);
+    public LEDSubsystem led;
 
     /* Path follower */
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -170,6 +173,9 @@ public class RobotContainer {
                 elevator = 
                     new ElevatorSubsystem(
                         new ElevatorIOSparkFlex());
+                led = 
+                    new LEDSubsystem(
+                        new LEDIOReal(0, 25));
                 break;
             case SIM:
                 // Sim robot, instantiate physics sim IO implementations
@@ -185,6 +191,9 @@ public class RobotContainer {
                 elevator = 
                     new ElevatorSubsystem(
                         new ElevatorIOSparkSim());
+                led = 
+                    new LEDSubsystem(
+                        new LEDIOSim());
                 break;
             default:
                 // Replayed robot, disable IO implementations
@@ -200,6 +209,9 @@ public class RobotContainer {
                 elevator = 
                     new ElevatorSubsystem(
                         new ElevatorIO() {});
+                led = 
+                    new LEDSubsystem(
+                        new LEDIO() {});
                 break;
         }
         
