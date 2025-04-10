@@ -103,12 +103,8 @@ public class RobotContainer {
     private final WaitToSeeCoralCmd waitToSeeCoral  = new WaitToSeeCoralCmd(tower);
 
     /* Event Trigger Commands */
-    //private final TriggerEventCmd intakeCoral = new TriggerEventCmd(tower, TowerEvent.INTAKE_CORAL);
     private final TriggerEventCmd score = new TriggerEventCmd(tower, TowerEvent.SCORE);
-    //private final TriggerEventCmd intakeLowAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_LOW_ALGAE);
-    //private final TriggerEventCmd intakeHighAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_HIGH_ALGAE);
     private final TriggerEventCmd gotoL1 = new TriggerEventCmd(tower, TowerEvent.GOTO_L1);
-    //private final TriggerEventCmd gotoL3 = new TriggerEventCmd(tower, TowerEvent.GOTO_L3);
     private final TriggerEventCmd gotoL4 = new TriggerEventCmd(tower, TowerEvent.GOTO_L4);
 
     /* Waiting Commands */
@@ -160,8 +156,6 @@ public class RobotContainer {
     private final Command reefKInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_K));
     private final Command reefLInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_L));
     private final Command reefKLInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_KL));
-    //private final Command leftCoralStationInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.LEFT_SOURCE)).andThen(approach.runOnce(() -> approach.startApproach())).andThen(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL));
-    //private final Command rightCoralStationInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.RIGHT_SOURCE)).andThen(approach.runOnce(() -> approach.startApproach())).andThen(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL));
     private final Command approachBargeInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.BARGE));
     private final Command approachProcessorInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.PROCESSOR));
 
@@ -174,7 +168,6 @@ public class RobotContainer {
     public RobotContainer() {
         
         // All named commands =========================
-        //NamedCommands.registerCommand("INTAKE_CORAL",              intakeCoral);
         NamedCommands.registerCommand("INTAKE_AND_GOTO_L1",        intakeAndGotoL1);  
         NamedCommands.registerCommand("INTAKE_AND_GOTO_L2",        intakeAndGotoL2);    // used
         NamedCommands.registerCommand("INTAKE_AND_GOTO_L3",        intakeAndGotoL3);    // used
@@ -184,8 +177,6 @@ public class RobotContainer {
         NamedCommands.registerCommand("SCORE",                     score);              // used
         NamedCommands.registerCommand("SCORE_THEN_GOTO_ALGAE_L2",  scoreAndGotoAlgaeL2);// used
         NamedCommands.registerCommand("SCORE_THEN_GOTO_ALGAE_L3",  scoreAndGotoAlgaeL3);// used
-        //NamedCommands.registerCommand("GET_ALGAE",                 intakeHighAlgae);
-        //NamedCommands.registerCommand("GET_LOW_ALGAE",             intakeLowAlgae);
         NamedCommands.registerCommand("GOTO_L1",                   gotoL1);
         NamedCommands.registerCommand("WAIT_FOR_ALGAE",            waitForAlgae);       // used
         NamedCommands.registerCommand("WAIT_FOR_LOWERING",         waitForLowering);    // used
@@ -193,15 +184,11 @@ public class RobotContainer {
 
     
         // All Path Planner event triggers  ===========
-        //new EventTrigger("INTAKE_CORAL").onTrue(intakeCoral);
         new EventTrigger("INTAKE_AND_GOTO_L3").onTrue( intakeAndGotoL3);
         new EventTrigger("INTAKE_AND_GOTO_L4").onTrue(intakeAndGotoL4);
         new EventTrigger("GOTO_L1_ALGAE").onTrue(gotoL1);                               // used
-        //new EventTrigger("GOTO_L3_ALGAE").onTrue(gotoL3);
         new EventTrigger("GOTO_L4_ALGAE").onTrue(gotoL4);
-        //new EventTrigger("INTAKE_LOW_ALGAE").onTrue(intakeLowAlgae);
-        //new EventTrigger("INTAKE_HIGH_ALGAE").onTrue(intakeHighAlgae);
- 
+        
         // Configure Auto Chooser  ===============================
         autoChooser = AutoBuilder.buildAutoChooser("None");
         SmartDashboard.putData("Auto Mode", autoChooser);
@@ -275,14 +262,13 @@ public class RobotContainer {
 
         pilot.y().onTrue(intakeHighAlgaeInstant);
         pilot.a().onTrue(intakeLowAlgaeInstant);
-
         pilot.x().onTrue(approachBargeInstant);
         pilot.b().onTrue(approachProcessorInstant);
         
         // ==== Approach Buttons ================================
 
         pilot.leftTrigger(0.5).onTrue(startApproachInstant)
-        .onFalse(stopDrivetrainInstant);
+                                        .onFalse(stopDrivetrainInstant);
 
         // ==== NON Field Centric driving ================================
 
@@ -294,7 +280,6 @@ public class RobotContainer {
         // ====  CoPilot 1 Buttons  ======================================
 
         copilot_1.button(Driver.reset).onTrue(enableSafetyOverrideInstant );
-
         copilot_1.button(Driver.home).onTrue(homeTowerInstant);
 
         copilot_1.button(Driver.l1).onTrue(gotoL1Instant);
