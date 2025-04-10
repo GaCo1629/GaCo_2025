@@ -28,6 +28,14 @@ public class ElevatorSubsystem extends SubsystemBase {
     setDefaultCommand(new DefaultElevatorCmd(this));
   }
 
+  public void initialize() {
+    resetElevatorControl();
+  }
+
+  public void resetFrameRate() {
+    io.resetFrameRate();
+  }
+
   @Override
   public void simulationPeriodic() {
     SmartDashboard.putNumber("Elev Rel Hgt", Units.metersToInches(inputs.encoderPositionMeters));
