@@ -279,6 +279,7 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
 
         Robot.m_field.setRobotPose(getState().Pose);
         SmartDashboard.putNumber("Heading" , getState().Pose.getRotation().getDegrees());
+        SmartDashboard.putString("Robot Pose", getState().Pose.toString());
     }         
 
     private void startSimThread() {

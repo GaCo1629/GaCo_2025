@@ -159,23 +159,7 @@
               "_showGlyph": false
             }
           },
-          "14,8": {
-            "size": [
-              3,
-              3
-            ],
-            "content": {
-              "_type": "Simple Dial",
-              "_source0": "network_table:///SmartDashboard/Safety Factor",
-              "_title": "Safety Factor",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Range/Min": 0.0,
-              "Range/Max": 100.0,
-              "Visuals/Show value": true
-            }
-          },
-          "3,6": {
+          "11,6": {
             "size": [
               2,
               2
@@ -186,36 +170,6 @@
               "_title": "LED Mode",
               "_glyph": 148,
               "_showGlyph": false
-            }
-          },
-          "0,8": {
-            "size": [
-              3,
-              2
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/LowerTagCamera Safety Override",
-              "_title": "Lower Override",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "0,6": {
-            "size": [
-              3,
-              2
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/UpperTagCamera Safety Override",
-              "_title": "Upper Override",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
             }
           },
           "6,2": {
@@ -248,22 +202,7 @@
               "Colors/Color when false": "#8B0000FF"
             }
           },
-          "3,8": {
-            "size": [
-              2,
-              2
-            ],
-            "content": {
-              "_type": "Boolean Box",
-              "_source0": "network_table:///SmartDashboard/Upper Cam Enabled",
-              "_title": "Enabled",
-              "_glyph": 148,
-              "_showGlyph": false,
-              "Colors/Color when true": "#7CFC00FF",
-              "Colors/Color when false": "#8B0000FF"
-            }
-          },
-          "5,8": {
+          "2,8": {
             "size": [
               9,
               2
@@ -271,12 +210,42 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/RIGHT_CAM Pose 2d",
-              "_title": "/SmartDashboard/RIGHT_CAM Pose 2d",
+              "_title": "RIGHT_CAM Pose 2d",
               "_glyph": 148,
               "_showGlyph": false
             }
           },
-          "5,6": {
+          "0,6": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/LEFT_CAM Safety Override",
+              "_title": "Over",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "0,8": {
+            "size": [
+              2,
+              2
+            ],
+            "content": {
+              "_type": "Boolean Box",
+              "_source0": "network_table:///SmartDashboard/RIGHT_CAM Safety Override",
+              "_title": "Over",
+              "_glyph": 148,
+              "_showGlyph": false,
+              "Colors/Color when true": "#7CFC00FF",
+              "Colors/Color when false": "#8B0000FF"
+            }
+          },
+          "2,6": {
             "size": [
               9,
               2
@@ -284,33 +253,7 @@
             "content": {
               "_type": "Text View",
               "_source0": "network_table:///SmartDashboard/LEFT_CAM Pose 2d",
-              "_title": "/SmartDashboard/LEFT_CAM Pose 2d",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "17,8": {
-            "size": [
-              3,
-              2
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Target Degrees",
-              "_title": "/SmartDashboard/Target Degrees",
-              "_glyph": 148,
-              "_showGlyph": false
-            }
-          },
-          "20,8": {
-            "size": [
-              3,
-              2
-            ],
-            "content": {
-              "_type": "Text View",
-              "_source0": "network_table:///SmartDashboard/Degrees Left to Turn",
-              "_title": "/SmartDashboard/Degrees Left to Turn",
+              "_title": "LEFT_CAM Pose 2d",
               "_glyph": 148,
               "_showGlyph": false
             }

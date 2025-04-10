@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.12175000000472,
-        "y": 5.624000000004656
+        "x": 8.175614754100028,
+        "y": 5.61337090164154
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.342142641831915,
-        "y": 5.257442106183282
+        "x": 7.396007395927223,
+        "y": 5.246813007820165
       },
       "isLocked": false,
       "linkedName": "Net Middle"
@@ -58,14 +58,7 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "GOTO_L3_ALGAE",
-      "waypointRelativePos": 0.6725185685347682,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.5,
     "maxAcceleration": 4.0,
@@ -82,7 +75,7 @@
   "folder": "Net",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -144.11915991949667
   },
   "useDefaultConstraints": false
 }

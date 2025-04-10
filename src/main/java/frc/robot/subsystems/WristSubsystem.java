@@ -137,29 +137,27 @@ public class WristSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-
-    getRangeMM();
-
-    Globals.GOT_CORAL = gotExitCoral() && gotEnterCoral();
-
-     /*if (DriverStation.getStickButtonPressed(1,2)){
-      bumpWrist(0.1016);
-    } else if (DriverStation.getStickButtonPressed(1,3)){
-      bumpWrist(0.0254);
-    } else if (DriverStation.getStickButtonPressed(1,4)){
-      bumpWrist(-0.0254);
-    } else if (DriverStation.get(1,5)){
-      bumpWrist(-0.1016);
-    }*/
-
     // This method will be called once per scheduler run
+    readSensors();
+   
+    SmartDashboard.putBoolean("Wrist In Position", Globals.WRIST_IN_POSITION);
     SmartDashboard.putNumber("Wrist Goal", angleGoal.position);    
     SmartDashboard.putNumber("Wrist Angle", getWristAngle());
 
     SmartDashboard.putNumber("Wrist Power", angleSpark.getAppliedOutput());
     SmartDashboard.putNumber("Exit Coral Sensor", exitCoralRangeMM);
     SmartDashboard.putNumber("Enter Coral Sensor", enterCoralRangeMM);
-    
+  }
+
+  public void readSensors() {
+    getRangeMM();
+    Globals.GOT_CORAL = gotExitCoral() && gotEnterCoral();
+
+    if (Utils.isSimulation()){
+      Globals.WRIST_IN_POSITION = true;
+    } else {
+      Globals.WRIST_IN_POSITION = (Math.abs(angleGoal.position - getWristAngle()) < Constants.Wrist.kAngleTollerance);
+    }
   }
 
   // TOF sensor
@@ -225,13 +223,7 @@ public class WristSubsystem extends SubsystemBase {
   }
 
   public boolean inPosition(){
-    if (Utils.isSimulation()){
-      Globals.WRIST_IN_POSITION = true;
-      return Globals.WRIST_IN_POSITION;
-    } else {
-      Globals.WRIST_IN_POSITION = (Math.abs(angleGoal.position - getWristAngle()) < Constants.Wrist.kAngleTollerance);
-      return Globals.WRIST_IN_POSITION;
-    }
+    return Globals.WRIST_IN_POSITION;
   }
   
   public void runWristClosedLoop() {

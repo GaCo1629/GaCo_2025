@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.12175000000472,
-        "y": 5.624000000004656
+        "x": 8.175614754100028,
+        "y": 5.61337090164154
       },
       "prevControl": null,
       "nextControl": {
-        "x": 8.520251959255287,
-        "y": 5.6402919423425235
+        "x": 8.574116713350595,
+        "y": 5.629662843979407
       },
       "isLocked": false,
       "linkedName": "Net Middle"
@@ -48,7 +48,7 @@
   "folder": "Net",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 180.0
+    "rotation": -144.11915991949667
   },
   "useDefaultConstraints": true
 }

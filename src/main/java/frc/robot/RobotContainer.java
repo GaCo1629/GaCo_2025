@@ -30,6 +30,7 @@ import frc.robot.commands.HomeElevatorCmd;
 import frc.robot.commands.JustIntakeCmd;
 import frc.robot.commands.TriggerEventCmd;
 import frc.robot.commands.WaitForTowerStateCmd;
+import frc.robot.commands.ScoreAndGotoAlgaeLevel;
 import frc.robot.commands.WaitToSeeCoralCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ApproachSubsystem;
@@ -66,7 +67,7 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(Constants.Drivetrain.kMaxVelocityMPS);
 
-    private final CommandXboxController joystick = new CommandXboxController(0);
+    private final CommandXboxController pilot = new CommandXboxController(0);
     private final CommandJoystick       copilot_1 = new CommandJoystick(1);
     private final CommandJoystick       copilot_2 = new CommandJoystick(2);
 
@@ -83,7 +84,7 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final ElevatorSubsystem elevator = new ElevatorSubsystem();
     public final WristSubsystem wrist = new WristSubsystem();
-    public final TowerSubsystem tower = new TowerSubsystem(elevator, wrist, joystick);
+    public final TowerSubsystem tower = new TowerSubsystem(elevator, wrist, pilot);
     public final VisionSubsystem leftVision = new VisionSubsystem(drivetrain, "LEFT_CAM", robotToLeftCam, leftCamStdDevs);
     public final VisionSubsystem rightVision = new VisionSubsystem(drivetrain, "RIGHT_CAM", robotToRightCam, rightCamStdDevs);
     public final ApproachSubsystem approach = new ApproachSubsystem(drivetrain);
@@ -97,21 +98,23 @@ public class RobotContainer {
     private final JustIntakeCmd intakeAndGotoL2 = new JustIntakeCmd(tower, TowerEvent.GOTO_L2);
     private final JustIntakeCmd intakeAndGotoL3 = new JustIntakeCmd(tower, TowerEvent.GOTO_L3);
     private final JustIntakeCmd intakeAndGotoL4 = new JustIntakeCmd(tower, TowerEvent.GOTO_L4);    
+    private final ScoreAndGotoAlgaeLevel scoreAndGotoAlgaeL2 = new ScoreAndGotoAlgaeLevel(tower, 2);
+    private final ScoreAndGotoAlgaeLevel scoreAndGotoAlgaeL3 = new ScoreAndGotoAlgaeLevel(tower, 3);
     private final WaitToSeeCoralCmd waitToSeeCoral  = new WaitToSeeCoralCmd(tower);
 
     /* Event Trigger Commands */
-    private final TriggerEventCmd intakeCoral = new TriggerEventCmd(tower, TowerEvent.INTAKE_CORAL);
+    //private final TriggerEventCmd intakeCoral = new TriggerEventCmd(tower, TowerEvent.INTAKE_CORAL);
     private final TriggerEventCmd score = new TriggerEventCmd(tower, TowerEvent.SCORE);
-    private final TriggerEventCmd intakeLowAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_LOW_ALGAE);
-    private final TriggerEventCmd intakeHighAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_HIGH_ALGAE);
+    //private final TriggerEventCmd intakeLowAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_LOW_ALGAE);
+    //private final TriggerEventCmd intakeHighAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_HIGH_ALGAE);
     private final TriggerEventCmd gotoL1 = new TriggerEventCmd(tower, TowerEvent.GOTO_L1);
-    private final TriggerEventCmd gotoL3 = new TriggerEventCmd(tower, TowerEvent.GOTO_L3);
+    //private final TriggerEventCmd gotoL3 = new TriggerEventCmd(tower, TowerEvent.GOTO_L3);
     private final TriggerEventCmd gotoL4 = new TriggerEventCmd(tower, TowerEvent.GOTO_L4);
 
     /* Waiting Commands */
     private final WaitForTowerStateCmd waitForAlgae = new WaitForTowerStateCmd(tower, TowerState.WAITING_FOR_ALGAE);
-    private final WaitForTowerStateCmd waitForLowering = new WaitForTowerStateCmd(tower, TowerState.PAUSING_AFTER_SCORING_CORAL);
-    private final WaitForTowerStateCmd waitForHome = new WaitForTowerStateCmd(tower, TowerState.HOME);
+    private final WaitForTowerStateCmd waitForLowering = new WaitForTowerStateCmd(tower, TowerState.FINISHING_SCORING_CORAL);
+    private final WaitForTowerStateCmd waitForChangingAlgaeHeight = new WaitForTowerStateCmd(tower, TowerState.CHANGING_ALGAE_HEIGHT);
 
     /* Home Elevator Command */
     private final HomeElevatorCmd homeElevator = new HomeElevatorCmd(elevator, tower);
@@ -128,10 +131,10 @@ public class RobotContainer {
     
     private final Command enableSafetyOverrideInstant = leftVision.runOnce(() -> leftVision.setSafetyOverride(true))
                                                         .andThen(rightVision.runOnce(() -> rightVision.setSafetyOverride(true)));
-    private final Command enableDirectToAlgaeInstant = tower.runOnce(() -> tower.enableGoToDirectAlgae());
 
     private final Command homeTowerInstant = tower.runOnce(() -> tower.homeTower());
-    private final Command tiltTowerInstant = tower.runOnce(() -> tower.tiltForward());
+    private final Command tiltWristNearInstant = tower.runOnce(() -> tower.forceWristTilt(Constants.Wrist.kSafeAngleDegrees));
+    private final Command tiltWristFarInstant = tower.runOnce(() -> tower.forceWristTilt(Constants.Wrist.kAlgaeReleaseAngleDegrees));
 
     private final Command gotoL1Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L1));
     private final Command gotoL2Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L2));
@@ -171,32 +174,33 @@ public class RobotContainer {
     public RobotContainer() {
         
         // All named commands =========================
-        NamedCommands.registerCommand("INTAKE_CORAL",              intakeCoral);
-        NamedCommands.registerCommand("INTAKE_AND_GOTO_L1",        intakeAndGotoL1);
-        NamedCommands.registerCommand("INTAKE_AND_GOTO_L2",        intakeAndGotoL2);
-        NamedCommands.registerCommand("INTAKE_AND_GOTO_L3",        intakeAndGotoL3);
+        //NamedCommands.registerCommand("INTAKE_CORAL",              intakeCoral);
+        NamedCommands.registerCommand("INTAKE_AND_GOTO_L1",        intakeAndGotoL1);  
+        NamedCommands.registerCommand("INTAKE_AND_GOTO_L2",        intakeAndGotoL2);    // used
+        NamedCommands.registerCommand("INTAKE_AND_GOTO_L3",        intakeAndGotoL3);    // used
         NamedCommands.registerCommand("INTAKE_AND_GOTO_L4",        intakeAndGotoL4);
-        NamedCommands.registerCommand("WAIT_TO_SEE_CORAL",         waitToSeeCoral);  //Does not set height
+        NamedCommands.registerCommand("WAIT_TO_SEE_CORAL",         waitToSeeCoral);     // used
         
-        NamedCommands.registerCommand("SCORE_CORAL",               score);
-        NamedCommands.registerCommand("SCORE_ALGAE",               score); // same as coral
-        NamedCommands.registerCommand("GET_ALGAE",                 intakeHighAlgae);
-        NamedCommands.registerCommand("GET_LOW_ALGAE",             intakeLowAlgae);
-        NamedCommands.registerCommand("GO_TO_L1",                  gotoL1);
-        NamedCommands.registerCommand("WAIT_FOR_ALGAE",            waitForAlgae);
-        NamedCommands.registerCommand("WAIT_FOR_LOWERING",         waitForLowering);
-        NamedCommands.registerCommand("WAIT_FOR_HOME",             waitForHome);
-        NamedCommands.registerCommand("GO_DIRECTLY_TO_ALGAE",      enableDirectToAlgaeInstant);
+        NamedCommands.registerCommand("SCORE",                     score);              // used
+        NamedCommands.registerCommand("SCORE_THEN_GOTO_ALGAE_L2",  scoreAndGotoAlgaeL2);// used
+        NamedCommands.registerCommand("SCORE_THEN_GOTO_ALGAE_L3",  scoreAndGotoAlgaeL3);// used
+        //NamedCommands.registerCommand("GET_ALGAE",                 intakeHighAlgae);
+        //NamedCommands.registerCommand("GET_LOW_ALGAE",             intakeLowAlgae);
+        NamedCommands.registerCommand("GOTO_L1",                   gotoL1);
+        NamedCommands.registerCommand("WAIT_FOR_ALGAE",            waitForAlgae);       // used
+        NamedCommands.registerCommand("WAIT_FOR_LOWERING",         waitForLowering);    // used
+        NamedCommands.registerCommand("WAIT_FOR_CHANGING_ALGAE_HEIGHT", waitForChangingAlgaeHeight);
+
     
         // All Path Planner event triggers  ===========
-        new EventTrigger("INTAKE_CORAL").onTrue(intakeCoral);
+        //new EventTrigger("INTAKE_CORAL").onTrue(intakeCoral);
         new EventTrigger("INTAKE_AND_GOTO_L3").onTrue( intakeAndGotoL3);
         new EventTrigger("INTAKE_AND_GOTO_L4").onTrue(intakeAndGotoL4);
-        new EventTrigger("GOTO_L1_ALGAE").onTrue(gotoL1);
-        new EventTrigger("GOTO_L3_ALGAE").onTrue(gotoL3);
+        new EventTrigger("GOTO_L1_ALGAE").onTrue(gotoL1);                               // used
+        //new EventTrigger("GOTO_L3_ALGAE").onTrue(gotoL3);
         new EventTrigger("GOTO_L4_ALGAE").onTrue(gotoL4);
-        new EventTrigger("INTAKE_LOW_ALGAE").onTrue(intakeLowAlgae);
-        new EventTrigger("INTAKE_HIGH_ALGAE").onTrue(intakeHighAlgae);
+        //new EventTrigger("INTAKE_LOW_ALGAE").onTrue(intakeLowAlgae);
+        //new EventTrigger("INTAKE_HIGH_ALGAE").onTrue(intakeHighAlgae);
  
         // Configure Auto Chooser  ===============================
         autoChooser = AutoBuilder.buildAutoChooser("None");
@@ -231,9 +235,9 @@ public class RobotContainer {
         drivetrain.setDefaultCommand(
             // Drivetrain will execute this command periodically
             drivetrain.applyRequest(() ->
-                drive.withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed * tower.getTowerSpeedSafetyFactor()) // Drive forward with negative Y (forward)
-                    .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed  * tower.getTowerSpeedSafetyFactor()) // Drive left with negative X (left)
-                    .withRotationalRate(-joystick.getRightX() * Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Driver.kMaxTurnSpeed * tower.getTowerSpeedSafetyFactor()) // Drive counterclockwise with negative X (left)
+                drive.withVelocityX(-pilot.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed * tower.getTowerSpeedSafetyFactor()) // Drive forward with negative Y (forward)
+                    .withVelocityY(-pilot.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed  * tower.getTowerSpeedSafetyFactor()) // Drive left with negative X (left)
+                    .withRotationalRate(-pilot.getRightX() * Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Driver.kMaxTurnSpeed * tower.getTowerSpeedSafetyFactor()) // Drive counterclockwise with negative X (left)
             )
         );
 
@@ -244,47 +248,48 @@ public class RobotContainer {
     private void configureBindings() {
 
         // Driver Buttons
-        joystick.rightTrigger(0.5).onTrue(scoreInstant);  // score coral or algae
+        pilot.rightTrigger(0.5).onTrue(scoreInstant);  // score coral or algae
 
-        joystick.back().onTrue(seedFieldCentricInstant);  // reset field centric home
+        pilot.back().onTrue(seedFieldCentricInstant);  // reset field centric home
 
-        joystick.start().onTrue(homeElevator);  //home the elevator
-        joystick.rightStick().onTrue(tiltTowerInstant); // Tilt the elevator
+        pilot.start().onTrue(homeElevator);  //home the elevator
+        pilot.rightStick().onTrue(tiltWristNearInstant); // Tilt the wrist to free coral
+        pilot.leftStick().onTrue(tiltWristFarInstant); // Tilt the wrist to free algae
 
         // Change to .toggleOnTrue to make it toggle on/off when the button is pressed
-        joystick.leftBumper().onTrue(intakeCoralInstant)
+        pilot.leftBumper().onTrue(intakeCoralInstant)
             .whileTrue(drivetrain.applyRequest(() -> 
                     rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(13).get().getRotation().toRotation2d())
-                        .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
-                        .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withVelocityX(-pilot.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withVelocityY(-pilot.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                         .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
                     ));  // collect coral left side
 
-        joystick.rightBumper().onTrue(intakeCoralInstant)
+        pilot.rightBumper().onTrue(intakeCoralInstant)
             .whileTrue(drivetrain.applyRequest(() -> 
                     rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(12).get().getRotation().toRotation2d())
-                        .withVelocityX(-joystick.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
-                        .withVelocityY(-joystick.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withVelocityX(-pilot.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
+                        .withVelocityY(-pilot.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
                         .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
                     )); // collect coral right side
 
-        joystick.y().onTrue(intakeHighAlgaeInstant);
-        joystick.a().onTrue(intakeLowAlgaeInstant);
+        pilot.y().onTrue(intakeHighAlgaeInstant);
+        pilot.a().onTrue(intakeLowAlgaeInstant);
 
-        joystick.x().onTrue(approachBargeInstant);
-        joystick.b().onTrue(approachProcessorInstant);
+        pilot.x().onTrue(approachBargeInstant);
+        pilot.b().onTrue(approachProcessorInstant);
         
         // ==== Approach Buttons ================================
 
-        joystick.leftTrigger(0.5).onTrue(startApproachInstant)
+        pilot.leftTrigger(0.5).onTrue(startApproachInstant)
         .onFalse(stopDrivetrainInstant);
 
         // ==== NON Field Centric driving ================================
 
-        joystick.pov(0).whileTrue(robotCentricForward);
-        joystick.pov(180).whileTrue(robotCentricBackward);
-        joystick.pov(90).whileTrue(robotCentricRight);
-        joystick.pov(270).whileTrue(robotCentricLeft);
+        pilot.pov(0).whileTrue(robotCentricForward);
+        pilot.pov(180).whileTrue(robotCentricBackward);
+        pilot.pov(90).whileTrue(robotCentricRight);
+        pilot.pov(270).whileTrue(robotCentricLeft);
             
         // ====  CoPilot 1 Buttons  ======================================
 

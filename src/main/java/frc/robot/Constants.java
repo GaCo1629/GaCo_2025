@@ -54,7 +54,7 @@ public class Constants {
         public static final double kAngleMaxVelocityDPS       = 400;  
 		public static final double kAngleMaxAccelerationDPSPS = 1000; 
 
-        public static final double kIntakeAngleDegrees             = 3;
+        public static final double kIntakeAngleDegrees             = 2;
         public static final double kSafeAngleDegrees               = 30;
         public static final double kL4AngleDegrees                 = 50; // was 48
 
@@ -62,8 +62,8 @@ public class Constants {
 
         public static final double kAlgaeIntakeAngleDegrees        = 180; 
         public static final double kAlgaeWindupAngleDegrees        = 150; 
-        public static final double kAlgaeReleaseAngleDegrees       = 125;
-        public static final double kAlgaeBackspinDegrees           = 95;
+        public static final double kAlgaeReleaseAngleDegrees       = 125;  // was 125
+        public static final double kAlgaeBackspinDegrees           = 90;
         public static final double kAlgaeReleaseGoalAngleDegrees   = 22; // was 20
         
         public static final double kMaxAngleWhenHomeDegrees        = 182;
