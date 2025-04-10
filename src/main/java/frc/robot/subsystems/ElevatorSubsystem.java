@@ -125,27 +125,29 @@ public class ElevatorSubsystem extends SubsystemBase {
     System.out.println("RESET FRAME RATE");
   }
 
-  @Override
-  public void simulationPeriodic() {
-      SmartDashboard.putNumber("Elev Rel Hgt", Units.metersToInches(elevatorGoal.position));
-      SmartDashboard.putNumber("ElevatorGoal", Units.metersToInches(elevatorGoal.position));
-      SmartDashboard.putString("Elevator Power", "SIMULATION");
-  }
-
+  
   @Override
 	public void periodic() {
+		// This method will be called once per scheduler run
     readSensors();
 
-		// This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Elevator In Position", Globals.ELEVATOR_IN_POSITION);
     SmartDashboard.putNumber("Elev Rel Hgt", Units.metersToInches(relativeEncoderHeightMeters));
 		SmartDashboard.putNumber("Elevator Goal", Units.metersToInches(elevatorGoal.position));
     SmartDashboard.putNumber("Elevator Power", centerElevatorMotor.getAppliedOutput());
     SmartDashboard.putNumber("Elevator Current", getCurrent());    
-    SmartDashboard.putNumber("Elevator Velocity", elevatorEncoder.getVelocity());	}
+    SmartDashboard.putNumber("Elevator Velocity", elevatorEncoder.getVelocity());	
+  }
 
   public void readSensors() {
-    getCurrent();
-    relativeEncoderHeightMeters = elevatorEncoder.getPosition(); 
+
+    if (Utils.isSimulation()){
+      relativeEncoderHeightMeters = elevatorGoal.position; 
+      Globals.ELEVATOR_IN_POSITION = true;
+    } else {
+      relativeEncoderHeightMeters = elevatorEncoder.getPosition(); 
+      Globals.ELEVATOR_IN_POSITION = (Math.abs(elevatorGoal.position - elevatorEncoder.getPosition()) < Constants.Elevator.kHeightTolleranceMeters);
+    }
   }
   
   public void bumpElevatorMeters(double changeMeters) {
@@ -177,13 +179,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean inPosition(){
-    if (Utils.isSimulation()){
-      Globals.ELEVATOR_IN_POSITION = true;
-      return Globals.ELEVATOR_IN_POSITION;
-    } else {
-      Globals.ELEVATOR_IN_POSITION = (Math.abs(elevatorGoal.position - elevatorEncoder.getPosition()) < Constants.Elevator.kHeightTolleranceMeters);
-      return Globals.ELEVATOR_IN_POSITION;
-    }
+    return Globals.ELEVATOR_IN_POSITION;
   }
 	
   public void runClosedLoop() {
