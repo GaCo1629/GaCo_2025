@@ -1,6 +1,10 @@
 # This gitignore has been specially created by the WPILib team.
 # If you remove items from this file, intellisense might break.
 
+# AdvantageKit
+**/BuildConstants.java
+src/main/java/frc/robot/generated/BuildConstants.java
+
 ### C++ ###
 # Prerequisites
 *.d
@@ -164,6 +168,3 @@ bin/
 *simgui*
 *hoot
 *networktables.json
-
-# AdvantageKit
-*BuildConstants.java
