@@ -166,4 +166,4 @@ bin/
 *networktables.json
 
 # AdvantageKit
-src/main/java/frc/robot/BuildConstants.java
+src/main/java/frc/robot/generated/BuildConstants.java
