@@ -26,13 +26,7 @@
         {
           "type": "named",
           "data": {
-            "name": "GO_DIRECTLY_TO_ALGAE"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SCORE_CORAL"
+            "name": "SCORE_THEN_GOTO_ALGAE_L2"
           }
         },
         {
@@ -68,13 +62,19 @@
         {
           "type": "named",
           "data": {
-            "name": "SCORE_ALGAE"
+            "name": "SCORE"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WAIT_FOR_LOWERING"
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 0.5
           }
         },
         {

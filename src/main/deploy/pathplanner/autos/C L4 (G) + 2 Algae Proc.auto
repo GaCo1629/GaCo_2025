@@ -26,13 +26,7 @@
         {
           "type": "named",
           "data": {
-            "name": "GO_DIRECTLY_TO_ALGAE"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SCORE_CORAL"
+            "name": "SCORE_THEN_GOTO_ALGAE_L2"
           }
         },
         {
@@ -68,19 +62,13 @@
         {
           "type": "named",
           "data": {
-            "name": "SCORE_ALGAE"
+            "name": "SCORE_THEN_GOTO_ALGAE_L3"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "GO_DIRECTLY_TO_ALGAE"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.0
+            "name": "WAIT_FOR_CHANGING_ALGAE_HEIGHT"
           }
         },
         {
@@ -98,7 +86,7 @@
         {
           "type": "named",
           "data": {
-            "name": "SCORE_ALGAE"
+            "name": "SCORE"
           }
         }
       ]

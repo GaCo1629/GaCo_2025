@@ -48,7 +48,7 @@
   "eventMarkers": [
     {
       "name": "GOTO_L4_ALGAE",
-      "waypointRelativePos": 0.5032258064516129,
+      "waypointRelativePos": 0.14901256732495488,
       "endWaypointRelativePos": null,
       "command": null
     }

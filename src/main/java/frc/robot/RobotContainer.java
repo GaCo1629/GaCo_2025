@@ -30,6 +30,7 @@ import frc.robot.commands.HomeElevatorCmd;
 import frc.robot.commands.JustIntakeCmd;
 import frc.robot.commands.TriggerEventCmd;
 import frc.robot.commands.WaitForTowerStateCmd;
+import frc.robot.commands.ScoreAndGotoAlgaeLevel;
 import frc.robot.commands.WaitToSeeCoralCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.ApproachSubsystem;
@@ -97,21 +98,23 @@ public class RobotContainer {
     private final JustIntakeCmd intakeAndGotoL2 = new JustIntakeCmd(tower, TowerEvent.GOTO_L2);
     private final JustIntakeCmd intakeAndGotoL3 = new JustIntakeCmd(tower, TowerEvent.GOTO_L3);
     private final JustIntakeCmd intakeAndGotoL4 = new JustIntakeCmd(tower, TowerEvent.GOTO_L4);    
+    private final ScoreAndGotoAlgaeLevel scoreAndGotoAlgaeL2 = new ScoreAndGotoAlgaeLevel(tower, 2);
+    private final ScoreAndGotoAlgaeLevel scoreAndGotoAlgaeL3 = new ScoreAndGotoAlgaeLevel(tower, 3);
     private final WaitToSeeCoralCmd waitToSeeCoral  = new WaitToSeeCoralCmd(tower);
 
     /* Event Trigger Commands */
-    private final TriggerEventCmd intakeCoral = new TriggerEventCmd(tower, TowerEvent.INTAKE_CORAL);
+    //private final TriggerEventCmd intakeCoral = new TriggerEventCmd(tower, TowerEvent.INTAKE_CORAL);
     private final TriggerEventCmd score = new TriggerEventCmd(tower, TowerEvent.SCORE);
-    private final TriggerEventCmd intakeLowAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_LOW_ALGAE);
-    private final TriggerEventCmd intakeHighAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_HIGH_ALGAE);
+    //private final TriggerEventCmd intakeLowAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_LOW_ALGAE);
+    //private final TriggerEventCmd intakeHighAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_HIGH_ALGAE);
     private final TriggerEventCmd gotoL1 = new TriggerEventCmd(tower, TowerEvent.GOTO_L1);
-    private final TriggerEventCmd gotoL3 = new TriggerEventCmd(tower, TowerEvent.GOTO_L3);
+    //private final TriggerEventCmd gotoL3 = new TriggerEventCmd(tower, TowerEvent.GOTO_L3);
     private final TriggerEventCmd gotoL4 = new TriggerEventCmd(tower, TowerEvent.GOTO_L4);
 
     /* Waiting Commands */
     private final WaitForTowerStateCmd waitForAlgae = new WaitForTowerStateCmd(tower, TowerState.WAITING_FOR_ALGAE);
-    private final WaitForTowerStateCmd waitForLowering = new WaitForTowerStateCmd(tower, TowerState.PAUSING_AFTER_SCORING_CORAL);
-    private final WaitForTowerStateCmd waitForHome = new WaitForTowerStateCmd(tower, TowerState.HOME);
+    private final WaitForTowerStateCmd waitForLowering = new WaitForTowerStateCmd(tower, TowerState.FINISHING_SCORING_CORAL);
+    private final WaitForTowerStateCmd waitForChangingAlgaeHeight = new WaitForTowerStateCmd(tower, TowerState.CHANGING_ALGAE_HEIGHT);
 
     /* Home Elevator Command */
     private final HomeElevatorCmd homeElevator = new HomeElevatorCmd(elevator, tower);
@@ -128,7 +131,6 @@ public class RobotContainer {
     
     private final Command enableSafetyOverrideInstant = leftVision.runOnce(() -> leftVision.setSafetyOverride(true))
                                                         .andThen(rightVision.runOnce(() -> rightVision.setSafetyOverride(true)));
-    private final Command enableDirectToAlgaeInstant = tower.runOnce(() -> tower.enableGoToDirectAlgae());
 
     private final Command homeTowerInstant = tower.runOnce(() -> tower.homeTower());
     private final Command tiltTowerInstant = tower.runOnce(() -> tower.tiltForward());
@@ -171,32 +173,33 @@ public class RobotContainer {
     public RobotContainer() {
         
         // All named commands =========================
-        NamedCommands.registerCommand("INTAKE_CORAL",              intakeCoral);
-        NamedCommands.registerCommand("INTAKE_AND_GOTO_L1",        intakeAndGotoL1);
-        NamedCommands.registerCommand("INTAKE_AND_GOTO_L2",        intakeAndGotoL2);
-        NamedCommands.registerCommand("INTAKE_AND_GOTO_L3",        intakeAndGotoL3);
+        //NamedCommands.registerCommand("INTAKE_CORAL",              intakeCoral);
+        NamedCommands.registerCommand("INTAKE_AND_GOTO_L1",        intakeAndGotoL1);  
+        NamedCommands.registerCommand("INTAKE_AND_GOTO_L2",        intakeAndGotoL2);    // used
+        NamedCommands.registerCommand("INTAKE_AND_GOTO_L3",        intakeAndGotoL3);    // used
         NamedCommands.registerCommand("INTAKE_AND_GOTO_L4",        intakeAndGotoL4);
-        NamedCommands.registerCommand("WAIT_TO_SEE_CORAL",         waitToSeeCoral);  //Does not set height
+        NamedCommands.registerCommand("WAIT_TO_SEE_CORAL",         waitToSeeCoral);     // used
         
-        NamedCommands.registerCommand("SCORE_CORAL",               score);
-        NamedCommands.registerCommand("SCORE_ALGAE",               score); // same as coral
-        NamedCommands.registerCommand("GET_ALGAE",                 intakeHighAlgae);
-        NamedCommands.registerCommand("GET_LOW_ALGAE",             intakeLowAlgae);
-        NamedCommands.registerCommand("GO_TO_L1",                  gotoL1);
-        NamedCommands.registerCommand("WAIT_FOR_ALGAE",            waitForAlgae);
-        NamedCommands.registerCommand("WAIT_FOR_LOWERING",         waitForLowering);
-        NamedCommands.registerCommand("WAIT_FOR_HOME",             waitForHome);
-        NamedCommands.registerCommand("GO_DIRECTLY_TO_ALGAE",      enableDirectToAlgaeInstant);
+        NamedCommands.registerCommand("SCORE",                     score);              // used
+        NamedCommands.registerCommand("SCORE_THEN_GOTO_ALGAE_L2",  scoreAndGotoAlgaeL2);// used
+        NamedCommands.registerCommand("SCORE_THEN_GOTO_ALGAE_L3",  scoreAndGotoAlgaeL3);// used
+        //NamedCommands.registerCommand("GET_ALGAE",                 intakeHighAlgae);
+        //NamedCommands.registerCommand("GET_LOW_ALGAE",             intakeLowAlgae);
+        NamedCommands.registerCommand("GOTO_L1",                   gotoL1);
+        NamedCommands.registerCommand("WAIT_FOR_ALGAE",            waitForAlgae);       // used
+        NamedCommands.registerCommand("WAIT_FOR_LOWERING",         waitForLowering);    // used
+        NamedCommands.registerCommand("WAIT_FOR_CHANGING_ALGAE_HEIGHT", waitForChangingAlgaeHeight);
+
     
         // All Path Planner event triggers  ===========
-        new EventTrigger("INTAKE_CORAL").onTrue(intakeCoral);
+        //new EventTrigger("INTAKE_CORAL").onTrue(intakeCoral);
         new EventTrigger("INTAKE_AND_GOTO_L3").onTrue( intakeAndGotoL3);
         new EventTrigger("INTAKE_AND_GOTO_L4").onTrue(intakeAndGotoL4);
-        new EventTrigger("GOTO_L1_ALGAE").onTrue(gotoL1);
-        new EventTrigger("GOTO_L3_ALGAE").onTrue(gotoL3);
+        new EventTrigger("GOTO_L1_ALGAE").onTrue(gotoL1);                               // used
+        //new EventTrigger("GOTO_L3_ALGAE").onTrue(gotoL3);
         new EventTrigger("GOTO_L4_ALGAE").onTrue(gotoL4);
-        new EventTrigger("INTAKE_LOW_ALGAE").onTrue(intakeLowAlgae);
-        new EventTrigger("INTAKE_HIGH_ALGAE").onTrue(intakeHighAlgae);
+        //new EventTrigger("INTAKE_LOW_ALGAE").onTrue(intakeLowAlgae);
+        //new EventTrigger("INTAKE_HIGH_ALGAE").onTrue(intakeHighAlgae);
  
         // Configure Auto Chooser  ===============================
         autoChooser = AutoBuilder.buildAutoChooser("None");
