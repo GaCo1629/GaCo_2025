@@ -4,5 +4,18 @@
 
 package frc.robot.subsystems.wrist;
 
+import com.playingwithfusion.TimeOfFlight.Status;
+
 /** Add your docs here. */
-public class SensorIOSim implements SensorIO {}
+public class SensorIOSim implements SensorIO {
+    @Override
+    public void updateInputs(SensorIOInputs inputs) {
+        inputs.enterTOFStatus = Status.Valid;
+        inputs.enterTOFRangeMM = 5;
+        inputs.enterCoral = true;
+
+        inputs.exitTOFStatus = Status.Valid;
+        inputs.exitTOFRangeMM = 5;
+        inputs.exitCoral = false;
+    }
+}
