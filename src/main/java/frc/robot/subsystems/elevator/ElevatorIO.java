@@ -32,7 +32,6 @@ public interface ElevatorIO {
         public double encoderVelocityMetersPerSec = 0.0;
 
         public double goalPositionMeters = 0.0;
-        public double totalCurrent = 0.0;
     }
 
     public default void updateInputs(ElevatorIOInputs inputs) {}

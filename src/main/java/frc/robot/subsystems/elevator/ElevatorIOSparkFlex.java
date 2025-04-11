@@ -95,19 +95,23 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
+        inputs.encoderConnected = true;
         inputs.encoderPositionMeters = elevatorEncoder.getPosition();
         inputs.encoderVelocityMetersPerSec = elevatorEncoder.getVelocity();
         
+        inputs.motor1Connected = true;
         inputs.motor1AppliedVolts = leftElevatorMotor.getAppliedOutput() * leftElevatorMotor.getBusVoltage();
         inputs.motor1CurrentAmps = leftElevatorMotor.getOutputCurrent();
         inputs.motor1PositionMeters = leftElevatorMotor.getEncoder().getPosition();
         inputs.motor1VelocityMetersPerSec = leftElevatorMotor.getEncoder().getVelocity();
 
+        inputs.motor2Connected = true;
         inputs.motor2AppliedVolts = centerElevatorMotor.getAppliedOutput() * centerElevatorMotor.getBusVoltage();
         inputs.motor2CurrentAmps = centerElevatorMotor.getOutputCurrent();
         inputs.motor2PositionMeters = centerElevatorMotor.getEncoder().getPosition();
         inputs.motor2VelocityMetersPerSec = centerElevatorMotor.getEncoder().getVelocity();
 
+        inputs.motor3Connected = true;
         inputs.motor3AppliedVolts = rightElevatorMotor.getAppliedOutput() * rightElevatorMotor.getBusVoltage();
         inputs.motor3CurrentAmps = rightElevatorMotor.getOutputCurrent();
         inputs.motor3PositionMeters = rightElevatorMotor.getEncoder().getPosition();

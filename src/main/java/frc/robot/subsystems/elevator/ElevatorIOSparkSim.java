@@ -98,7 +98,6 @@ public class ElevatorIOSparkSim implements ElevatorIO {
         inputs.motor2CurrentAmps = centerElevatorMotor.getMotorCurrent();
 
         inputs.goalPositionMeters = elevatorGoal.position;
-        inputs.totalCurrent = sim.getCurrentDrawAmps();
     }
 
     @Override
