@@ -5,15 +5,15 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.TowerEvent;
-import frc.robot.subsystems.TowerSubsystem;
+import frc.robot.subsystems.tower.TowerEvent;
+import frc.robot.subsystems.tower.Tower;
 
 public class ScoreAndGotoAlgaeLevel extends Command {
-  TowerSubsystem tower;
+  Tower tower;
   int    level;
 
   /** Creates a new TriggerEvent. */
-  public ScoreAndGotoAlgaeLevel(TowerSubsystem tower, int level) {
+  public ScoreAndGotoAlgaeLevel(Tower tower, int level) {
     this.tower = tower;
     this.level = level;
   }

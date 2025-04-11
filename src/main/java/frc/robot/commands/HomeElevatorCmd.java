@@ -5,19 +5,19 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.TowerSubsystem;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.tower.Tower;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class HomeElevatorCmd extends Command {
 
-  ElevatorSubsystem elevator;
-  TowerSubsystem    tower;
+  Elevator elevator;
+  Tower    tower;
   double motorCurrent = 0;
   int    overcurrentCount = 0;
 
   /** Creates a new DefaultWristCommand. */
-  public HomeElevatorCmd(ElevatorSubsystem elevator, TowerSubsystem tower) {
+  public HomeElevatorCmd(Elevator elevator, Tower tower) {
     addRequirements(elevator);
     this.elevator = elevator;
     this.tower = tower;
