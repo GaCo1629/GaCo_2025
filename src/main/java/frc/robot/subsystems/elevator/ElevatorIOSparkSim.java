@@ -22,10 +22,10 @@ import frc.robot.Constants;
 import frc.robot.Constants.Elevator;
 
 public class ElevatorIOSparkSim implements ElevatorIO {
-    private DCMotor gearbox =
+    private final DCMotor gearbox =
         DCMotor.getNeoVortex(3);
 
-    private ElevatorSim sim =
+    private final ElevatorSim sim =
         new ElevatorSim(
             gearbox, 
             Elevator.kElevatorGearing, 
@@ -38,13 +38,13 @@ public class ElevatorIOSparkSim implements ElevatorIO {
             0.01,
             0.0);
 
-    private SparkFlex[] elevatorMotors;
+    private final SparkFlex[] elevatorMotors;
 
-    private SparkFlexSim centerElevatorMotor;
+    private final SparkFlexSim centerElevatorMotor;
 
     private final SparkClosedLoopController elevatorController;
 
-    private SparkRelativeEncoderSim elevatorEncoder;
+    private final SparkRelativeEncoderSim elevatorEncoder;
 
     private final ElevatorFeedforward elevatorFeedforward;
 

@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.wrist;
 
+import java.util.zip.ZipEntry;
+
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;
@@ -100,5 +102,9 @@ public class AngleIOSparkFlex implements AngleIO {
     @Override
     public void resetFrameRate() {
         angleSpark.configure(resetFrameRateConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    }
+
+    protected SparkFlex getAngleSpark() {
+        return angleSpark;
     }
 }

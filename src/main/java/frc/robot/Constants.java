@@ -41,6 +41,8 @@ public class Constants {
         
         public static final double kAngleFactor = 360 * 24 / 40; // 216 degrees
 
+        public static final double kAngleGearing = 1.0 / 4.0; // 4:1 gearing 
+
         public static final double kP = 0.04; // was 0.02
         public static final double kI = 0;
         public static final double kD = 0.0;
