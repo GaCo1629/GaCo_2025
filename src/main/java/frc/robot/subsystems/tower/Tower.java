@@ -23,7 +23,6 @@ public class Tower extends SubsystemBase {
 	@AutoLogOutput
 	private TowerState currentState = TowerState.INIT;
 
-	@AutoLogOutput
 	private final Timer stateTimer = new Timer();
 
 	private final Elevator elevator;
@@ -507,7 +506,6 @@ public class Tower extends SubsystemBase {
 		}
 	}
 
-	@AutoLogOutput
 	private Boolean isHoldingGoTo(){
 		if ((pendingEvent == TowerEvent.GOTO_L1) || (pendingEvent == TowerEvent.GOTO_L2) || 
 		    (pendingEvent == TowerEvent.GOTO_L3) || (pendingEvent == TowerEvent.GOTO_L4)) {
