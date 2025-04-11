@@ -82,6 +82,7 @@ public class Robot extends LoggedRobot {
     SignalLogger.enableAutoLogging(false);
     SmartDashboard.putData("Field", m_field);
     robotContainer.tower.initialize();
+    robotContainer.resetSimulationField();
   }
 
   @Override
@@ -137,5 +138,7 @@ public class Robot extends LoggedRobot {
   public void testExit() {}
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    robotContainer.updateSimulation();
+  }
 }
