@@ -83,13 +83,11 @@ public class Robot extends LoggedRobot {
   public void disabledInit() {
     SignalLogger.enableAutoLogging(false);
     SmartDashboard.putData("Field", m_field);
-    SmartDashboard.putData("AutoField", Telemetry.m_field2);
     robotContainer.tower.initialize();
   }
 
   @Override
   public void disabledPeriodic() {
-    Telemetry.displayAutoPaths(); // Display the selected auto path on the dashboard while robot is disabled
   }
 
   @Override
