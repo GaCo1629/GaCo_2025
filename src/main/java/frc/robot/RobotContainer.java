@@ -11,20 +11,14 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.events.EventTrigger;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
 import frc.robot.Constants.Driver;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.HomeElevatorCmd;
@@ -53,10 +47,19 @@ import frc.robot.subsystems.led.LEDSubsystem;
 import frc.robot.subsystems.tower.TowerEvent;
 import frc.robot.subsystems.tower.TowerState;
 import frc.robot.subsystems.tower.TowerSubsystem;
-import frc.robot.subsystems.vision.VisionSubsystem;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.wrist.AngleIO;
 import frc.robot.subsystems.wrist.AngleIOSparkFlex;
+import frc.robot.subsystems.wrist.AngleIOSparkSim;
+import frc.robot.subsystems.wrist.IntakeIO;
 import frc.robot.subsystems.wrist.IntakeIOSparkFlex;
+import frc.robot.subsystems.wrist.IntakeIOSparkSim;
+import frc.robot.subsystems.wrist.SensorIO;
 import frc.robot.subsystems.wrist.SensorIOPWF;
+import frc.robot.subsystems.wrist.SensorIOSim;
 import frc.robot.subsystems.wrist.WristSubsystem;
 
 public class RobotContainer {
@@ -64,24 +67,15 @@ public class RobotContainer {
     private final CommandJoystick       copilot_1 = new CommandJoystick(1);
     private final CommandJoystick       copilot_2 = new CommandJoystick(2);
 
-    static final Transform3d robotToLeftCam = new Transform3d(new Translation3d(0.24, 0.27, 0.21), 
-                                                            new Rotation3d(0, Math.toRadians(-5), Math.toRadians(-45)));
-    static final Vector<N3> leftCamStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(5));
-  
-    static final Transform3d robotToRightCam = new Transform3d(new Translation3d(0.24, -0.27, 0.217), 
-                                                          new Rotation3d(0, Math.toRadians(-5), Math.toRadians(45)));
-    static final Vector<N3> rightCamStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(5));
-
     // Instanciate subsystems
     public Drive drive;
     public final Globals globals = new Globals();
-    public ElevatorSubsystem elevator;
-    public WristSubsystem wrist;
-    public TowerSubsystem tower = new TowerSubsystem(elevator, wrist, joystick);
-    public VisionSubsystem leftVision = new VisionSubsystem(drive, "LEFT_CAM", robotToLeftCam, leftCamStdDevs);
-    public VisionSubsystem rightVision = new VisionSubsystem(drive, "RIGHT_CAM", robotToRightCam, rightCamStdDevs);
     public ApproachSubsystem approach;
+    public ElevatorSubsystem elevator;
     public LEDSubsystem led;
+    public Vision vision;
+    public WristSubsystem wrist;
+    public TowerSubsystem tower;
 
     /* Path follower */
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -120,8 +114,8 @@ public class RobotContainer {
     private final Command seedFieldCentricInstant = drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true);
     private final Command stopDrivetrainInstant = drive.runOnce(drive::stop);
     
-    private final Command enableSafetyOverrideInstant = leftVision.runOnce(() -> leftVision.setSafetyOverride(true))
-                                                        .andThen(rightVision.runOnce(() -> rightVision.setSafetyOverride(true)));
+    private final Command enableSafetyOverrideInstant = vision.runOnce(() -> vision.setSafetyOverride(true));
+    //                                                    .andThen(rightVision.runOnce(() -> rightVision.setSafetyOverride(true)));
     private final Command enableDirectToAlgaeInstant = tower.runOnce(() -> tower.enableGoToDirectAlgae());
 
     private final Command homeTowerInstant = tower.runOnce(() -> tower.homeTower());
@@ -171,14 +165,17 @@ public class RobotContainer {
                         new ModuleIOTalonFX(TunerConstants.FrontRight),
                         new ModuleIOTalonFX(TunerConstants.BackLeft),
                         new ModuleIOTalonFX(TunerConstants.BackRight));
-                approach = 
-                    new ApproachSubsystem(drive);
                 elevator = 
                     new ElevatorSubsystem(
                         new ElevatorIOSparkFlex());
                 led = 
                     new LEDSubsystem(
                         new LEDIOReal(0, 25));
+                vision = 
+                    new Vision(
+                        drive::addVisionMeasurement, 
+                        new VisionIOPhotonVision(Constants.Vision.camera0Name, Constants.Vision.robotToCamera0),
+                        new VisionIOPhotonVision(Constants.Vision.camera1Name, Constants.Vision.robotToCamera1));
                 wrist = 
                     new WristSubsystem(
                         new AngleIOSparkFlex(),
@@ -194,14 +191,22 @@ public class RobotContainer {
                         new ModuleIOSim(TunerConstants.FrontRight),
                         new ModuleIOSim(TunerConstants.BackLeft),
                         new ModuleIOSim(TunerConstants.BackRight));
-                approach = 
-                    new ApproachSubsystem(drive);
                 elevator = 
                     new ElevatorSubsystem(
                         new ElevatorIOSparkSim());
                 led = 
                     new LEDSubsystem(
                         new LEDIOSim());
+                vision = 
+                    new Vision(
+                        drive::addVisionMeasurement, 
+                        new VisionIOPhotonVisionSim(Constants.Vision.camera0Name, Constants.Vision.robotToCamera0, drive::getPose),
+                        new VisionIOPhotonVisionSim(Constants.Vision.camera1Name, Constants.Vision.robotToCamera1, drive::getPose));
+                wrist = 
+                    new WristSubsystem(
+                        new AngleIOSparkSim(), 
+                        new IntakeIOSparkSim(), 
+                        new SensorIOSim());
                 break;
             default:
                 // Replayed robot, disable IO implementations
@@ -212,16 +217,27 @@ public class RobotContainer {
                         new ModuleIO() {},
                         new ModuleIO() {},
                         new ModuleIO() {});
-                approach = 
-                    new ApproachSubsystem(drive);
                 elevator = 
                     new ElevatorSubsystem(
                         new ElevatorIO() {});
                 led = 
                     new LEDSubsystem(
                         new LEDIO() {});
+                vision = 
+                    new Vision(
+                        drive::addVisionMeasurement, 
+                        new VisionIO() {},
+                        new VisionIO() {});
+                wrist = 
+                    new WristSubsystem(
+                        new AngleIO() {}, 
+                        new IntakeIO() {}, 
+                        new SensorIO() {});
                 break;
         }
+
+        approach = new ApproachSubsystem(drive);
+        tower = new TowerSubsystem(elevator, wrist, joystick);
         
         // All named commands =========================
         NamedCommands.registerCommand("INTAKE_CORAL",              intakeCoral);

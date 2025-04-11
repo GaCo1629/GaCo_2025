@@ -93,7 +93,7 @@ public class Robot extends LoggedRobot {
   @Override
   public void disabledExit() {
     robotContainer.tower.initialize();
-    robotContainer.leftVision.setSafetyOverride(false);
+    robotContainer.vision.setSafetyOverride(false);
   }
 
   @Override

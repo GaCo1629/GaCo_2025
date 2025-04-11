@@ -8,6 +8,12 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
@@ -191,5 +197,32 @@ public class Constants {
 
         /** Replaying from a log file. */
         REPLAY
+    }
+
+    public class Vision {
+        public static final String camera0Name = "LEFT_CAM";
+        public static final String camera1Name = "RIGHT_CAM";
+
+        public static final Transform3d robotToCamera0 = new Transform3d(new Translation3d(0.24, 0.27, 0.21), 
+                                                            new Rotation3d(0, Math.toRadians(-5), Math.toRadians(-45)));
+        public static final Vector<N3> camera0StdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(5));
+  
+        public static final Transform3d robotToCamera1 = new Transform3d(new Translation3d(0.24, -0.27, 0.217), 
+                                                          new Rotation3d(0, Math.toRadians(-5), Math.toRadians(45)));
+        public static final Vector<N3> camera1StdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(5));
+
+        public static double maxAmbiguity = 0.3;
+        public static double maxZError = 0.75;
+
+        public static double linearStdDevBaseline = 0.02; // Meters
+        public static double angularStdDevBaseline = 0.06; // Radians
+
+        public static double[] cameraStdDevFactors = new double[] {
+                1.0, // Camera 0
+                1.0 // Camera 1
+        };
+
+        public static double linearStdDevMegatag2Factor = 0.5; // More stable than full 3D solve
+        public static double angularStdDevMegatag2Factor = Double.POSITIVE_INFINITY; // No rotation data available
     }
 }
