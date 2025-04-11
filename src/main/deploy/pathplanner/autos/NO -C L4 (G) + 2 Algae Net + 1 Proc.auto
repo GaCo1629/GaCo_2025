@@ -26,13 +26,7 @@
         {
           "type": "named",
           "data": {
-            "name": "GO_DIRECTLY_TO_ALGAE"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SCORE_CORAL"
+            "name": "SCORE_THEN_GOTO_ALGAE_L2"
           }
         },
         {
@@ -68,19 +62,67 @@
         {
           "type": "named",
           "data": {
-            "name": "SCORE_ALGAE"
+            "name": "SCORE_THEN_GOTO_ALGAE_L3"
           }
         },
         {
-          "type": "wait",
+          "type": "named",
           "data": {
-            "waitTime": 2.0
+            "name": "WAIT_FOR_CHANGING_ALGAE_HEIGHT"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "NtoOut"
+            "pathName": "NtoIJ"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "IJtoNM"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SCORE_THEN_GOTO_ALGAE_L3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "WAIT_FOR_CHANGING_ALGAE_HEIGHT"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "NMtoEF"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.2
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "EFtoProcessor"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "SCORE"
           }
         }
       ]

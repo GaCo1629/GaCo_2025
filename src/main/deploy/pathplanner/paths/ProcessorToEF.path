@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 6.045640677973637,
-        "y": 0.761459862345223
+        "x": 6.019075716020279,
+        "y": 0.9249887735636332
       },
       "prevControl": null,
       "nextControl": {
-        "x": 5.964743500097779,
-        "y": 1.3671914914449645
+        "x": 5.93817853814442,
+        "y": 1.5307204026633747
       },
       "isLocked": false,
       "linkedName": "Processor"
@@ -54,14 +54,7 @@
     }
   ],
   "pointTowardsZones": [],
-  "eventMarkers": [
-    {
-      "name": "GOTO_L3_ALGAE",
-      "waypointRelativePos": 0.09042769857433855,
-      "endWaypointRelativePos": null,
-      "command": null
-    }
-  ],
+  "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 3.0,

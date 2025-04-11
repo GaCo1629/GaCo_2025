@@ -11,7 +11,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "CtoG"
+                  "pathName": "CtoH"
                 }
               },
               {
@@ -26,13 +26,7 @@
         {
           "type": "named",
           "data": {
-            "name": "GO_DIRECTLY_TO_ALGAE"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SCORE_CORAL"
+            "name": "SCORE_THEN_GOTO_ALGAE_L2"
           }
         },
         {
@@ -44,7 +38,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Gto0.5C"
+            "pathName": "Hto0.5C"
           }
         },
         {
@@ -62,67 +56,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "GHtoNet"
+            "pathName": "GHtoProcessor"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "SCORE_ALGAE"
+            "name": "SCORE_THEN_GOTO_ALGAE_L3"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "GO_DIRECTLY_TO_ALGAE"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.75
+            "name": "WAIT_FOR_CHANGING_ALGAE_HEIGHT"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "NtoIJ"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "IJtoNM"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "SCORE_ALGAE"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.5
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "NMtoEF"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "WAIT_FOR_ALGAE"
+            "pathName": "ProcessorToEF"
           }
         },
         {
@@ -134,7 +86,7 @@
         {
           "type": "named",
           "data": {
-            "name": "SCORE_ALGAE"
+            "name": "SCORE"
           }
         }
       ]

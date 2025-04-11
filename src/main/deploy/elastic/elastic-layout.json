@@ -63,25 +63,6 @@
         "layouts": [],
         "containers": [
           {
-            "title": "clownfish_Port_1182_Output_MJPEG_Server",
-            "x": 256.0,
-            "y": 0.0,
-            "width": 512.0,
-            "height": 448.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/clownfish_Port_1182_Output_MJPEG_Server",
-              "period": 0.06,
-              "rotation_turns": 0,
-              "compression": 90,
-              "fps": 10,
-              "resolution": [
-                160.0,
-                120.0
-              ]
-            }
-          },
-          {
             "title": "Field",
             "x": 768.0,
             "y": 128.0,
@@ -192,7 +173,7 @@
           },
           {
             "title": "Safety Override",
-            "x": 576.0,
+            "x": 640.0,
             "y": 448.0,
             "width": 128.0,
             "height": 128.0,
@@ -209,7 +190,7 @@
           },
           {
             "title": "Vision Disabled",
-            "x": 320.0,
+            "x": 256.0,
             "y": 448.0,
             "width": 128.0,
             "height": 128.0,
@@ -223,6 +204,54 @@
               "true_icon": "None",
               "false_icon": "None"
             }
+          },
+          {
+            "title": "Left Cam",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 512.0,
+            "height": 448.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/gaco_Port_1182_Output_MJPEG_Server",
+              "period": 0.06,
+              "rotation_turns": 0,
+              "compression": 9
+            }
+          },
+          {
+            "title": "Elevator In Position",
+            "x": 384.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Elevator In Position",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283167798,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
+          },
+          {
+            "title": "Wrist In Position",
+            "x": 512.0,
+            "y": 448.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Boolean Box",
+            "properties": {
+              "topic": "/SmartDashboard/Wrist In Position",
+              "period": 0.06,
+              "data_type": "boolean",
+              "true_color": 4283215696,
+              "false_color": 4294198070,
+              "true_icon": "None",
+              "false_icon": "None"
+            }
           }
         ]
       }
@@ -233,29 +262,10 @@
         "layouts": [],
         "containers": [
           {
-            "title": "clownfish_Port_1182_Output_MJPEG_Server",
-            "x": 0.0,
-            "y": 0.0,
-            "width": 256.0,
-            "height": 256.0,
-            "type": "Camera Stream",
-            "properties": {
-              "topic": "/CameraPublisher/clownfish_Port_1182_Output_MJPEG_Server",
-              "period": 0.06,
-              "rotation_turns": 0,
-              "compression": 80,
-              "fps": 10,
-              "resolution": [
-                160.0,
-                120.0
-              ]
-            }
-          },
-          {
             "title": "Field",
-            "x": 832.0,
+            "x": 896.0,
             "y": 128.0,
-            "width": 704.0,
+            "width": 640.0,
             "height": 320.0,
             "type": "Field",
             "properties": {
@@ -329,7 +339,7 @@
           },
           {
             "title": "Swerve Drive",
-            "x": 256.0,
+            "x": 384.0,
             "y": 256.0,
             "width": 256.0,
             "height": 256.0,
@@ -357,7 +367,7 @@
           },
           {
             "title": "Tower State",
-            "x": 512.0,
+            "x": 640.0,
             "y": 384.0,
             "width": 256.0,
             "height": 128.0,
@@ -371,7 +381,7 @@
           },
           {
             "title": "Safety Factor",
-            "x": 320.0,
+            "x": 512.0,
             "y": 0.0,
             "width": 256.0,
             "height": 256.0,
@@ -392,7 +402,7 @@
           },
           {
             "title": "Wrist Goal",
-            "x": 512.0,
+            "x": 640.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
@@ -406,7 +416,7 @@
           },
           {
             "title": "Wrist Angle",
-            "x": 640.0,
+            "x": 768.0,
             "y": 256.0,
             "width": 128.0,
             "height": 128.0,
@@ -420,8 +430,8 @@
           },
           {
             "title": "Lift Position",
-            "x": 576.0,
-            "y": 0.0,
+            "x": 256.0,
+            "y": 256.0,
             "width": 128.0,
             "height": 256.0,
             "type": "Number Bar",
@@ -448,6 +458,50 @@
               "period": 0.06,
               "data_type": "double[]",
               "show_submit_button": false
+            }
+          },
+          {
+            "title": "Left Cam",
+            "x": 0.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/gaco_Port_1182_Output_MJPEG_Server",
+              "period": 0.06,
+              "rotation_turns": 0,
+              "compression": 5
+            }
+          },
+          {
+            "title": "Right Cam",
+            "x": 256.0,
+            "y": 0.0,
+            "width": 256.0,
+            "height": 256.0,
+            "type": "Camera Stream",
+            "properties": {
+              "topic": "/CameraPublisher/gaco_Port_1184_Output_MJPEG_Server",
+              "period": 0.06,
+              "rotation_turns": 0,
+              "compression": 4
+            }
+          },
+          {
+            "title": "Elevator Velocity",
+            "x": 768.0,
+            "y": 128.0,
+            "width": 128.0,
+            "height": 128.0,
+            "type": "Graph",
+            "properties": {
+              "topic": "/SmartDashboard/Elevator Velocity",
+              "period": 0.033,
+              "data_type": "double",
+              "time_displayed": 5.0,
+              "color": 4278238420,
+              "line_width": 2.0
             }
           }
         ]

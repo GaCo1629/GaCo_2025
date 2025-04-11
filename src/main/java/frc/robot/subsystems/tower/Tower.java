@@ -40,7 +40,7 @@ public class Tower extends SubsystemBase {
 	private int currentLevel = 0;
 
 	@AutoLogOutput
-	private boolean goDirectAlgae = false;
+	private int goDirectAlgaeLevel = 0;
 
 	/** Creates a new Tower. */
 	public Tower(Elevator elevator, Wrist wrist, CommandXboxController joystick) {
@@ -63,8 +63,8 @@ public class Tower extends SubsystemBase {
 		wrist.resetFrameRate();
 	}
 
-	public void enableGoToDirectAlgae(){
-		goDirectAlgae = true;
+	public void setDirectAlgaeLevel(int level){
+		goDirectAlgaeLevel = level;
 	}
 
 	@Override
@@ -83,8 +83,9 @@ public class Tower extends SubsystemBase {
 		setState(TowerState.INIT);
 	}
 	
-	public void tiltForward(){
-		wrist.setGoalAngle(Constants.Wrist.kSafeAngleDegrees);
+	public void forceWristTilt(double angleDeg){
+		wrist.setGoalAngle(angleDeg);
+		wrist.setIntakeSpeed(0);
 		setState(TowerState.GOING_TO_SAFE);
 	}
 
@@ -143,7 +144,7 @@ public class Tower extends SubsystemBase {
 					setState(TowerState.GET_SAFE_FOR_L3_ALGAE);
 				} else if (isTriggered(TowerEvent.SCORE)){
 					wrist.setIntakeSpeed(Constants.Wrist.kCoralIntakePower);
-					setState(TowerState.PAUSING_AFTER_SCORING_CORAL);
+					setState(TowerState.FINISHING_SCORING_CORAL);
 				} else {
 					currentLevel = 0;
 					joystick.setRumble(RumbleType.kBothRumble,0);
@@ -213,7 +214,7 @@ public class Tower extends SubsystemBase {
 					setState(TowerState.RAISING_TO_L4);
 				} else if (isTriggered(TowerEvent.SCORE)){
 					wrist.setIntakeSpeed(Constants.Wrist.kCoralIntakePower);
-					setState(TowerState.PAUSING_AFTER_SCORING_CORAL);
+					setState(TowerState.FINISHING_SCORING_CORAL);
 				} else {
 					if (wrist.gotExitCoral()) {
 						wrist.setIntakeSpeed(Constants.Wrist.kCoralHoldPower);
@@ -287,28 +288,24 @@ public class Tower extends SubsystemBase {
 			}
 
 			case SCORING_CORAL: {
-				if (!wrist.gotExitCoral()) {
-					setState(TowerState.DELAY_AFTER_SCORING_CORAL);
-				} else if(stateTimer.hasElapsed(0.5)){
+				if ((!wrist.gotExitCoral() && stateTimer.hasElapsed(0.2)) ||
+					(stateTimer.hasElapsed(0.5))) {
 					wrist.setGoalAngle(Constants.Wrist.kSafeAngleDegrees);
-					setState(TowerState.PAUSING_AFTER_SCORING_CORAL);
+					setState(TowerState.FINISHING_SCORING_CORAL);
 				}
 				break;
 			}
 
-			case DELAY_AFTER_SCORING_CORAL: {
-				if (stateTimer.hasElapsed(0.2)){
-					wrist.setGoalAngle(Constants.Wrist.kSafeAngleDegrees);
-					setState(TowerState.PAUSING_AFTER_SCORING_CORAL);
-				}
-			}
-
-			case PAUSING_AFTER_SCORING_CORAL: {
-				if (wrist.inPosition() && stateTimer.hasElapsed(0.2)) {
-					if (goDirectAlgae){  // special bypass to go to pickup Algae in Auto
-						goDirectAlgae = false;  // reset the flag
-						elevator.setGoalPositionMeters(Constants.Elevator.kL2AlgaeHeightMeters);
+			case FINISHING_SCORING_CORAL: {
+				if (wrist.inPosition()) {
+					if (goDirectAlgaeLevel > 0){  // special bypass to go to pickup Algae in Auto
+						if (goDirectAlgaeLevel == 2){
+							elevator.setGoalPositionMeters(Constants.Elevator.kL2AlgaeHeightMeters);
+						} else if (goDirectAlgaeLevel == 3){
+							elevator.setGoalPositionMeters(Constants.Elevator.kL3AlgaeHeightMeters);
+						}
 						wrist.setGoalAngle(Constants.Wrist.kAlgaeIntakeAngleDegrees);
+						goDirectAlgaeLevel = 0;
 						setState(TowerState.GOING_TO_ALGAE_INTAKE);
 					} else {
 						elevator.setGoalPositionMeters(Constants.Elevator.kIntakeHeightMeters);
@@ -367,7 +364,7 @@ public class Tower extends SubsystemBase {
 					if (currentLevel < 4) {
 						wrist.setIntakeSpeed(Constants.Wrist.kAlgaeScoringPower);  // Score Algae
 						Globals.GOT_ALGAE = false;
-						setState(TowerState.PAUSING_AFTER_SCORING_ALGAE);
+						setState(TowerState.FINISHING_L123_ALGAE);
 					} else {
 						// Lobbing into Barge
 						wrist.setGoalAngle(Constants.Wrist.kAlgaeReleaseGoalAngleDegrees);
@@ -420,24 +417,44 @@ public class Tower extends SubsystemBase {
 				if (wrist.getWristAngle() <= Constants.Wrist.kAlgaeBackspinDegrees){
 					wrist.setIntakeSpeed(-Constants.Wrist.kAlgaeScoringPower);
 
-					setState(TowerState.PAUSING_AFTER_SCORING_ALGAE);
+					setState(TowerState.FINISHING_L4_ALGAE);
 				}
 				break;
 			}
 
-			case PAUSING_AFTER_SCORING_ALGAE: {  
+			case FINISHING_L4_ALGAE: {
+				if (wrist.inPosition()){
+					setState(TowerState.DONE_SCORING_ALGAE);
+				}
+				break;
+			}
+
+			case FINISHING_L123_ALGAE: {
 				if (stateTimer.hasElapsed(0.5)){
-					if(goDirectAlgae){  // special bypass to go to pickup Algae in Auto
-						goDirectAlgae = false; //resets the flag
-						wrist.setGoalAngle(Constants.Wrist.kAlgaeIntakeAngleDegrees);
-						wrist.setIntakeSpeed(Constants.Wrist.kAlgaeIntakePower);
-						setState(TowerState.WAITING_FOR_ALGAE);
-					} else {
-						wrist.setGoalAngle(Constants.Wrist.kSafeAngleDegrees);
-						elevator.setGoalPositionMeters(Constants.Elevator.kIntakeHeightMeters);
-						currentLevel = 1;
-						setState(TowerState.LOWERING);
+					setState(TowerState.DONE_SCORING_ALGAE);
+				}
+				break;
+			}
+
+			case DONE_SCORING_ALGAE: {  
+				if(goDirectAlgaeLevel > 0){  // special bypass to go to pickup Algae in Auto
+					if (goDirectAlgaeLevel == 2){
+						elevator.setGoalPositionMeters(Constants.Elevator.kL2AlgaeHeightMeters);
+						currentLevel = 2;
+					} else if (goDirectAlgaeLevel == 3){
+						elevator.setGoalPositionMeters(Constants.Elevator.kL3AlgaeHeightMeters);
+						currentLevel = 3;
 					}
+
+					wrist.setGoalAngle(Constants.Wrist.kAlgaeIntakeAngleDegrees);
+					wrist.setIntakeSpeed(Constants.Wrist.kAlgaeIntakePower);
+					goDirectAlgaeLevel = 0;
+					setState(TowerState.CHANGING_ALGAE_HEIGHT);
+				} else {
+					wrist.setGoalAngle(Constants.Wrist.kSafeAngleDegrees);
+					//elevator.setGoalPositionMeters(Constants.Elevator.kIntakeHeightMeters);
+					currentLevel = 0;
+					setState(TowerState.FINISHING_SCORING_CORAL);  // make sure the wrist is back before lowring
 				}
 				break;
 			}
@@ -450,7 +467,7 @@ public class Tower extends SubsystemBase {
 		//  Determine what portion of full speed can be used based on the tower State
 		safetyFactor = 1;
 
-		if ((currentState == TowerState.SCORING_CORAL) || (currentState == TowerState.PAUSING_AFTER_SCORING_CORAL)) {
+		if ((currentState == TowerState.SCORING_CORAL) || (currentState == TowerState.FINISHING_SCORING_CORAL)) {
 			safetyFactor = 0.25;
 		} else if (elevator.getHeightMeters() > Constants.Elevator.kElevatorSpeedSafeHeightMeters) {
 			double currentSafeHeight = elevator.getHeightMeters() - Constants.Elevator.kElevatorSpeedSafeHeightMeters;
@@ -478,7 +495,6 @@ public class Tower extends SubsystemBase {
 	private void updateDashboard() {
 		SmartDashboard.putString("Tower State", currentState.toString() + " <- " + pendingEvent.toString());
 		SmartDashboard.putNumber("Safety Factor", safetyFactor * 100);
-		SmartDashboard.putBoolean("l3Algae", goDirectAlgae);
 		SmartDashboard.putNumber("Elevator Level", currentLevel);
 	}
 	

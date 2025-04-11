@@ -111,7 +111,7 @@ public class Constants {
 		public static final double kAngleMaxAccelerationDPSPS = 1000; 
 
         @AutoLogOutput
-        public static final double kIntakeAngleDegrees             = 3;
+        public static final double kIntakeAngleDegrees             = 2;
 
         @AutoLogOutput
         public static final double kSafeAngleDegrees               = 30;
