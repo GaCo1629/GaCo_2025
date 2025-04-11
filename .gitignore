@@ -186,3 +186,11 @@ compile_commands.json
 
 # Version file
 src/main/java/frc/robot/generated/BuildConstants.java
+
+# Gradle local.properties
+local.properties
+
+# Misc WPILib Tools
+.DataLogTool
+.roboRIOTeamNumberSetter
+.SysId
