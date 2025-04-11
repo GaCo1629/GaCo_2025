@@ -193,7 +193,8 @@ public class RobotContainer {
                         new ModuleIOSim(TunerConstants.BackRight));
                 elevator = 
                     new Elevator(
-                        new ElevatorIOSparkSim());
+                        new ElevatorIOSparkSim(
+                            new ElevatorIOSparkFlex()));
                 led = 
                     new LED(
                         new LEDIOSim());

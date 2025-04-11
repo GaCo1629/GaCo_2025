@@ -113,7 +113,6 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
         inputs.motor3PositionMeters = rightElevatorMotor.getEncoder().getPosition();
         inputs.motor3VelocityMetersPerSec = rightElevatorMotor.getEncoder().getVelocity();
 
-        
         inputs.goalPositionMeters = elevatorGoal.position;
     }
 
@@ -154,5 +153,9 @@ public class ElevatorIOSparkFlex implements ElevatorIO {
     @Override
     public void setSpeed(double speed) {
         centerElevatorMotor.set(speed);
+    }
+
+    protected SparkFlex[] getMotors() {
+        return new SparkFlex[] {leftElevatorMotor, centerElevatorMotor, rightElevatorMotor};
     }
 }

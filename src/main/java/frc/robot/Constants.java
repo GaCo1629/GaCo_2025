@@ -99,6 +99,10 @@ public class Constants {
 		public static final double kV = 0.117 ;     //
 		public static final double kA = 0.00803 ;   //
 
+        public static final double kElevatorCarriageMassKg = 0.1;
+        public static final double kElevatorGearing = 10.0;
+        public static final double kElevatorDrumRadius = 0.0;
+
         public static final double kHeightTolleranceMeters = Units.inchesToMeters(1.0);
 
         public static final int kElevatorCurrentLimit = 60;
