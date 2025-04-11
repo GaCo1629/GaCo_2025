@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.wrist;
 
-import java.util.zip.ZipEntry;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.spark.SparkBase.ControlType;
 import com.revrobotics.spark.SparkBase.PersistMode;

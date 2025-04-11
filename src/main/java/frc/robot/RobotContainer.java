@@ -197,7 +197,7 @@ public class RobotContainer {
                             new ElevatorIOSparkFlex()));
                 led = 
                     new LED(
-                        new LEDIOSim());
+                        new LEDIOSim(0, 25));
                 vision = 
                     new Vision(
                         drive::addVisionMeasurement, 
@@ -205,7 +205,8 @@ public class RobotContainer {
                         new VisionIOPhotonVisionSim(Constants.Vision.camera1Name, Constants.Vision.robotToCamera1, drive::getPose));
                 wrist = 
                     new Wrist(
-                        new AngleIOSparkSim(), 
+                        new AngleIOSparkSim(
+                            new AngleIOSparkFlex()), 
                         new IntakeIOSparkSim(), 
                         new SensorIOSim());
                 break;
