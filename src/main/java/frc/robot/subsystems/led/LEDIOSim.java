@@ -4,6 +4,23 @@
 
 package frc.robot.subsystems.led;
 
-public class LEDIOSim implements LEDIO {
+import frc.robot.subsystems.Globals;
 
+public class LEDIOSim implements LEDIO {
+    private LEDmode lastMode = LEDmode.NONE;
+
+    @Override
+    public void updateInputs(LEDIOInputs inputs)
+    {
+        inputs.ledMode = Globals.getLEDMode();
+
+        if (inputs.ledMode != lastMode) {
+            lastMode = inputs.ledMode;
+        }
+    }
+
+    @Override
+    public void setLEDMode(LEDmode mode) {
+        Globals.setLEDMode(mode);
+    }
 }
