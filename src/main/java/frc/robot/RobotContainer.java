@@ -207,7 +207,8 @@ public class RobotContainer {
                     new Wrist(
                         new AngleIOSparkSim(
                             new AngleIOSparkFlex()), 
-                        new IntakeIOSparkSim(), 
+                        new IntakeIOSparkSim(
+                            new IntakeIOSparkFlex()), 
                         new SensorIOSim());
                 break;
             default:

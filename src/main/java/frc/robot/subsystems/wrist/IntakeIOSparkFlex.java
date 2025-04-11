@@ -47,7 +47,7 @@ public class IntakeIOSparkFlex implements IntakeIO {
 
     @Override
     public void setSpeed(double speed) {
-
+        intakeSpark.set(speed);
     }
 
     @Override
@@ -58,5 +58,9 @@ public class IntakeIOSparkFlex implements IntakeIO {
     @Override
     public void resetFrameRate() {
         intakeSpark.configure(resetFrameRateConfig, ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
+    }
+
+    protected SparkFlex getIntakeSpark() {
+        return intakeSpark;
     }
 }
