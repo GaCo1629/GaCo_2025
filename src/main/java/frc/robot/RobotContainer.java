@@ -28,7 +28,7 @@ import frc.robot.commands.WaitForTowerStateCmd;
 import frc.robot.commands.WaitToSeeCoralCmd;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Globals;
-import frc.robot.subsystems.approach.ApproachSubsystem;
+import frc.robot.subsystems.approach.Approach;
 import frc.robot.subsystems.approach.ApproachTarget;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
@@ -39,14 +39,14 @@ import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.subsystems.elevator.ElevatorIO;
 import frc.robot.subsystems.elevator.ElevatorIOSparkFlex;
 import frc.robot.subsystems.elevator.ElevatorIOSparkSim;
-import frc.robot.subsystems.elevator.ElevatorSubsystem;
+import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.led.LEDIO;
 import frc.robot.subsystems.led.LEDIOReal;
 import frc.robot.subsystems.led.LEDIOSim;
-import frc.robot.subsystems.led.LEDSubsystem;
+import frc.robot.subsystems.led.LED;
 import frc.robot.subsystems.tower.TowerEvent;
 import frc.robot.subsystems.tower.TowerState;
-import frc.robot.subsystems.tower.TowerSubsystem;
+import frc.robot.subsystems.tower.Tower;
 import frc.robot.subsystems.vision.Vision;
 import frc.robot.subsystems.vision.VisionIO;
 import frc.robot.subsystems.vision.VisionIOPhotonVision;
@@ -60,7 +60,7 @@ import frc.robot.subsystems.wrist.IntakeIOSparkSim;
 import frc.robot.subsystems.wrist.SensorIO;
 import frc.robot.subsystems.wrist.SensorIOPWF;
 import frc.robot.subsystems.wrist.SensorIOSim;
-import frc.robot.subsystems.wrist.WristSubsystem;
+import frc.robot.subsystems.wrist.Wrist;
 
 public class RobotContainer {
     private final CommandXboxController joystick = new CommandXboxController(0);
@@ -70,12 +70,12 @@ public class RobotContainer {
     // Instanciate subsystems
     public Drive drive;
     public final Globals globals = new Globals();
-    public ApproachSubsystem approach;
-    public ElevatorSubsystem elevator;
-    public LEDSubsystem led;
+    public Approach approach;
+    public Elevator elevator;
+    public LED led;
     public Vision vision;
-    public WristSubsystem wrist;
-    public TowerSubsystem tower;
+    public Wrist wrist;
+    public Tower tower;
 
     /* Path follower */
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -166,10 +166,10 @@ public class RobotContainer {
                         new ModuleIOTalonFX(TunerConstants.BackLeft),
                         new ModuleIOTalonFX(TunerConstants.BackRight));
                 elevator = 
-                    new ElevatorSubsystem(
+                    new Elevator(
                         new ElevatorIOSparkFlex());
                 led = 
-                    new LEDSubsystem(
+                    new LED(
                         new LEDIOReal(0, 25));
                 vision = 
                     new Vision(
@@ -177,7 +177,7 @@ public class RobotContainer {
                         new VisionIOPhotonVision(Constants.Vision.camera0Name, Constants.Vision.robotToCamera0),
                         new VisionIOPhotonVision(Constants.Vision.camera1Name, Constants.Vision.robotToCamera1));
                 wrist = 
-                    new WristSubsystem(
+                    new Wrist(
                         new AngleIOSparkFlex(),
                         new IntakeIOSparkFlex(),
                         new SensorIOPWF());
@@ -192,10 +192,10 @@ public class RobotContainer {
                         new ModuleIOSim(TunerConstants.BackLeft),
                         new ModuleIOSim(TunerConstants.BackRight));
                 elevator = 
-                    new ElevatorSubsystem(
+                    new Elevator(
                         new ElevatorIOSparkSim());
                 led = 
-                    new LEDSubsystem(
+                    new LED(
                         new LEDIOSim());
                 vision = 
                     new Vision(
@@ -203,7 +203,7 @@ public class RobotContainer {
                         new VisionIOPhotonVisionSim(Constants.Vision.camera0Name, Constants.Vision.robotToCamera0, drive::getPose),
                         new VisionIOPhotonVisionSim(Constants.Vision.camera1Name, Constants.Vision.robotToCamera1, drive::getPose));
                 wrist = 
-                    new WristSubsystem(
+                    new Wrist(
                         new AngleIOSparkSim(), 
                         new IntakeIOSparkSim(), 
                         new SensorIOSim());
@@ -218,10 +218,10 @@ public class RobotContainer {
                         new ModuleIO() {},
                         new ModuleIO() {});
                 elevator = 
-                    new ElevatorSubsystem(
+                    new Elevator(
                         new ElevatorIO() {});
                 led = 
-                    new LEDSubsystem(
+                    new LED(
                         new LEDIO() {});
                 vision = 
                     new Vision(
@@ -229,15 +229,15 @@ public class RobotContainer {
                         new VisionIO() {},
                         new VisionIO() {});
                 wrist = 
-                    new WristSubsystem(
+                    new Wrist(
                         new AngleIO() {}, 
                         new IntakeIO() {}, 
                         new SensorIO() {});
                 break;
         }
 
-        approach = new ApproachSubsystem(drive);
-        tower = new TowerSubsystem(elevator, wrist, joystick);
+        approach = new Approach(drive);
+        tower = new Tower(elevator, wrist, joystick);
         
         // All named commands =========================
         NamedCommands.registerCommand("INTAKE_CORAL",              intakeCoral);

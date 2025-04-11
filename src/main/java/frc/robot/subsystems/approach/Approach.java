@@ -23,7 +23,7 @@ import frc.robot.subsystems.Globals;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.led.LEDmode;
 
-public class ApproachSubsystem extends SubsystemBase {
+public class Approach extends SubsystemBase {
 
   private final CommandScheduler scheduler = CommandScheduler.getInstance();
   private final Drive drive;
@@ -37,7 +37,7 @@ public class ApproachSubsystem extends SubsystemBase {
   private double pt0X;
   private double pt0Y;
 
-  public ApproachSubsystem(Drive drive) {
+  public Approach(Drive drive) {
     this.drive = drive;
   }
   

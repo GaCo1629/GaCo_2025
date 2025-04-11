@@ -15,14 +15,14 @@ import frc.robot.Constants;
 import frc.robot.commands.DefaultElevatorCmd;
 import frc.robot.subsystems.Globals;
 
-public class ElevatorSubsystem extends SubsystemBase {
+public class Elevator extends SubsystemBase {
   private final ElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
   private double lastGoalPositionMeters = Constants.Elevator.kElevatorMinHeightMeters;
 
   /** Creates a new ElevatorSubsystem. */
-  public ElevatorSubsystem(ElevatorIO io) {
+  public Elevator(ElevatorIO io) {
     this.io = io;
 
     setDefaultCommand(new DefaultElevatorCmd(this));

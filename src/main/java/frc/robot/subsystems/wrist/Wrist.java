@@ -14,7 +14,7 @@ import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.Utils;
 
-public class WristSubsystem extends SubsystemBase {
+public class Wrist extends SubsystemBase {
   private final AngleIO angleIO;
   private final IntakeIO intakeIO;
   private final SensorIO sensorIO;
@@ -24,7 +24,7 @@ public class WristSubsystem extends SubsystemBase {
   private final SensorIOInputsAutoLogged sensorInputs = new SensorIOInputsAutoLogged();
   
   /** Creates a new WristSubsystem. */
-  public WristSubsystem(AngleIO angleIO, IntakeIO intakeIO, SensorIO sensorIO) {
+  public Wrist(AngleIO angleIO, IntakeIO intakeIO, SensorIO sensorIO) {
     this.angleIO = angleIO;
     this.intakeIO = intakeIO;
     this.sensorIO = sensorIO;

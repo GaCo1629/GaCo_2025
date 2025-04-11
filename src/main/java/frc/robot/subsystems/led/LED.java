@@ -11,12 +11,12 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import frc.robot.subsystems.Globals;
 
-public class LEDSubsystem extends SubsystemBase {
+public class LED extends SubsystemBase {
   private final LEDIO io;
   private final LEDIOInputsAutoLogged inputs = new LEDIOInputsAutoLogged();
 
   /** Creates a new LED Strip. */
-  public LEDSubsystem(LEDIO io) {
+  public LED(LEDIO io) {
     this.io = io;
   }
 

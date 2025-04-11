@@ -6,14 +6,14 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.tower.TowerState;
-import frc.robot.subsystems.tower.TowerSubsystem;
+import frc.robot.subsystems.tower.Tower;
 
 public class WaitForTowerStateCmd extends Command {
-  TowerSubsystem tower;
+  Tower tower;
   TowerState     state;
 
   /** Creates a new TriggerEvent. */
-  public WaitForTowerStateCmd(TowerSubsystem tower, TowerState state) {
+  public WaitForTowerStateCmd(Tower tower, TowerState state) {
     this.tower = tower;
     this.state = state;
   }

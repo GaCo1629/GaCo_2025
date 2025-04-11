@@ -5,13 +5,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.robot.subsystems.wrist.WristSubsystem;
+import frc.robot.subsystems.wrist.Wrist;
 
 public class StopFinCmd extends InstantCommand {
 
-  WristSubsystem wrist;
+  Wrist wrist;
 
-  public StopFinCmd(WristSubsystem wrist) {
+  public StopFinCmd(Wrist wrist) {
     this.wrist = wrist;
   }
 

@@ -5,16 +5,16 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.elevator.ElevatorSubsystem;
+import frc.robot.subsystems.elevator.Elevator;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
 public class SetElevatorHeightCmd extends Command {
-  private ElevatorSubsystem elevatorSubsystem;
+  private Elevator elevatorSubsystem;
 
   private double position;
 
   /** Creates a new RunElevator. */
-  public SetElevatorHeightCmd(ElevatorSubsystem elevatorSubsystem, double position) {
+  public SetElevatorHeightCmd(Elevator elevatorSubsystem, double position) {
     // Use addRequirements() here to declare subsystem dependencies.
 
     this.elevatorSubsystem = elevatorSubsystem;

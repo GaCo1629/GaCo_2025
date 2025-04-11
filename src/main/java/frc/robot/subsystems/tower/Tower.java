@@ -14,17 +14,17 @@ import frc.robot.Constants;
 import frc.robot.Constants.Driver;
 import frc.robot.subsystems.Globals;
 import frc.robot.subsystems.approach.ApproachTarget;
-import frc.robot.subsystems.elevator.ElevatorSubsystem;
-import frc.robot.subsystems.wrist.WristSubsystem;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.wrist.Wrist;
 
-public class TowerSubsystem extends SubsystemBase {
+public class Tower extends SubsystemBase {
 
 	private TowerState currentState = TowerState.INIT;
 
 	private final Timer stateTimer = new Timer();
 
-	private final ElevatorSubsystem elevator;
-	private final WristSubsystem wrist;
+	private final Elevator elevator;
+	private final Wrist wrist;
 	private final CommandXboxController joystick;
 
 	private TowerEvent pendingEvent = TowerEvent.NONE;   
@@ -34,7 +34,7 @@ public class TowerSubsystem extends SubsystemBase {
 	private boolean goDirectAlgae = false;
 
 	/** Creates a new Tower. */
-	public TowerSubsystem(ElevatorSubsystem elevator, WristSubsystem wrist, CommandXboxController joystick) {
+	public Tower(Elevator elevator, Wrist wrist, CommandXboxController joystick) {
 		this.elevator = elevator;
 		this.wrist = wrist;
 		this.joystick = joystick;

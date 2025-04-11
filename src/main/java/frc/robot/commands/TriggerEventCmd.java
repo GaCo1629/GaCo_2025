@@ -6,14 +6,14 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.tower.TowerEvent;
-import frc.robot.subsystems.tower.TowerSubsystem;
+import frc.robot.subsystems.tower.Tower;
 
 public class TriggerEventCmd extends Command {
-  TowerSubsystem tower;
+  Tower tower;
   TowerEvent    event;
 
   /** Creates a new TriggerEvent. */
-  public TriggerEventCmd(TowerSubsystem tower, TowerEvent event) {
+  public TriggerEventCmd(Tower tower, TowerEvent event) {
     this.tower = tower;
     this.event = event;
   }
