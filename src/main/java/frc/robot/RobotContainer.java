@@ -4,28 +4,26 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.ctre.phoenix6.swerve.SwerveRequest;
+import org.ironmaple.simulation.SimulatedArena;
+import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.events.EventTrigger;
 
-import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.numbers.N3;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.util.sendable.Sendable;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+
+import frc.robot.Constants.Driver;
+import frc.robot.commands.DriveCommands;
 import frc.robot.commands.HomeElevatorCmd;
 import frc.robot.commands.JustIntakeCmd;
 import frc.robot.commands.TriggerEventCmd;
@@ -33,139 +31,234 @@ import frc.robot.commands.WaitForTowerStateCmd;
 import frc.robot.commands.ScoreAndGotoAlgaeLevel;
 import frc.robot.commands.WaitToSeeCoralCmd;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.ApproachSubsystem;
-import frc.robot.subsystems.ApproachTarget;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.WristSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.Globals;
-import frc.robot.subsystems.LEDSubsystem;
-import frc.robot.subsystems.TowerEvent;
-import frc.robot.subsystems.TowerState;
-import frc.robot.subsystems.TowerSubsystem;
-import frc.robot.Constants.Driver;
+import frc.robot.subsystems.approach.Approach;
+import frc.robot.subsystems.approach.ApproachTarget;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.subsystems.drive.GyroIO;
+import frc.robot.subsystems.drive.GyroIOPigeon2;
+import frc.robot.subsystems.drive.GyroIOSim;
+import frc.robot.subsystems.drive.ModuleIO;
+import frc.robot.subsystems.drive.ModuleIOTalonFXReal;
+import frc.robot.subsystems.drive.ModuleIOTalonFXSim;
+import frc.robot.subsystems.elevator.ElevatorIO;
+import frc.robot.subsystems.elevator.ElevatorIOSparkFlex;
+import frc.robot.subsystems.elevator.ElevatorIOSparkSim;
+import frc.robot.subsystems.elevator.Elevator;
+import frc.robot.subsystems.led.LEDIO;
+import frc.robot.subsystems.led.LEDIOReal;
+import frc.robot.subsystems.led.LEDIOSim;
+import frc.robot.subsystems.led.LED;
+import frc.robot.subsystems.tower.TowerEvent;
+import frc.robot.subsystems.tower.TowerState;
+import frc.robot.subsystems.tower.Tower;
+import frc.robot.subsystems.vision.Vision;
+import frc.robot.subsystems.vision.VisionIO;
+import frc.robot.subsystems.vision.VisionIOPhotonVision;
+import frc.robot.subsystems.vision.VisionIOPhotonVisionSim;
+import frc.robot.subsystems.wrist.AngleIO;
+import frc.robot.subsystems.wrist.AngleIOSparkFlex;
+import frc.robot.subsystems.wrist.AngleIOSparkSim;
+import frc.robot.subsystems.wrist.IntakeIO;
+import frc.robot.subsystems.wrist.IntakeIOSparkFlex;
+import frc.robot.subsystems.wrist.IntakeIOSparkSim;
+import frc.robot.subsystems.wrist.SensorIO;
+import frc.robot.subsystems.wrist.SensorIOPWF;
+import frc.robot.subsystems.wrist.SensorIOSim;
+import frc.robot.subsystems.wrist.Wrist;
 
 public class RobotContainer {
-    //public static final double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    //public static final double MaxAngularRate = RotationsPerSecond.of(1.5).in(RadiansPerSecond); // was 0.75
-
-    /* Setting up bindings for necessary control of the swerve drive platform */
-    private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
-            .withDeadband(Constants.Drivetrain.kMaxVelocityMPS * 0.08).withRotationalDeadband(Constants.Drivetrain.kMaxAngularVelocityRPS * 0.08) // Add a 8% deadband
-            .withDriveRequestType(DriveRequestType.Velocity); // Use closed-loop control for drive motors
-
-    //private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
-    private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric()
-            .withDriveRequestType(DriveRequestType.Velocity); // Use closed-loop control for drive motors
-
-    private final SwerveRequest.FieldCentricFacingAngle rotateTo = new SwerveRequest.FieldCentricFacingAngle()
-            .withDeadband(Constants.Drivetrain.kMaxVelocityMPS * 0.08)
-            .withRotationalDeadband(Constants.Drivetrain.kMaxAngularVelocityRPS * 0.08)
-            .withDriveRequestType(DriveRequestType.Velocity) // Use closed-loop control for drive motors
-            .withHeadingPID(Constants.Drivetrain.kPHeading, Constants.Drivetrain.kIHeading, Constants.Drivetrain.kDHeading);
-
-    private final Telemetry logger = new Telemetry(Constants.Drivetrain.kMaxVelocityMPS);
-
     private final CommandXboxController pilot = new CommandXboxController(0);
     private final CommandJoystick       copilot_1 = new CommandJoystick(1);
     private final CommandJoystick       copilot_2 = new CommandJoystick(2);
 
-    static final Transform3d robotToLeftCam = new Transform3d(new Translation3d(0.24, 0.27, 0.21), 
-                                                            new Rotation3d(0, Math.toRadians(-5), Math.toRadians(-45)));
-    static final Vector<N3> leftCamStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(5));
-  
-    static final Transform3d robotToRightCam = new Transform3d(new Translation3d(0.24, -0.27, 0.217), 
-                                                          new Rotation3d(0, Math.toRadians(-5), Math.toRadians(45)));
-    static final Vector<N3> rightCamStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(5));
-
     // Instanciate subsystems
-    public final Globals globals = new Globals();
-    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    public final ElevatorSubsystem elevator = new ElevatorSubsystem();
-    public final WristSubsystem wrist = new WristSubsystem();
-    public final TowerSubsystem tower = new TowerSubsystem(elevator, wrist, pilot);
-    public final VisionSubsystem leftVision = new VisionSubsystem(drivetrain, "LEFT_CAM", robotToLeftCam, leftCamStdDevs);
-    public final VisionSubsystem rightVision = new VisionSubsystem(drivetrain, "RIGHT_CAM", robotToRightCam, rightCamStdDevs);
-    public final ApproachSubsystem approach = new ApproachSubsystem(drivetrain);
-    public final LEDSubsystem led = new LEDSubsystem(0);
+    public Approach approach;
+    public Drive drive;
+    public Elevator elevator;
+    public Globals globals;
+    public LED led;
+    public Tower tower;
+    public Vision vision;
+    public Wrist wrist;
+
+    private SwerveDriveSimulation driveSimulation;
 
     /* Path follower */
-    private final SendableChooser<Command> autoChooser;
+    private final LoggedDashboardChooser<Command> autoChooser;
 
     /* Intake and Goto Commands */
-    private final JustIntakeCmd intakeAndGotoL1 = new JustIntakeCmd(tower, TowerEvent.GOTO_L1);
-    private final JustIntakeCmd intakeAndGotoL2 = new JustIntakeCmd(tower, TowerEvent.GOTO_L2);
-    private final JustIntakeCmd intakeAndGotoL3 = new JustIntakeCmd(tower, TowerEvent.GOTO_L3);
-    private final JustIntakeCmd intakeAndGotoL4 = new JustIntakeCmd(tower, TowerEvent.GOTO_L4);    
-    private final ScoreAndGotoAlgaeLevel scoreAndGotoAlgaeL2 = new ScoreAndGotoAlgaeLevel(tower, 2);
-    private final ScoreAndGotoAlgaeLevel scoreAndGotoAlgaeL3 = new ScoreAndGotoAlgaeLevel(tower, 3);
-    private final WaitToSeeCoralCmd waitToSeeCoral  = new WaitToSeeCoralCmd(tower);
+    private JustIntakeCmd intakeAndGotoL1;
+    private JustIntakeCmd intakeAndGotoL2;
+    private JustIntakeCmd intakeAndGotoL3;
+    private JustIntakeCmd intakeAndGotoL4;    
+    private ScoreAndGotoAlgaeLevel scoreAndGotoAlgaeL2;
+    private ScoreAndGotoAlgaeLevel scoreAndGotoAlgaeL3;
+    private WaitToSeeCoralCmd waitToSeeCoral;
 
     /* Event Trigger Commands */
-    private final TriggerEventCmd score = new TriggerEventCmd(tower, TowerEvent.SCORE);
-    private final TriggerEventCmd gotoL1 = new TriggerEventCmd(tower, TowerEvent.GOTO_L1);
-    private final TriggerEventCmd gotoL4 = new TriggerEventCmd(tower, TowerEvent.GOTO_L4);
+    private TriggerEventCmd score;
+    private TriggerEventCmd gotoL1;
+    private TriggerEventCmd gotoL4;
 
     /* Waiting Commands */
-    private final WaitForTowerStateCmd waitForAlgae = new WaitForTowerStateCmd(tower, TowerState.WAITING_FOR_ALGAE);
-    private final WaitForTowerStateCmd waitForLowering = new WaitForTowerStateCmd(tower, TowerState.FINISHING_SCORING_CORAL);
-    private final WaitForTowerStateCmd waitForChangingAlgaeHeight = new WaitForTowerStateCmd(tower, TowerState.CHANGING_ALGAE_HEIGHT);
+    private WaitForTowerStateCmd waitForAlgae;
+    private WaitForTowerStateCmd waitForLowering;
+    private WaitForTowerStateCmd waitForChangingAlgaeHeight;
 
     /* Home Elevator Command */
-    private final HomeElevatorCmd homeElevator = new HomeElevatorCmd(elevator, tower);
+    private HomeElevatorCmd homeElevator;
 
     /* Instant Commands */
-    private final Command scoreInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.SCORE));
-    private final Command intakeCoralInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL));
+    private Command scoreInstant;
+    private Command intakeCoralInstant;
 
-    private final Command intakeLowAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE));
-    private final Command intakeHighAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE));
+    private Command intakeLowAlgaeInstant;
+    private Command intakeHighAlgaeInstant;
 
-    private final Command seedFieldCentricInstant = drivetrain.runOnce(() -> drivetrain.seedFieldCentric());
-    private final Command stopDrivetrainInstant = drivetrain.runOnce(() -> drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.0).withVelocityY(0.0)));
+    private Command seedFieldCentricInstant;
+    private Command stopDrivetrainInstant;
     
-    private final Command enableSafetyOverrideInstant = leftVision.runOnce(() -> leftVision.setSafetyOverride(true))
-                                                        .andThen(rightVision.runOnce(() -> rightVision.setSafetyOverride(true)));
+    private Command enableSafetyOverrideInstant;
+    private Command homeTowerInstant;
+    private Command tiltWristNearInstant;
+    private Command tiltWristFarInstant;
 
-    private final Command homeTowerInstant = tower.runOnce(() -> tower.homeTower());
-    private final Command tiltWristNearInstant = tower.runOnce(() -> tower.forceWristTilt(Constants.Wrist.kSafeAngleDegrees));
-    private final Command tiltWristFarInstant = tower.runOnce(() -> tower.forceWristTilt(Constants.Wrist.kAlgaeReleaseAngleDegrees));
+    private Command gotoL1Instant;
+    private Command gotoL2Instant;
+    private Command gotoL3Instant;
+    private Command gotoL4Instant;
 
-    private final Command gotoL1Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L1));
-    private final Command gotoL2Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L2));
-    private final Command gotoL3Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L3));
-    private final Command gotoL4Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L4));
-
-    private final Command startApproachInstant = approach.runOnce(() -> approach.startApproach());
-    private final Command reefAInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_A));
-    private final Command reefBInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_B));
-    private final Command reefABInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_AB));
-    private final Command reefCInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_C));
-    private final Command reefDInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_D));
-    private final Command reefCDInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_CD));
-    private final Command reefEInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_E));
-    private final Command reefFInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_F));
-    private final Command reefEFInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_EF));
-    private final Command reefGInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_G));
-    private final Command reefHInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_H));
-    private final Command reefGHInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_GH));
-    private final Command reefIInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_I));
-    private final Command reefJInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_J));
-    private final Command reefIJInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_IJ));
-    private final Command reefKInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_K));
-    private final Command reefLInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_L));
-    private final Command reefKLInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_KL));
-    private final Command approachBargeInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.BARGE));
-    private final Command approachProcessorInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.PROCESSOR));
+    private Command startApproachInstant;
+    private Command reefAInstant;
+    private Command reefBInstant;
+    private Command reefABInstant;
+    private Command reefCInstant;
+    private Command reefDInstant;
+    private Command reefCDInstant;
+    private Command reefEInstant;
+    private Command reefFInstant;
+    private Command reefEFInstant;
+    private Command reefGInstant;
+    private Command reefHInstant;
+    private Command reefGHInstant;
+    private Command reefIInstant;
+    private Command reefJInstant;
+    private Command reefIJInstant;
+    private Command reefKInstant;
+    private Command reefLInstant;
+    private Command reefKLInstant;
+    private Command approachBargeInstant;
+    private Command approachProcessorInstant;
 
     /* Robot Centric Movement Commands */
-    private final Command robotCentricForward = drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.75).withVelocityY(0));
-    private final Command robotCentricBackward = drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.75).withVelocityY(0));
-    private final Command robotCentricLeft = drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.0).withVelocityY(0.25));
-    private final Command robotCentricRight = drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.0).withVelocityY(-0.25));
+    private Command robotCentricForward;
+    private Command robotCentricBackward;
+    private Command robotCentricLeft;
+    private Command robotCentricRight;
 
     public RobotContainer() {
+        switch (Constants.currentMode) {
+            case REAL:
+                // Real robot, instantiate hardware IO implementations
+                drive =
+                    new Drive(
+                        new GyroIOPigeon2(),
+                        new ModuleIOTalonFXReal(TunerConstants.FrontLeft),
+                        new ModuleIOTalonFXReal(TunerConstants.FrontRight),
+                        new ModuleIOTalonFXReal(TunerConstants.BackLeft),
+                        new ModuleIOTalonFXReal(TunerConstants.BackRight),
+                        (pose) -> {});
+                elevator = 
+                    new Elevator(
+                        new ElevatorIOSparkFlex());
+                led = 
+                    new LED(
+                        new LEDIOReal(0, 25));
+                vision = 
+                    new Vision(
+                        drive::addVisionMeasurement, 
+                        new VisionIOPhotonVision(Constants.Vision.camera0Name, Constants.Vision.robotToCamera0),
+                        new VisionIOPhotonVision(Constants.Vision.camera1Name, Constants.Vision.robotToCamera1));
+                wrist = 
+                    new Wrist(
+                        new AngleIOSparkFlex(),
+                        new IntakeIOSparkFlex(),
+                        new SensorIOPWF());
+                break;
+            case SIM:
+                // Sim robot, instantiate physics sim IO implementations
+                driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
+                SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
+                drive =
+                    new Drive(
+                        new GyroIOSim(driveSimulation.getGyroSimulation()),
+                        new ModuleIOTalonFXSim(
+                            TunerConstants.FrontLeft, 
+                            driveSimulation.getModules()[0]),
+                        new ModuleIOTalonFXSim(
+                            TunerConstants.FrontRight, 
+                            driveSimulation.getModules()[1]),
+                        new ModuleIOTalonFXSim(
+                            TunerConstants.BackLeft, 
+                            driveSimulation.getModules()[2]),
+                        new ModuleIOTalonFXSim(
+                            TunerConstants.BackRight, 
+                            driveSimulation.getModules()[3]),
+                        driveSimulation::setSimulationWorldPose);
+                elevator = 
+                    new Elevator(
+                        new ElevatorIOSparkSim(
+                            new ElevatorIOSparkFlex()));
+                led = 
+                    new LED(
+                        new LEDIOSim(0, 25));
+                vision = 
+                    new Vision(
+                        drive::addVisionMeasurement, 
+                        new VisionIOPhotonVisionSim(Constants.Vision.camera0Name, Constants.Vision.robotToCamera0, drive::getPose),
+                        new VisionIOPhotonVisionSim(Constants.Vision.camera1Name, Constants.Vision.robotToCamera1, drive::getPose));
+                wrist = 
+                    new Wrist(
+                        new AngleIOSparkSim(
+                            new AngleIOSparkFlex()), 
+                        new IntakeIOSparkSim(
+                            new IntakeIOSparkFlex()), 
+                        new SensorIOSim());
+                break;
+            default:
+                // Replayed robot, disable IO implementations
+                drive =
+                    new Drive(
+                        new GyroIO() {},
+                        new ModuleIO() {},
+                        new ModuleIO() {},
+                        new ModuleIO() {},
+                        new ModuleIO() {},
+                        (pose) -> {});
+                elevator = 
+                    new Elevator(
+                        new ElevatorIO() {});
+                led = 
+                    new LED(
+                        new LEDIO() {});
+                vision = 
+                    new Vision(
+                        drive::addVisionMeasurement, 
+                        new VisionIO() {},
+                        new VisionIO() {});
+                wrist = 
+                    new Wrist(
+                        new AngleIO() {}, 
+                        new IntakeIO() {}, 
+                        new SensorIO() {});
+                break;
+        }
+        approach = new Approach(drive);
+        globals = new Globals();
+        tower = new Tower(elevator, wrist, pilot);
+
+        instantiateCommands();
         
         // All named commands =========================
         NamedCommands.registerCommand("INTAKE_AND_GOTO_L1",        intakeAndGotoL1);  
@@ -190,49 +283,38 @@ public class RobotContainer {
         new EventTrigger("GOTO_L4_ALGAE").onTrue(gotoL4);
         
         // Configure Auto Chooser  ===============================
-        autoChooser = AutoBuilder.buildAutoChooser("None");
-        SmartDashboard.putData("Auto Mode", autoChooser);
+        autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-        // Send drive module data to dashboard
-        SmartDashboard.putData("Swerve Drive", new Sendable() {
-            @Override
-            public void initSendable(SendableBuilder builder) {
-              builder.setSmartDashboardType("SwerveDrive");
-          
-              builder.addDoubleProperty("Front Left Angle", () -> drivetrain.getModule(0).getPosition(false).angle.getRadians(), null);
-              builder.addDoubleProperty("Front Left Velocity", () -> drivetrain.getModule(0).getDriveMotor().getVelocity().getValueAsDouble(), null);
-          
-              builder.addDoubleProperty("Front Right Angle", () -> drivetrain.getModule(1).getPosition(false).angle.getRadians(), null);
-              builder.addDoubleProperty("Front Right Velocity", () -> drivetrain.getModule(1).getDriveMotor().getVelocity().getValueAsDouble(), null);
-          
-              builder.addDoubleProperty("Back Left Angle", () -> drivetrain.getModule(2).getPosition(false).angle.getRadians(), null);
-              builder.addDoubleProperty("Back Left Velocity", () -> drivetrain.getModule(2).getDriveMotor().getVelocity().getValueAsDouble(), null);
-          
-              builder.addDoubleProperty("Back Right Angle", () -> drivetrain.getModule(3).getPosition(false).angle.getRadians(), null);
-              builder.addDoubleProperty("Back Right Velocity", () -> drivetrain.getModule(3).getDriveMotor().getVelocity().getValueAsDouble(), null);
-          
-              builder.addDoubleProperty("Robot Angle", () -> drivetrain.getRotation3d().getMeasureAngle().baseUnitMagnitude(), null);
-            }
-          });
+        // Set up SysId routines
+        autoChooser.addOption(
+            "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+        autoChooser.addOption(
+            "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+        autoChooser.addOption(
+            "Drive SysId (Quasistatic Forward)",
+            drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        autoChooser.addOption(
+            "Drive SysId (Quasistatic Reverse)",
+            drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        autoChooser.addOption(
+            "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        autoChooser.addOption(
+            "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
   
         configureBindings();
-
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
-        drivetrain.setDefaultCommand(
-            // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(-pilot.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed * tower.getTowerSpeedSafetyFactor()) // Drive forward with negative Y (forward)
-                    .withVelocityY(-pilot.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed  * tower.getTowerSpeedSafetyFactor()) // Drive left with negative X (left)
-                    .withRotationalRate(-pilot.getRightX() * Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Driver.kMaxTurnSpeed * tower.getTowerSpeedSafetyFactor()) // Drive counterclockwise with negative X (left)
-            )
-        );
 
         // avoid the PathPlanner startup delay....
         FollowPathCommand.warmupCommand().schedule();
     }
 
     private void configureBindings() {
+        drive.setDefaultCommand(
+            DriveCommands.joystickDrive(
+                drive, 
+                () -> -pilot.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed * tower.getTowerSpeedSafetyFactor(), 
+                () -> -pilot.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed  * tower.getTowerSpeedSafetyFactor(), 
+                () -> -pilot.getRightX() * Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Driver.kMaxTurnSpeed * tower.getTowerSpeedSafetyFactor()
+            ));
 
         // Driver Buttons
         pilot.rightTrigger(0.5).onTrue(scoreInstant);  // score coral or algae
@@ -245,20 +327,20 @@ public class RobotContainer {
 
         // Change to .toggleOnTrue to make it toggle on/off when the button is pressed
         pilot.leftBumper().onTrue(intakeCoralInstant)
-            .whileTrue(drivetrain.applyRequest(() -> 
-                    rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(13).get().getRotation().toRotation2d())
-                        .withVelocityX(-pilot.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
-                        .withVelocityY(-pilot.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
-                        .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
-                    ));  // collect coral left side
+            .whileTrue(DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -pilot.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed * tower.getTowerSpeedSafetyFactor(), 
+                () -> -pilot.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed  * tower.getTowerSpeedSafetyFactor(), 
+                () -> Constants.kFieldLayout.getTagPose(13).get().getRotation().toRotation2d()
+            ));  // collect coral left side
 
         pilot.rightBumper().onTrue(intakeCoralInstant)
-            .whileTrue(drivetrain.applyRequest(() -> 
-                    rotateTo.withTargetDirection(Constants.kFieldLayout.getTagPose(12).get().getRotation().toRotation2d())
-                        .withVelocityX(-pilot.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
-                        .withVelocityY(-pilot.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Approach.maxApproachLinearVelocityPercent * 1.25 * tower.getTowerSpeedSafetyFactor()) // was max 2.5m/s
-                        .withMaxAbsRotationalRate(Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent  * tower.getTowerSpeedSafetyFactor()) // was max 0.75*PI
-                    )); // collect coral right side
+            .whileTrue(DriveCommands.joystickDriveAtAngle(
+                drive,
+                () -> -pilot.getLeftY() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed * tower.getTowerSpeedSafetyFactor(), 
+                () -> -pilot.getLeftX() * Constants.Drivetrain.kMaxVelocityMPS * Constants.Driver.kMaxDriveSpeed  * tower.getTowerSpeedSafetyFactor(), 
+                () -> Constants.kFieldLayout.getTagPose(12).get().getRotation().toRotation2d()
+            ));  // collect coral left side
 
         pilot.y().onTrue(intakeHighAlgaeInstant);
         pilot.a().onTrue(intakeLowAlgaeInstant);
@@ -307,12 +389,101 @@ public class RobotContainer {
         copilot_2.button(Driver.pose_g).onTrue(reefGInstant);
         copilot_2.button(Driver.pose_h).onTrue(reefHInstant);
         copilot_2.button(Driver.pose_gha).onTrue(reefGHInstant);
-       
-        drivetrain.registerTelemetry(logger::telemeterize);
+    }
+
+    private void instantiateCommands() {
+        /* Intake and Goto Commands */
+        intakeAndGotoL1 = new JustIntakeCmd(tower, TowerEvent.GOTO_L1);
+        intakeAndGotoL2 = new JustIntakeCmd(tower, TowerEvent.GOTO_L2);
+        intakeAndGotoL3 = new JustIntakeCmd(tower, TowerEvent.GOTO_L3);
+        intakeAndGotoL4 = new JustIntakeCmd(tower, TowerEvent.GOTO_L4);    
+        scoreAndGotoAlgaeL2 = new ScoreAndGotoAlgaeLevel(tower, 2);
+        scoreAndGotoAlgaeL3 = new ScoreAndGotoAlgaeLevel(tower, 3);
+        waitToSeeCoral  = new WaitToSeeCoralCmd(tower);
+
+        /* Event Trigger Commands */
+        score = new TriggerEventCmd(tower, TowerEvent.SCORE);
+        gotoL1 = new TriggerEventCmd(tower, TowerEvent.GOTO_L1);
+        gotoL4 = new TriggerEventCmd(tower, TowerEvent.GOTO_L4);
+
+        /* Waiting Commands */
+        waitForAlgae = new WaitForTowerStateCmd(tower, TowerState.WAITING_FOR_ALGAE);
+        waitForLowering = new WaitForTowerStateCmd(tower, TowerState.FINISHING_SCORING_CORAL);
+        waitForChangingAlgaeHeight = new WaitForTowerStateCmd(tower, TowerState.CHANGING_ALGAE_HEIGHT);
+
+        /* Home Elevator Command */
+        homeElevator = new HomeElevatorCmd(elevator, tower);
+
+        /* Instant Commands */
+        scoreInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.SCORE));
+        intakeCoralInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL));
+
+        intakeLowAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE));
+        intakeHighAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE));
+
+        seedFieldCentricInstant = drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true);
+        stopDrivetrainInstant = drive.runOnce(drive::stop);
+    
+        enableSafetyOverrideInstant = vision.runOnce(() -> vision.setSafetyOverride(true));
+
+        homeTowerInstant = tower.runOnce(() -> tower.homeTower());
+        tiltWristNearInstant = tower.runOnce(() -> tower.forceWristTilt(Constants.Wrist.kSafeAngleDegrees));
+        tiltWristFarInstant = tower.runOnce(() -> tower.forceWristTilt(Constants.Wrist.kAlgaeReleaseAngleDegrees));
+
+        gotoL1Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L1));
+        gotoL2Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L2));
+        gotoL3Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L3));
+        gotoL4Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L4));
+
+        startApproachInstant = approach.runOnce(() -> approach.startApproach());
+        reefAInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_A));
+        reefBInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_B));
+        reefABInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_AB));
+        reefCInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_C));
+        reefDInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_D));
+        reefCDInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_CD));
+        reefEInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_E));
+        reefFInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_F));
+        reefEFInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_EF));
+        reefGInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_G));
+        reefHInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_H));
+        reefGHInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_GH));
+        reefIInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_I));
+        reefJInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_J));
+        reefIJInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_IJ));
+        reefKInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_K));
+        reefLInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_L));
+        reefKLInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_KL));
+        approachBargeInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.BARGE));
+        approachProcessorInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.PROCESSOR));
+
+        /* Robot Centric Movement Commands */
+        robotCentricForward = drive.runOnce(() -> drive.runVelocity(new ChassisSpeeds(0.75, 0, 0)));
+        robotCentricBackward = drive.runOnce(() -> drive.runVelocity(new ChassisSpeeds(-0.75, 0, 0)));
+        robotCentricLeft = drive.runOnce(() -> drive.runVelocity(new ChassisSpeeds(0, 0.25, 0)));
+        robotCentricRight = drive.runOnce(() -> drive.runVelocity(new ChassisSpeeds(0, -0.25, 0)));
     }
 
     public Command getAutonomousCommand() {
         /* Run the path selected from the auto chooser */
-        return autoChooser.getSelected();
+        return autoChooser.get();
+    }
+
+    public void resetSimulationField() {
+        if (Constants.currentMode != Constants.Mode.SIM) return;
+
+        driveSimulation.setSimulationWorldPose(new Pose2d(3, 3, new Rotation2d()));
+        SimulatedArena.getInstance().resetFieldForAuto();
+    }
+
+    public void updateSimulation() {
+        if (Constants.currentMode != Constants.Mode.SIM) return;
+
+        SimulatedArena.getInstance().simulationPeriodic();
+        Logger.recordOutput("FieldSimulation/RobotPosition", driveSimulation.getSimulatedDriveTrainPose());
+        Logger.recordOutput(
+                "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
+        Logger.recordOutput(
+                "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
     }
 }
