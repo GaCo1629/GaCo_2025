@@ -27,16 +27,13 @@ public class ElevatorIOSparkSim implements ElevatorIO {
 
     private final ElevatorSim sim =
         new ElevatorSim(
+            Elevator.kV / Elevator.kRelativeEncoderScaleRevToMeters,
+            Elevator.kA,
             gearbox, 
-            Elevator.kElevatorGearing, 
-            Elevator.kElevatorCarriageMassKg, 
-            Elevator.kElevatorDrumRadius, 
-            Elevator.kElevatorMinHeightMeters, 
-            Elevator.kElevatorMaxHeightMeters, 
+            Constants.Elevator.kElevatorMinHeightMeters, 
+            Constants.Elevator.kElevatorMaxHeightMeters + Constants.Elevator.kElevatorMinHeightMeters, 
             true, 
-            Elevator.elevatorHomeHeightMeters, 
-            0.01,
-            0.0);
+            Constants.Elevator.elevatorHomeHeightMeters);
 
     private final SparkFlex[] elevatorMotors;
 
@@ -54,15 +51,18 @@ public class ElevatorIOSparkSim implements ElevatorIO {
 
     public ElevatorIOSparkSim(ElevatorIOSparkFlex io) {
         elevatorMotors = io.getMotors();
+
         centerElevatorMotor = new SparkFlexSim(
             elevatorMotors[1], 
             gearbox);
         elevatorController = elevatorMotors[1].getClosedLoopController();
         elevatorEncoder = centerElevatorMotor.getRelativeEncoderSim();
+        
         elevatorFeedforward = new ElevatorFeedforward(
             Elevator.kS, 
             Elevator.kG, 
             Elevator.kV);
+
         elevatorTrapezoidProfile = new TrapezoidProfile(
             new Constraints(
                 elevatorFeedforward.maxAchievableVelocity(
@@ -73,13 +73,13 @@ public class ElevatorIOSparkSim implements ElevatorIO {
 
     @Override
     public void updateInputs(ElevatorIOInputs inputs) {
-        sim.setInputVoltage(
-            centerElevatorMotor.getAppliedOutput() * centerElevatorMotor.getBusVoltage());
+        sim.setInput(
+            centerElevatorMotor.getAppliedOutput() * RoboRioSim.getVInVoltage());
         sim.update(Constants.kDt);
 
         centerElevatorMotor.iterate(
-            sim.getVelocityMetersPerSecond(), 
-            RoboRioSim.getVInVoltage(), 
+            sim.getVelocityMetersPerSecond(),
+            RoboRioSim.getVInVoltage(),
             Constants.kDt);
 
         RoboRioSim.setVInVoltage(
@@ -87,31 +87,18 @@ public class ElevatorIOSparkSim implements ElevatorIO {
                 sim.getCurrentDrawAmps()));
 
         inputs.encoderConnected = true;
-        inputs.encoderPositionMeters = centerElevatorMotor.getPosition();
-        inputs.encoderVelocityMetersPerSec = centerElevatorMotor.getVelocity();
-
-        inputs.motor1Connected = true;
-        inputs.motor1PositionMeters = centerElevatorMotor.getPosition();
-        inputs.motor1VelocityMetersPerSec = centerElevatorMotor.getVelocity();
-        inputs.motor1AppliedVolts = 
-            centerElevatorMotor.getAppliedOutput() * centerElevatorMotor.getBusVoltage();
-        inputs.motor1CurrentAmps = centerElevatorMotor.getMotorCurrent();
+        inputs.encoderPositionMeters = elevatorEncoder.getPosition();
+        inputs.encoderVelocityMetersPerSec = elevatorEncoder.getVelocity();
 
         inputs.motor2Connected = true;
         inputs.motor2PositionMeters = centerElevatorMotor.getPosition();
         inputs.motor2VelocityMetersPerSec = centerElevatorMotor.getVelocity();
         inputs.motor2AppliedVolts = 
-            centerElevatorMotor.getAppliedOutput() * centerElevatorMotor.getBusVoltage();
+            centerElevatorMotor.getAppliedOutput() * RoboRioSim.getVInVoltage();
         inputs.motor2CurrentAmps = centerElevatorMotor.getMotorCurrent();
 
-        inputs.motor3Connected = true;
-        inputs.motor3PositionMeters = centerElevatorMotor.getPosition();
-        inputs.motor3VelocityMetersPerSec = centerElevatorMotor.getVelocity();
-        inputs.motor3AppliedVolts = 
-            centerElevatorMotor.getAppliedOutput() * centerElevatorMotor.getBusVoltage();
-        inputs.motor3CurrentAmps = centerElevatorMotor.getMotorCurrent();
-
         inputs.goalPositionMeters = elevatorGoal.position;
+        inputs.totalCurrent = sim.getCurrentDrawAmps();
     }
 
     @Override
@@ -141,9 +128,11 @@ public class ElevatorIOSparkSim implements ElevatorIO {
                 Constants.kDt, 
                 elevatorSetpoint, 
                 elevatorGoal);
+
         double arbFF = 
             elevatorFeedforward.calculate(
                 elevatorSetpoint.velocity);
+                
         elevatorController.setReference(
             elevatorSetpoint.position, 
             ControlType.kPosition, 

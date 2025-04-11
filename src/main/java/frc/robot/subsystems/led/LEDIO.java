@@ -16,6 +16,8 @@ public interface LEDIO {
         public int stripLength = 0;
     }
 
+    public default void createViews() {}
+
     public default void updateInputs(LEDIOInputs inputs) {}
 
     public default void setLEDMode(LEDmode mode) {}

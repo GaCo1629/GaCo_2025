@@ -29,7 +29,7 @@ public class AngleIOSparkSim implements AngleIO {
             LinearSystemId.createDCMotorSystem(
                 gearbox, 
                 0.004, 
-                Wrist.kAngleGearing), // 4:1 Gearing
+                Wrist.kAngleGearing),
             gearbox);
     
     private final SparkFlex angleSpark;

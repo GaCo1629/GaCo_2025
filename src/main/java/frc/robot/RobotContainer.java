@@ -68,91 +68,91 @@ public class RobotContainer {
     private final CommandJoystick       copilot_2 = new CommandJoystick(2);
 
     // Instanciate subsystems
-    public Drive drive;
-    public final Globals globals = new Globals();
     public Approach approach;
+    public Drive drive;
     public Elevator elevator;
+    public Globals globals;
     public LED led;
+    public Tower tower;
     public Vision vision;
     public Wrist wrist;
-    public Tower tower;
 
     /* Path follower */
     private final LoggedDashboardChooser<Command> autoChooser;
 
     /* Intake and Goto Commands */
-    private final JustIntakeCmd intakeAndGotoL1 = new JustIntakeCmd(tower, TowerEvent.GOTO_L1);
-    private final JustIntakeCmd intakeAndGotoL2 = new JustIntakeCmd(tower, TowerEvent.GOTO_L2);
-    private final JustIntakeCmd intakeAndGotoL3 = new JustIntakeCmd(tower, TowerEvent.GOTO_L3);
-    private final JustIntakeCmd intakeAndGotoL4 = new JustIntakeCmd(tower, TowerEvent.GOTO_L4);    
-    private final WaitToSeeCoralCmd waitToSeeCoral  = new WaitToSeeCoralCmd(tower);
+    private JustIntakeCmd intakeAndGotoL1;
+    private JustIntakeCmd intakeAndGotoL2;
+    private JustIntakeCmd intakeAndGotoL3;
+    private JustIntakeCmd intakeAndGotoL4;    
+    private WaitToSeeCoralCmd waitToSeeCoral;
 
     /* Event Trigger Commands */
-    private final TriggerEventCmd intakeCoral = new TriggerEventCmd(tower, TowerEvent.INTAKE_CORAL);
-    private final TriggerEventCmd score = new TriggerEventCmd(tower, TowerEvent.SCORE);
-    private final TriggerEventCmd intakeLowAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_LOW_ALGAE);
-    private final TriggerEventCmd intakeHighAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_HIGH_ALGAE);
-    private final TriggerEventCmd gotoL1 = new TriggerEventCmd(tower, TowerEvent.GOTO_L1);
-    private final TriggerEventCmd gotoL3 = new TriggerEventCmd(tower, TowerEvent.GOTO_L3);
-    private final TriggerEventCmd gotoL4 = new TriggerEventCmd(tower, TowerEvent.GOTO_L4);
+    private TriggerEventCmd intakeCoral;
+    private TriggerEventCmd score;
+    private TriggerEventCmd intakeLowAlgae;
+    private TriggerEventCmd intakeHighAlgae;
+    private TriggerEventCmd gotoL1;
+    private TriggerEventCmd gotoL3;
+    private TriggerEventCmd gotoL4;
 
     /* Waiting Commands */
-    private final WaitForTowerStateCmd waitForAlgae = new WaitForTowerStateCmd(tower, TowerState.WAITING_FOR_ALGAE);
-    private final WaitForTowerStateCmd waitForLowering = new WaitForTowerStateCmd(tower, TowerState.PAUSING_AFTER_SCORING_CORAL);
-    private final WaitForTowerStateCmd waitForHome = new WaitForTowerStateCmd(tower, TowerState.HOME);
+    private WaitForTowerStateCmd waitForAlgae;
+    private WaitForTowerStateCmd waitForLowering;
+    private WaitForTowerStateCmd waitForHome;
 
     /* Home Elevator Command */
-    private final HomeElevatorCmd homeElevator = new HomeElevatorCmd(elevator, tower);
+    private HomeElevatorCmd homeElevator;
 
     /* Instant Commands */
-    private final Command scoreInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.SCORE));
-    private final Command intakeCoralInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL));
+    private Command scoreInstant;
+    private Command intakeCoralInstant;
 
-    private final Command intakeLowAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE));
-    private final Command intakeHighAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE));
+    private Command intakeLowAlgaeInstant;
+    private Command intakeHighAlgaeInstant;
 
-    private final Command seedFieldCentricInstant = drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true);
-    private final Command stopDrivetrainInstant = drive.runOnce(drive::stop);
+    private Command seedFieldCentricInstant;
+    private Command stopDrivetrainInstant;
     
-    private final Command enableSafetyOverrideInstant = vision.runOnce(() -> vision.setSafetyOverride(true));
+    private Command enableSafetyOverrideInstant;
     //                                                    .andThen(rightVision.runOnce(() -> rightVision.setSafetyOverride(true)));
-    private final Command enableDirectToAlgaeInstant = tower.runOnce(() -> tower.enableGoToDirectAlgae());
+    private Command enableDirectToAlgaeInstant;
 
-    private final Command homeTowerInstant = tower.runOnce(() -> tower.homeTower());
-    private final Command tiltTowerInstant = tower.runOnce(() -> tower.tiltForward());
+    private Command homeTowerInstant;
+    private Command tiltTowerInstant;
 
-    private final Command gotoL1Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L1));
-    private final Command gotoL2Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L2));
-    private final Command gotoL3Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L3));
-    private final Command gotoL4Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L4));
+    private Command gotoL1Instant;
+    private Command gotoL2Instant;
+    private Command gotoL3Instant;
+    private Command gotoL4Instant;
 
-    private final Command startApproachInstant = approach.runOnce(() -> approach.startApproach());
-    private final Command reefAInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_A));
-    private final Command reefBInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_B));
-    private final Command reefABInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_AB));
-    private final Command reefCInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_C));
-    private final Command reefDInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_D));
-    private final Command reefCDInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_CD));
-    private final Command reefEInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_E));
-    private final Command reefFInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_F));
-    private final Command reefEFInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_EF));
-    private final Command reefGInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_G));
-    private final Command reefHInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_H));
-    private final Command reefGHInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_GH));
-    private final Command reefIInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_I));
-    private final Command reefJInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_J));
-    private final Command reefIJInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_IJ));
-    private final Command reefKInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_K));
-    private final Command reefLInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_L));
-    private final Command reefKLInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_KL));
-    private final Command approachBargeInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.BARGE));
-    private final Command approachProcessorInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.PROCESSOR));
+    private Command startApproachInstant;
+    private Command reefAInstant;
+    private Command reefBInstant;
+    private Command reefABInstant;
+    private Command reefCInstant;
+    private Command reefDInstant;
+    private Command reefCDInstant;
+    private Command reefEInstant;
+    private Command reefFInstant;
+    private Command reefEFInstant;
+    private Command reefGInstant;
+    private Command reefHInstant;
+    private Command reefGHInstant;
+    private Command reefIInstant;
+    private Command reefJInstant;
+    private Command reefIJInstant;
+    private Command reefKInstant;
+    private Command reefLInstant;
+    private Command reefKLInstant;
+    private Command approachBargeInstant;
+    private Command approachProcessorInstant;
 
     /* Robot Centric Movement Commands */
-    private final Command robotCentricForward = drive.runOnce(() -> drive.runVelocity(new ChassisSpeeds(0.75, 0, 0)));
-    private final Command robotCentricBackward = drive.runOnce(() -> drive.runVelocity(new ChassisSpeeds(-0.75, 0, 0)));
-    private final Command robotCentricLeft = drive.runOnce(() -> drive.runVelocity(new ChassisSpeeds(0, 0.25, 0)));
-    private final Command robotCentricRight = drive.runOnce(() -> drive.runVelocity(new ChassisSpeeds(0, -0.25, 0)));
+    private Command robotCentricForward;
+    private Command robotCentricBackward;
+    private Command robotCentricLeft;
+    private Command robotCentricRight;
 
     public RobotContainer() {
         switch (Constants.currentMode) {
@@ -238,9 +238,11 @@ public class RobotContainer {
                         new SensorIO() {});
                 break;
         }
-
         approach = new Approach(drive);
+        globals = new Globals();
         tower = new Tower(elevator, wrist, joystick);
+
+        instantiateCommands();
         
         // All named commands =========================
         NamedCommands.registerCommand("INTAKE_CORAL",              intakeCoral);
@@ -378,6 +380,82 @@ public class RobotContainer {
         copilot_2.button(Driver.pose_g).onTrue(reefGInstant);
         copilot_2.button(Driver.pose_h).onTrue(reefHInstant);
         copilot_2.button(Driver.pose_gha).onTrue(reefGHInstant);
+    }
+
+    private void instantiateCommands() {
+        /* Intake and Goto Commands */
+        intakeAndGotoL1 = new JustIntakeCmd(tower, TowerEvent.GOTO_L1);
+        intakeAndGotoL2 = new JustIntakeCmd(tower, TowerEvent.GOTO_L2);
+        intakeAndGotoL3 = new JustIntakeCmd(tower, TowerEvent.GOTO_L3);
+        intakeAndGotoL4 = new JustIntakeCmd(tower, TowerEvent.GOTO_L4);    
+        waitToSeeCoral  = new WaitToSeeCoralCmd(tower);
+
+        /* Event Trigger Commands */
+        intakeCoral = new TriggerEventCmd(tower, TowerEvent.INTAKE_CORAL);
+        score = new TriggerEventCmd(tower, TowerEvent.SCORE);
+        intakeLowAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_LOW_ALGAE);
+        intakeHighAlgae = new TriggerEventCmd(tower, TowerEvent.INTAKE_HIGH_ALGAE);
+        gotoL1 = new TriggerEventCmd(tower, TowerEvent.GOTO_L1);
+        gotoL3 = new TriggerEventCmd(tower, TowerEvent.GOTO_L3);
+        gotoL4 = new TriggerEventCmd(tower, TowerEvent.GOTO_L4);
+
+        /* Waiting Commands */
+        waitForAlgae = new WaitForTowerStateCmd(tower, TowerState.WAITING_FOR_ALGAE);
+        waitForLowering = new WaitForTowerStateCmd(tower, TowerState.PAUSING_AFTER_SCORING_CORAL);
+        waitForHome = new WaitForTowerStateCmd(tower, TowerState.HOME);
+
+        /* Home Elevator Command */
+        homeElevator = new HomeElevatorCmd(elevator, tower);
+
+        /* Instant Commands */
+        scoreInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.SCORE));
+        intakeCoralInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_CORAL));
+
+        intakeLowAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE));
+        intakeHighAlgaeInstant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE));
+
+        seedFieldCentricInstant = drive.runOnce(() -> drive.setPose(new Pose2d(drive.getPose().getTranslation(), new Rotation2d()))).ignoringDisable(true);
+        stopDrivetrainInstant = drive.runOnce(drive::stop);
+    
+        enableSafetyOverrideInstant = vision.runOnce(() -> vision.setSafetyOverride(true));
+        //                                                    .andThen(rightVision.runOnce(() -> rightVision.setSafetyOverride(true)));
+        enableDirectToAlgaeInstant = tower.runOnce(() -> tower.enableGoToDirectAlgae());
+
+        homeTowerInstant = tower.runOnce(() -> tower.homeTower());
+        tiltTowerInstant = tower.runOnce(() -> tower.tiltForward());
+
+        gotoL1Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L1));
+        gotoL2Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L2));
+        gotoL3Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L3));
+        gotoL4Instant = tower.runOnce(() -> tower.triggerEvent(TowerEvent.GOTO_L4));
+
+        startApproachInstant = approach.runOnce(() -> approach.startApproach());
+        reefAInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_A));
+        reefBInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_B));
+        reefABInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_AB));
+        reefCInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_C));
+        reefDInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_D));
+        reefCDInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_CD));
+        reefEInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_E));
+        reefFInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_F));
+        reefEFInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_EF));
+        reefGInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_G));
+        reefHInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_H));
+        reefGHInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_GH));
+        reefIInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_I));
+        reefJInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_J));
+        reefIJInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_IJ));
+        reefKInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_K));
+        reefLInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_L));
+        reefKLInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.REEF_KL));
+        approachBargeInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.BARGE));
+        approachProcessorInstant = tower.runOnce(() -> approach.identifyTarget(ApproachTarget.PROCESSOR));
+
+        /* Robot Centric Movement Commands */
+        robotCentricForward = drive.runOnce(() -> drive.runVelocity(new ChassisSpeeds(0.75, 0, 0)));
+        robotCentricBackward = drive.runOnce(() -> drive.runVelocity(new ChassisSpeeds(-0.75, 0, 0)));
+        robotCentricLeft = drive.runOnce(() -> drive.runVelocity(new ChassisSpeeds(0, 0.25, 0)));
+        robotCentricRight = drive.runOnce(() -> drive.runVelocity(new ChassisSpeeds(0, -0.25, 0)));
     }
 
     public Command getAutonomousCommand() {

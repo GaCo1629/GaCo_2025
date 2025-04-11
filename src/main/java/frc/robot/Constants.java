@@ -20,7 +20,7 @@ import frc.robot.generated.TunerConstants;
 
 /** Add your docs here. */
 public class Constants {
-    public static final Mode simMode = Mode.REPLAY;
+    public static final Mode simMode = Mode.SIM;
     public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : simMode;
 
     public static final double kDt = 0.02;
@@ -41,7 +41,7 @@ public class Constants {
         
         public static final double kAngleFactor = 360 * 24 / 40; // 216 degrees
 
-        public static final double kAngleGearing = 1.0 / 4.0; // 4:1 gearing 
+        public static final double kAngleGearing = 40.0;
 
         public static final double kP = 0.04; // was 0.02
         public static final double kI = 0;
@@ -101,10 +101,6 @@ public class Constants {
 		public static final double kV = 0.117 ;     //
 		public static final double kA = 0.00803 ;   //
 
-        public static final double kElevatorCarriageMassKg = 0.1;
-        public static final double kElevatorGearing = 10.0;
-        public static final double kElevatorDrumRadius = 0.0;
-
         public static final double kHeightTolleranceMeters = Units.inchesToMeters(1.0);
 
         public static final int kElevatorCurrentLimit = 60;
@@ -136,7 +132,7 @@ public class Constants {
 		public static final double kElevatorMaxAccelerationMPSPS = 4.0; // MPSS  was 6
 	
         public static final double kElevatorEncoderPositionConversionFactor = kRelativeEncoderScaleRevToMeters; 
-        public static final double kElevatorEncoderVelocityConversionFactor = kRelativeEncoderScaleRevToMeters; 
+        public static final double kElevatorEncoderVelocityConversionFactor = kRelativeEncoderScaleRevToMeters / 60.0; 
     }
 
     public class Driver{

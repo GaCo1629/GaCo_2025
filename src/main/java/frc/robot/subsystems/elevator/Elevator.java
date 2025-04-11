@@ -6,8 +6,6 @@ package frc.robot.subsystems.elevator;
 
 import org.littletonrobotics.junction.Logger;
 
-import com.ctre.phoenix6.Utils;
-
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -85,13 +83,8 @@ public class Elevator extends SubsystemBase {
   }
 
   public boolean inPosition(){
-    if (Utils.isSimulation()){
-      Globals.ELEVATOR_IN_POSITION = true;
-      return Globals.ELEVATOR_IN_POSITION;
-    } else {
-      Globals.ELEVATOR_IN_POSITION = (Math.abs(inputs.goalPositionMeters - inputs.encoderPositionMeters) < Constants.Elevator.kHeightTolleranceMeters);
-      return Globals.ELEVATOR_IN_POSITION;
-    }
+    Globals.ELEVATOR_IN_POSITION = (Math.abs(inputs.goalPositionMeters - inputs.encoderPositionMeters) < Constants.Elevator.kHeightTolleranceMeters);
+    return Globals.ELEVATOR_IN_POSITION;
   }
 
   public double getCurrent() {

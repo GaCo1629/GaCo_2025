@@ -28,24 +28,35 @@ public class LEDIOSim implements LEDIO {
     private boolean stripOn = false;
 
     // The LED bar is divided into 3 bands...
-    // 0-4   ELV In Pos    
-    // 5-8   Wrist in Pos
-    // 9-16  Got Coral
-    // 17-20 Wrist in Pos
-    // 21-44 ELV In Pos    
-    private final AddressableLEDBufferView elevatorView_1 = ledBuffer.createView(0, 4);
-    private final AddressableLEDBufferView elevatorView_2 = ledBuffer.createView(21, 25);
-    private final AddressableLEDBufferView wristView_1 = ledBuffer.createView(5, 8);
-    private final AddressableLEDBufferView wristView_2 = ledBuffer.createView(17, 20);
-    private final AddressableLEDBufferView coralView = ledBuffer.createView(9, 16);
+    // 0-3   ELV In Pos    
+    // 4-7   Wrist in Pos
+    // 8-15  Got Coral
+    // 16-19 Wrist in Pos
+    // 20-23 ELV In Pos    
+    private AddressableLEDBufferView elevatorView_1;
+    private AddressableLEDBufferView elevatorView_2;
+    private AddressableLEDBufferView wristView_1;
+    private AddressableLEDBufferView wristView_2;
+    private AddressableLEDBufferView coralView;
 
     public LEDIOSim(int port, int stripLength) {
-        ledStrip = AddressableLEDSim.createForChannel(port);
+        ledStrip = new AddressableLEDSim();
         ledStrip.setLength(stripLength);
 
         ledBuffer = new AddressableLEDBuffer(stripLength);
-        ledByteBuffer = new byte[stripLength];
+        ledByteBuffer = new byte[stripLength * 4];
         ledStrip.setData(ledByteBuffer);
+
+        createViews();
+    }
+
+    @Override
+    public void createViews() {
+        elevatorView_1 = ledBuffer.createView(0, 3);
+        elevatorView_2 = ledBuffer.createView(20, 24);
+        wristView_1 = ledBuffer.createView(4, 7);
+        wristView_2 = ledBuffer.createView(16, 19);
+        coralView = ledBuffer.createView(8, 15);
     }
 
     @Override
