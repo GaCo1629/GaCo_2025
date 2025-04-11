@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.tower;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -18,19 +20,26 @@ import frc.robot.subsystems.elevator.Elevator;
 import frc.robot.subsystems.wrist.Wrist;
 
 public class Tower extends SubsystemBase {
-
+	@AutoLogOutput
 	private TowerState currentState = TowerState.INIT;
 
+	@AutoLogOutput
 	private final Timer stateTimer = new Timer();
 
 	private final Elevator elevator;
 	private final Wrist wrist;
 	private final CommandXboxController joystick;
 
-	private TowerEvent pendingEvent = TowerEvent.NONE;   
+	@AutoLogOutput
+	private TowerEvent pendingEvent = TowerEvent.NONE; 
 
+	@AutoLogOutput
 	private double safetyFactor = 1;
+
+	@AutoLogOutput
 	private int currentLevel = 0;
+
+	@AutoLogOutput
 	private boolean goDirectAlgae = false;
 
 	/** Creates a new Tower. */
@@ -81,7 +90,6 @@ public class Tower extends SubsystemBase {
 
 	public void runStateMachine() {
 		switch(currentState){
-
 			// =================== Initializing ===================
 			case INIT: {
 				if (elevator.getHeightMeters() < Constants.Elevator.kSafeHomeHeightMeters) {
@@ -437,6 +445,7 @@ public class Tower extends SubsystemBase {
 		}
 	}
 
+	@AutoLogOutput
 	public double getTowerSpeedSafetyFactor() {
 		//  Determine what portion of full speed can be used based on the tower State
 		safetyFactor = 1;
@@ -465,10 +474,7 @@ public class Tower extends SubsystemBase {
 		return currentState;
 	}
 
-
 	// -- Private Methods  ----------------------------------------------------
-
-	
 	private void updateDashboard() {
 		SmartDashboard.putString("Tower State", currentState.toString() + " <- " + pendingEvent.toString());
 		SmartDashboard.putNumber("Safety Factor", safetyFactor * 100);
@@ -485,6 +491,7 @@ public class Tower extends SubsystemBase {
 		}
 	}
 
+	@AutoLogOutput
 	private Boolean isHoldingGoTo(){
 		if ((pendingEvent == TowerEvent.GOTO_L1) || (pendingEvent == TowerEvent.GOTO_L2) || 
 		    (pendingEvent == TowerEvent.GOTO_L3) || (pendingEvent == TowerEvent.GOTO_L4)) {
@@ -493,7 +500,6 @@ public class Tower extends SubsystemBase {
 			return false;
 		}
 	}
-
 
 	private void setState(TowerState newState){
 		currentState = newState;

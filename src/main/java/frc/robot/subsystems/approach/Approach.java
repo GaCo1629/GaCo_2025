@@ -6,6 +6,8 @@ package frc.robot.subsystems.approach;
 
 import java.util.List;
 
+import org.littletonrobotics.junction.AutoLogOutput;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.path.PathConstraints;
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -24,7 +26,6 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.led.LEDmode;
 
 public class Approach extends SubsystemBase {
-
   private final CommandScheduler scheduler = CommandScheduler.getInstance();
   private final Drive drive;
   private final PathConstraints pathConstraints = new PathConstraints(
@@ -32,9 +33,17 @@ public class Approach extends SubsystemBase {
                               Constants.Drivetrain.kMaxAccelerationMPSPS * Constants.Approach.maxApproachLinearAccelerationPercent, 
                               Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Approach.maxApproachAngularVelocityPercent, 
                               Constants.Drivetrain.kMaxAngularAccelerationRPSPS * Constants.Approach.maxApproachAngularAccelerationPercent);
+
+  @AutoLogOutput
   private PathPlannerPath path;
+
+  @AutoLogOutput
   private Pose2d pt0;
+
+  @AutoLogOutput
   private double pt0X;
+
+  @AutoLogOutput
   private double pt0Y;
 
   public Approach(Drive drive) {

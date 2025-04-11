@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -23,6 +24,7 @@ import frc.robot.subsystems.Globals;
 import frc.robot.subsystems.led.LEDmode;
 
 public class Robot extends LoggedRobot {
+  @AutoLogOutput
   private Command autonomousCommand;
 
   public static final Field2d m_field = new Field2d(); // Tele-Op field

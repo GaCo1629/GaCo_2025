@@ -114,7 +114,7 @@ public class Wrist extends SubsystemBase {
   public double getWristSpeed(){
     return angleInputs.angleEncoderVelocityDegPerSec;
   }
-
+  
   public boolean inPosition(){
     if (Utils.isSimulation()){
       Globals.WRIST_IN_POSITION = true;

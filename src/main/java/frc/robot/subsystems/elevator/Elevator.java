@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.elevator;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.math.util.Units;
@@ -17,6 +18,7 @@ public class Elevator extends SubsystemBase {
   private final ElevatorIO io;
   private final ElevatorIOInputsAutoLogged inputs = new ElevatorIOInputsAutoLogged();
 
+  @AutoLogOutput
   private double lastGoalPositionMeters = Constants.Elevator.kElevatorMinHeightMeters;
 
   /** Creates a new ElevatorSubsystem. */
@@ -87,6 +89,7 @@ public class Elevator extends SubsystemBase {
     return Globals.ELEVATOR_IN_POSITION;
   }
 
+  @AutoLogOutput
   public double getCurrent() {
     return inputs.motor1CurrentAmps + inputs.motor2CurrentAmps + inputs.motor3CurrentAmps;
   }
