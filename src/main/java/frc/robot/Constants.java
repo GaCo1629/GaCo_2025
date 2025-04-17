@@ -57,7 +57,7 @@ public class Constants {
 
         public static final double kIntakeAngleDegrees             = 2;
         public static final double kSafeAngleDegrees               = 30;
-        public static final double kL4AngleDegrees                 = 50; // was 48
+        public static final double kL4AngleDegrees                 = 53; // was 50
 
         public static final double kHighAlgaeAngleDegrees          = 60;
 
