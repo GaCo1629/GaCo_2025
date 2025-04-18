@@ -16,7 +16,8 @@ public class Constants {
 
     public static final double kDt = 0.02;
 
-    public static final AprilTagFields kField = AprilTagFields.k2025ReefscapeAndyMark;
+    // public static final AprilTagFields kField = AprilTagFields.k2025ReefscapeAndyMark;   // Chesapeake
+    public static final AprilTagFields kField = AprilTagFields.k2025ReefscapeWelded;        // Worlds
     public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(kField);
 
     public class Wrist {
@@ -56,7 +57,7 @@ public class Constants {
 
         public static final double kIntakeAngleDegrees             = 2;
         public static final double kSafeAngleDegrees               = 30;
-        public static final double kL4AngleDegrees                 = 50; // was 48
+        public static final double kL4AngleDegrees                 = 53; // was 50
 
         public static final double kHighAlgaeAngleDegrees          = 60;
 

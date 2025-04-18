@@ -10,8 +10,7 @@ public enum ApproachPosition {
 	LEFT(Meters.of(0.45), Meters.of(-0.165)),
 	RIGHT(Meters.of(0.45), Meters.of(0.165)),
 	ALGAE(Meters.of(0.80), Meters.of(0.0)),
-	OVERHEAD(Meters.of(0.125), Meters.of(0.4));  // back of robot on Barge line
-
+	OVERHEAD(Meters.of(0.0), Meters.of(0.4));  // back of robot on Barge line	// first Meter.of was 0.125
 	public final Transform2d pt1Transform;
 	public final Transform2d pt2Transform;
 
