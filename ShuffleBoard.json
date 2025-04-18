@@ -65,7 +65,8 @@
               "_showGlyph": false,
               "Game/Game": "k2025Reefscape",
               "Visuals/Robot Icon Size": 50.0,
-              "Visuals/Show Outside Circles": false
+              "Visuals/Show Outside Circles": false,
+              "Colors/ActivateTrajectory": "#FFFFFFFF"
             }
           },
           "4,2": {
