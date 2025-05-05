@@ -3,13 +3,13 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.0,
-        "y": 5.076321721311474
+        "x": 8.150999999999998,
+        "y": 5.5
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.8690000000000015,
-        "y": 5.651571721311474
+        "x": 7.02,
+        "y": 6.0752500000000005
       },
       "isLocked": false,
       "linkedName": "Net"
@@ -62,7 +62,7 @@
   "folder": "Net",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -148.56166011580225
+    "rotation": 179.78796505682757
   },
   "useDefaultConstraints": true
 }

@@ -91,6 +91,7 @@ public class WristSubsystem extends SubsystemBase {
       .outputRange(-Constants.Wrist.kAnglePower, Constants.Wrist.kAnglePower)
       .positionWrappingInputRange(0, Constants.Wrist.kAngleFactor)
       .positionWrappingEnabled(true);
+    angleConfig.signals.absoluteEncoderPositionPeriodMs(16);
 
     intakeSpark.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     angleSpark.configure(angleConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
