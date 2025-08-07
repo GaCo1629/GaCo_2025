@@ -11,6 +11,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.FollowPathCommand;
 import com.pathplanner.lib.events.EventTrigger;
+import com.pathplanner.lib.util.FlippingUtil;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -227,6 +228,10 @@ public class RobotContainer {
                     .withRotationalRate(-pilot.getRightX() * Constants.Drivetrain.kMaxAngularVelocityRPS * Constants.Driver.kMaxTurnSpeed * tower.getTowerSpeedSafetyFactor()) // Drive counterclockwise with negative X (left)
             )
         );
+
+        // Change PathPlanner field size for robocon
+        FlippingUtil.fieldSizeX = 15.814;
+
 
         // avoid the PathPlanner startup delay....
         FollowPathCommand.warmupCommand().schedule();
