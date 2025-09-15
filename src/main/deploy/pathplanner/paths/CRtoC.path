@@ -8,8 +8,8 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 2.584417808219177,
-        "y": 1.8688142123287672
+        "x": 2.4120059288537545,
+        "y": 2.079545454545455
       },
       "isLocked": false,
       "linkedName": "Collect Right"
@@ -20,8 +20,8 @@
         "y": 3.02075
       },
       "prevControl": {
-        "x": 2.3743999999999987,
-        "y": 2.182249999999998
+        "x": 2.457213438735178,
+        "y": 2.1157114624505926
       },
       "nextControl": null,
       "isLocked": false,

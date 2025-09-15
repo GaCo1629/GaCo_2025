@@ -3,24 +3,24 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 7.16863256054936,
+        "x": 6.235,
         "y": 6.311329973664701
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.4749785216820746,
+        "x": 6.5413459611327145,
         "y": 6.340177421466137
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Barge Blue"
     },
     {
       "anchor": {
-        "x": 7.3,
+        "x": 6.366,
         "y": 6.311329973664701
       },
       "prevControl": {
-        "x": 6.838918326697336,
+        "x": 5.904918326697336,
         "y": 6.26382110241378
       },
       "nextControl": null,
