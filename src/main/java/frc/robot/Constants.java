@@ -17,8 +17,10 @@ public class Constants {
     public static final double kDt = 0.02;
 
     // public static final AprilTagFields kField = AprilTagFields.k2025ReefscapeAndyMark;   // Chesapeake
-    public static final AprilTagFields kField = AprilTagFields.k2025ReefscapeWelded;        // Worlds
-    public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(kField);
+    //public static final AprilTagFields kField = AprilTagFields.k2025ReefscapeWelded;        // Worlds
+    //public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(kField);
+
+    AprilTagFieldLayout kFieldLayout = new AprilTagFieldLayout("2025-reefscape-welded-robocon.json");
 
     public class Wrist {
         public static final int kAngleMotorId = 61;
