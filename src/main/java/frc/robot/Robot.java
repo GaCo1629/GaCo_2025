@@ -19,6 +19,7 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   public static final Field2d m_field = new Field2d(); // Tele-Op field
+  Constants dummyConstants  = new Constants();         // do this to read the apriltag file.
 
   private final RobotContainer m_robotContainer;
 

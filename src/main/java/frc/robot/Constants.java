@@ -7,20 +7,32 @@ package frc.robot;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.Filesystem;
+
 import frc.robot.generated.TunerConstants;
 
 /** Add your docs here. */
 public class Constants {
 
     public static final double kDt = 0.02;
+    public static AprilTagFieldLayout kFieldLayout;
 
-    // public static final AprilTagFields kField = AprilTagFields.k2025ReefscapeAndyMark;   // Chesapeake
+    //public static final AprilTagFields kField = AprilTagFields.k2025ReefscapeAndyMark;   // Chesapeake
     //public static final AprilTagFields kField = AprilTagFields.k2025ReefscapeWelded;        // Worlds
     //public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(kField);
 
-    AprilTagFieldLayout kFieldLayout = new AprilTagFieldLayout("2025-reefscape-welded-robocon.json");
+    //this imports the april tag layout for robocon and then puts all the poses of april tags on the dashboard to verify it matches new field map
+    public Constants() {
+        String apath = Filesystem.getDeployDirectory().getAbsolutePath() + "\\2025-reefscape-welded-robocon.json";
+        try {
+            kFieldLayout = new AprilTagFieldLayout(apath);
+                                                                        
+        } catch (Exception e) {
+            kFieldLayout = null;
+            e.printStackTrace();
+        }
+    }
 
     public class Wrist {
         public static final int kAngleMotorId = 61;

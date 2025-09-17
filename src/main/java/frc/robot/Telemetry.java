@@ -149,6 +149,7 @@ public class Telemetry {
     
     /** Display the currently selected autonomous path on the dashboard */
     public static void displayAutoPaths(){
+
         //Retrieve the currently selected path from the dashboard
         try {
             paths = PathPlannerAuto.getPathGroupFromAutoFile(SmartDashboard.getEntry("Auto Mode/active").getString("None"));
@@ -174,7 +175,8 @@ public class Telemetry {
 
         // Only runs this section once, when the selected auto changes
         if(paths != null && !paths.equals(pathsLast)){
-            
+        
+                      
             firstAnimation = true;
             autoAnimationStep = -10;   // Give a slight delay after changing paths
             poses = new ArrayList<>(); // Clear the pose list
