@@ -1,0 +1,19 @@
+{
+  "game": "Crescendo",
+  "source-url": "https://github.com/owen1050/frc2025_roboconPathplanning/tree/main/userAssets/Field2d_Robocon",
+  "field-image": "assets/fields/2024-field.png",
+  "field-corners": {
+    "top-left": [
+      0,
+      0
+    ],
+    "bottom-right": [
+      1274,
+      647
+    ]
+  },
+  "field-size": [
+    15.790,
+    8.050
+  ]
+}
