@@ -22,36 +22,22 @@ public class Constants {
     //public static final AprilTagFields kField = AprilTagFields.k2025ReefscapeAndyMark;   // Chesapeake
     //public static final AprilTagFields kField = AprilTagFields.k2025ReefscapeWelded;        // Worlds
     //public static final AprilTagFieldLayout kFieldLayout = AprilTagFieldLayout.loadField(kField);
-    public static String apath = Filesystem.getDeployDirectory().getAbsolutePath() + "\\2025-reefscape-welded-robocon.json";
-    public static AprilTagFieldLayout kFieldLayout;
+    public static String apath = Filesystem.getDeployDirectory().getAbsolutePath() + "/2025-reefscape-welded-robocon.json";
+    public static AprilTagFieldLayout kFieldLayout = loadAprilTags();
 
-    static {
+    public static AprilTagFieldLayout loadAprilTags() {
+        AprilTagFieldLayout tags;
         try {
-            kFieldLayout = new AprilTagFieldLayout(apath); // Method that throws Exception
-            //kFieldLayout.getTagPose(1).get().toPose2d();
+            tags = new AprilTagFieldLayout(apath); // Method that throws Exception
             System.err.println("AprilTags Initialized");
         } catch (IOException e) {
             // Handle the exception during static initialization
             System.err.println("Error initializing STATIC_MY_MEMBER: " + e.getMessage());
             // Set a default value or null, or rethrow as an unchecked exception
-            // This will wrap the original checked exception in an ExceptionInInitializerError
-            kFieldLayout = null; 
+            tags = null; 
         }
-    }    
-    //this imports the april tag layout for robocon and then puts all the poses of april tags on the dashboard to verify it matches new field map
-    public Constants() {
 
-    }
-
-    public void loadAprilTags() {
-        String apath = Filesystem.getDeployDirectory().getAbsolutePath() + "\\2025-reefscape-welded-robocon.json";
-        try {
-            kFieldLayout = new AprilTagFieldLayout(apath);
-            kFieldLayout.getTagPose(0) ;  // test to see if we can read this                                                        
-        } catch (Exception e) {
-            kFieldLayout = null;
-            e.printStackTrace();
-        }
+        return tags;
     }
 
     public class Wrist {
