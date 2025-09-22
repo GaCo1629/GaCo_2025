@@ -6,6 +6,8 @@ package frc.robot;
 
 import com.ctre.phoenix6.SignalLogger;
 
+import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.wpilibj.Filesystem;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -19,7 +21,6 @@ public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   public static final Field2d m_field = new Field2d(); // Tele-Op field
-  Constants dummyConstants  = new Constants();         // do this to read the apriltag file.
 
   private final RobotContainer m_robotContainer;
 
@@ -27,6 +28,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
   }
 
+  
   @Override
   public void robotPeriodic() {
     SignalLogger.stop();

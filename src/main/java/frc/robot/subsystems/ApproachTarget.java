@@ -11,6 +11,7 @@ import frc.robot.Constants;
 
 /** Reef target positions using blue side AprilTag IDs */
 public enum ApproachTarget {
+    
     UNKNOWN(0, 0, ApproachPosition.ALGAE, false),
     REEF_A(18, 7, ApproachPosition.LEFT, false),
     REEF_B(18, 7, ApproachPosition.RIGHT, false),
@@ -34,7 +35,7 @@ public enum ApproachTarget {
     BARGE(14, 5, ApproachPosition.OVERHEAD, true),
     LEFT_SOURCE(13, 1, ApproachPosition.ALGAE, true),
     RIGHT_SOURCE(12, 2, ApproachPosition.ALGAE, true);
-
+    
     public final int blueTagId;
     public final int redTagId;
     public final boolean enableHighCam;
@@ -52,6 +53,9 @@ public enum ApproachTarget {
     public final GoalEndState redGoalEndState;
 
     private ApproachTarget(int blueTagId, int redTagId, ApproachPosition position, boolean enableHighCam){
+
+        System.err.println("AprilTags Initialized");
+
         this.blueTagId = blueTagId;
         this.redTagId = redTagId;
         this.enableHighCam = enableHighCam;
