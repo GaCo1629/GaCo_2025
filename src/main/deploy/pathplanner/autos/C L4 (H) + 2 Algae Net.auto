@@ -106,12 +106,6 @@
           "data": {
             "waitTime": 0.5
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "NMtoOut"
-          }
         }
       ]
     }
