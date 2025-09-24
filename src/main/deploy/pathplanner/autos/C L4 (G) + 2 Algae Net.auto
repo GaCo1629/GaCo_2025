@@ -60,6 +60,12 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.3
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "SCORE_THEN_GOTO_ALGAE_L3"
@@ -87,6 +93,12 @@
           "type": "path",
           "data": {
             "pathName": "IJtoNM"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.4
           }
         },
         {

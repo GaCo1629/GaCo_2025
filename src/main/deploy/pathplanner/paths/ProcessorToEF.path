@@ -4,12 +4,12 @@
     {
       "anchor": {
         "x": 5.101,
-        "y": 0.7392499999999995
+        "y": 0.94
       },
       "prevControl": null,
       "nextControl": {
         "x": 5.020102822124142,
-        "y": 1.344981629099741
+        "y": 1.5457316290997416
       },
       "isLocked": false,
       "linkedName": "Processor"
@@ -57,7 +57,7 @@
   "eventMarkers": [],
   "globalConstraints": {
     "maxVelocity": 3.0,
-    "maxAcceleration": 3.0,
+    "maxAcceleration": 2.5,
     "maxAngularVelocity": 540.0,
     "maxAngularAcceleration": 720.0,
     "nominalVoltage": 12.0,
