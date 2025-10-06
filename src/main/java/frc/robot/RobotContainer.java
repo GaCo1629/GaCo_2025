@@ -289,24 +289,24 @@ public class RobotContainer {
 
         copilot_1.button(Driver.pose_i).onTrue(reefIInstant);
         copilot_1.button(Driver.pose_j).onTrue(reefJInstant);
-        copilot_1.button(Driver.pose_ija).onTrue(reefIJInstant);
+        copilot_1.button(Driver.pose_ija).onTrue(reefIJInstant.andThen(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE))));
         copilot_1.button(Driver.pose_k).onTrue(reefKInstant);
         copilot_1.button(Driver.pose_l).onTrue(reefLInstant);
-        copilot_1.button(Driver.pose_kla).onTrue(reefKLInstant);
+        copilot_1.button(Driver.pose_kla).onTrue(reefKLInstant.andThen(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE))));
         
         // ===  CoPilot 2 Buttons  ===========================================
         copilot_2.button(Driver.pose_a).onTrue(reefAInstant);
         copilot_2.button(Driver.pose_b).onTrue(reefBInstant);
-        copilot_2.button(Driver.pose_aba).onTrue(reefABInstant);
+        copilot_2.button(Driver.pose_aba).onTrue(reefABInstant.andThen(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE))));
         copilot_2.button(Driver.pose_c).onTrue(reefCInstant);
         copilot_2.button(Driver.pose_d).onTrue(reefDInstant);
-        copilot_2.button(Driver.pose_cda).onTrue(reefCDInstant);
+        copilot_2.button(Driver.pose_cda).onTrue(reefCDInstant.andThen(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE))));
         copilot_2.button(Driver.pose_e).onTrue(reefEInstant);
         copilot_2.button(Driver.pose_f).onTrue(reefFInstant);
-        copilot_2.button(Driver.pose_efa).onTrue(reefEFInstant);
+        copilot_2.button(Driver.pose_efa).onTrue(reefEFInstant.andThen(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_HIGH_ALGAE))));
         copilot_2.button(Driver.pose_g).onTrue(reefGInstant);
         copilot_2.button(Driver.pose_h).onTrue(reefHInstant);
-        copilot_2.button(Driver.pose_gha).onTrue(reefGHInstant);
+        copilot_2.button(Driver.pose_gha).onTrue(reefGHInstant.andThen(tower.runOnce(() -> tower.triggerEvent(TowerEvent.INTAKE_LOW_ALGAE))));
        
         drivetrain.registerTelemetry(logger::telemeterize);
     }

@@ -30,7 +30,7 @@ public enum ApproachTarget {
     REEF_K(19, 6, ApproachPosition.LEFT, false),
     REEF_L(19, 6, ApproachPosition.RIGHT, false),
     REEF_KL(19, 6, ApproachPosition.ALGAE, false),
-    PROCESSOR(16, 3, ApproachPosition.ALGAE, false),
+    PROCESSOR(16, 3, ApproachPosition.PROCESSOR, false),
     BARGE(14, 5, ApproachPosition.OVERHEAD, true),
     LEFT_SOURCE(13, 1, ApproachPosition.ALGAE, true),
     RIGHT_SOURCE(12, 2, ApproachPosition.ALGAE, true);

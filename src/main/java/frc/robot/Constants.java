@@ -49,7 +49,7 @@ public class Constants {
         public static final double kCoralFeedPower          = -0.04;
         public static final double kCoralHoldPower          =  0.04;
         
-  		public static final double kAlgaeIntakePower        =  0.3;
+  		public static final double kAlgaeIntakePower        =  0.5; //was 0.3
         public static final double kAlgaeScoringPower       = -1.0;
 
         public static final double kAngleMaxVelocityDPS       = 400;  
