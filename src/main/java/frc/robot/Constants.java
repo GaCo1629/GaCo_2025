@@ -129,8 +129,8 @@ public class Constants {
     public class Driver{
         
         // driver 
-        public static final double kMaxDriveSpeed = 0.5; // Percent of kMaxVelocityMPS
-        public static final double kMaxTurnSpeed  = 0.7; // Percent of kMaxAngularVelocityRPS
+        public static final double kMaxDriveSpeed = 0.4; // Percent of kMaxVelocityMPS
+        public static final double kMaxTurnSpeed  = 0.6; // Percent of kMaxAngularVelocityRPS
 
         //Co-Pilot 1
         public static final int reset = 1;
